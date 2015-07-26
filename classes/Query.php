@@ -1,0 +1,696 @@
+<?php namespace Phrodo\Database;
+
+use Phrodo\Contract\Database\Connection as ConnectionContract;
+
+/**
+ * Query builder class
+ */
+class Query implements \Phrodo\Contract\Database\Query
+{
+
+    /**
+     * Connection
+     *
+     * @var ConnectionContract
+     */
+    protected $connection;
+
+    /**
+     * Type
+     *
+     * @var string
+     */
+    protected $type;
+
+    /**
+     * Columns
+     *
+     * @var string
+     */
+    protected $columns = "*";
+
+    /**
+     * Tables by alias
+     *
+     * @var string
+     */
+    protected $tables = [];
+
+    /**
+     * Joins by alias
+     *
+     * @var array
+     */
+    protected $joins = [];
+
+    /**
+     * Data to insert or update
+     *
+     * @var array
+     */
+    protected $data = [];
+
+    /**
+     * Where conditions
+     *
+     * @var array
+     */
+    protected $where = [];
+
+    /**
+     * Group by clause
+     *
+     * @var string
+     */
+    protected $groupBy;
+
+    /**
+     * Having clause
+     *
+     * @var array
+     */
+    protected $having = [];
+
+    /**
+     * Order by clause
+     *
+     * @var string
+     */
+    protected $orderBy;
+
+    /**
+     * Limit clause
+     *
+     * @var string
+     */
+    protected $limit;
+
+    /**
+     * Alternative action
+     *
+     * @var callable
+     */
+    protected $alternative;
+
+    /**
+     * Constructor
+     *
+     * @param ConnectionContract $connection
+     */
+    public function __construct(ConnectionContract $connection)
+    {
+        $this->connection = $connection;
+    }
+
+    /**
+     * Get SQL select query as string
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getQuery();
+    }
+
+    /**
+     * Select columns
+     *
+     * @param $columns
+     * @return $this
+     */
+    public function select($columns)
+    {
+        $this->type    = self::TYPE_SELECT;
+        $this->columns = $columns;
+
+        return $this;
+    }
+
+    /**
+     * Insert query
+     *
+     * @param string $table (optional)
+     * @param array  $data  (optional)
+     * @return $this
+     */
+    public function insert($table = null, array $data = null)
+    {
+        $this->type = self::TYPE_INSERT;
+        if ($table) {
+            $this->table($table);
+        }
+        if ($data) {
+            $this->values($data);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Update query
+     *
+     * @param string       $table (optional)
+     * @param array        $data  (optional)
+     * @param array|string $where (optional)
+     * @return $this
+     */
+    public function update($table = null, array $data = null, $where = null)
+    {
+        $this->type = self::TYPE_UPDATE;
+        if ($table) {
+            $this->table($table);
+        }
+        if ($data) {
+            $this->set($data);
+        }
+        if ($where) {
+            $this->where($where);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Delete query
+     *
+     * @param string       $table (optional)
+     * @param array|string $where (optional)
+     * @return $this
+     */
+    public function delete($table = null, $where = null)
+    {
+        $this->type = self::TYPE_DELETE;
+        if ($table) {
+            $this->table($table);
+        }
+        if ($where) {
+            $this->where($where);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Add table
+     *
+     * @param string $table
+     * @param string $alias
+     * @return $this
+     */
+    public function table($table, $alias = null)
+    {
+        $this->tables[$alias ?: $table] = "$table $alias";
+
+        return $this;
+    }
+
+    /**
+     * From table
+     *
+     * @param string $table
+     * @param string $alias
+     * @return $this
+     */
+    public function from($table, $alias = null)
+    {
+        return $this->table($table, $alias);
+    }
+
+    /**
+     * Into table
+     *
+     * @param string $table
+     * @param string $alias
+     * @return $this
+     */
+    public function into($table, $alias = null)
+    {
+        return $this->table($table, $alias);
+    }
+
+    /**
+     * Join a table
+     *
+     * @param string $table
+     * @param string $alias
+     * @param string $on
+     * @param string $type
+     * @return $this
+     */
+    public function join($table, $alias = null, $on = null, $type = "INNER JOIN")
+    {
+        $this->joins[$alias] = "$type $table $alias ON $on";
+
+        return $this;
+    }
+
+    /**
+     * LEFT OUTER Join a table
+     *
+     * @param string $table
+     * @param string $alias
+     * @param string $on
+     * @return $this
+     */
+    public function leftJoin($table, $alias = null, $on = null)
+    {
+        return $this->join($table, $alias, $on, "LEFT JOIN");
+    }
+
+    /**
+     * RIGHT OUTER Join a table
+     *
+     * @param string $table
+     * @param string $alias
+     * @param string $on
+     * @return $this
+     */
+    public function rightJoin($table, $alias = null, $on = null)
+    {
+        return $this->join($table, $alias, $on, "RIGHT JOIN");
+    }
+
+    /**
+     * INNER Join a table
+     *
+     * @param string $table
+     * @param string $alias
+     * @param string $on
+     * @return $this
+     */
+    public function innerJoin($table, $alias = null, $on = null)
+    {
+        return $this->join($table, $alias, $on, "INNER JOIN");
+    }
+
+    /**
+     * Data to insert
+     *
+     * @param array $data
+     * @return $this
+     */
+    public function values(array $data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    /**
+     * Data to set
+     *
+     * @param array $data
+     * @return $this
+     */
+    public function set(array $data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    /**
+     * Where condition
+     *
+     * @param array|string $conditions
+     * @param array        $parameters
+     * @return $this
+     */
+    public function where($conditions, $parameters = null)
+    {
+        if (!is_array($parameters)) {
+            $parameters = func_get_args();
+            array_shift($parameters);
+        }
+
+        $this->where[] = $this->connection->merge($conditions, $parameters);
+
+        return $this;
+    }
+
+    /**
+     * Group by column
+     *
+     * @param string $groupBy
+     * @return $this
+     */
+    public function groupBy($groupBy)
+    {
+        $this->groupBy = $groupBy;
+
+        return $this;
+    }
+
+    /**
+     * Having condition
+     *
+     * @param $condition
+     * @return $this;
+     */
+    public function having($condition)
+    {
+        $this->having[] = $condition;
+
+        return $this;
+    }
+
+    /**
+     * Order by column
+     *
+     * @param string $orderBy
+     * @return $this
+     */
+    public function orderBy($orderBy)
+    {
+        $this->orderBy = $orderBy;
+
+        return $this;
+    }
+
+    /**
+     * Limit number of results/items
+     *
+     * @param int $limit
+     * @param int $offset
+     * @return $this
+     */
+    public function limit($limit, $offset = 0)
+    {
+        $this->limit = ($offset ? "$offset," : "") . $limit;
+
+        return $this;
+    }
+
+    /**
+     * Fail hard and throw an exception when no result can be found
+     *
+     * @param string $message
+     * @return $this
+     */
+    public function orFail($message = "No rows found or affected")
+    {
+        $this->alternative = function () use ($message) {
+            throw new \RuntimeException($message);
+        };
+
+        return $this;
+    }
+
+    /**
+     * No rows affected? Insert row instead
+     *
+     * @return $this
+     */
+    public function orInsert()
+    {
+        $this->alternative = function () {
+            $this->insert();
+
+            return $this->execute();
+        };
+
+        return $this;
+    }
+
+    /**
+     * Get select columns query part
+     *
+     * @return string
+     */
+    public function getColumns()
+    {
+        return $this->columns;
+    }
+
+    /**
+     * Get tables
+     *
+     * @return string
+     */
+    public function getTables()
+    {
+        return implode(',', $this->tables);
+    }
+
+    /**
+     * Get from query part
+     *
+     * @return string
+     */
+    public function getFrom()
+    {
+        return implode("\n", array_merge([$this->getTables()], $this->joins));
+    }
+
+    /**
+     * Get where query part
+     *
+     * @return string
+     */
+    public function getWhere()
+    {
+        return implode("\nAND ", $this->where);
+    }
+
+    /**
+     * Get group by query part
+     *
+     * @return string
+     */
+    public function getGroupBy()
+    {
+        return $this->groupBy;
+    }
+
+    /**
+     * Get having query part
+     *
+     * @return string
+     */
+    public function getHaving()
+    {
+        return implode("\nAND ", $this->having);
+    }
+
+    /**
+     * Get order by query part
+     *
+     * @return string
+     */
+    public function getOrderBy()
+    {
+        return $this->orderBy;
+    }
+
+    /**
+     * Get limit query part
+     *
+     * @return string
+     */
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
+    /**
+     * Get select query
+     *
+     * @return string
+     */
+    public function getSelect()
+    {
+        $sql = 'SELECT ' . $this->getColumns();
+        $sql .= "\nFROM " . $this->getFrom();
+        if ($this->where) {
+            $sql .= "\nWHERE " . $this->getWhere();
+        }
+        if ($this->groupBy) {
+            $sql .= "\nGROUP BY " . $this->getGroupBy();
+        }
+        if ($this->having) {
+            $sql .= "\nHAVING " . $this->getHaving();
+        }
+        if ($this->orderBy) {
+            $sql .= "\nORDER BY " . $this->getOrderBy();
+        }
+        if ($this->limit) {
+            $sql .= "\nLIMIT " . $this->getLimit();
+        }
+
+        return $sql;
+    }
+
+    /**
+     * Get insert query
+     *
+     * @return string
+     */
+    public function getInsert()
+    {
+        $sql = 'INSERT INTO ' . $this->getTables();
+        $sql .= "\n(" . implode(',', array_keys($this->data)) . ')';
+        $sql .= "\nVALUES (" . implode(',', array_map([$this->connection, 'quote'], $this->data)) . ')';
+
+        return $sql;
+    }
+
+    /**
+     * Get update query
+     *
+     * @return string
+     */
+    public function getUpdate()
+    {
+        $sql = 'UPDATE ' . $this->getTables();
+        $sql .= "\nSET " . implode(',', array_map(function($value, $field) {
+            return $field . '=' . $this->connection->quote($value);
+        }, $this->data));
+        if ($this->where) {
+            $sql .= "\nWHERE " . $this->getWhere();
+        }
+        if ($this->orderBy) {
+            $sql .= "\nORDER BY " . $this->getOrderBy();
+        }
+        if ($this->limit) {
+            $sql .= "\nLIMIT " . $this->getLimit();
+        }
+
+        return $sql;
+    }
+
+    /**
+     * Get delete query
+     *
+     * @return string
+     */
+    public function getDelete()
+    {
+        $sql = 'DELETE ' . $this->getTables();
+        if ($this->where) {
+            $sql .= "\nWHERE " . $this->getWhere();
+        }
+        if ($this->limit) {
+            $sql .= "\nLIMIT " . $this->getLimit();
+        }
+
+        return $sql;
+    }
+
+    /**
+     * Get SQL Query
+     *
+     * @return string
+     */
+    public function getQuery()
+    {
+        if (!$this->type) {
+            throw new \RuntimeException('No query type set');
+        }
+
+        return $this->{'get' . $this->type}();
+    }
+
+    /**
+     * Run a query and return the results
+     *
+     * @return Result
+     */
+    public function query()
+    {
+        $result = $this->connection->query($this->getQuery());
+        if (!$result->count() && $this->alternative) {
+            $this->{"alternative"}();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Execute the query and return the number of rows affected
+     *
+     * @return int
+     */
+    public function execute()
+    {
+        $rows = $this->connection->execute($this->getQuery());
+        if (!$rows && $this->alternative) {
+            $this->{"alternative"}();
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Call a closure for each row
+     *
+     * @param callable $closure
+     * @return array
+     */
+    public function each(callable $closure)
+    {
+        return $this->query()->each($closure);
+    }
+
+    /**
+     * Get all rows as array
+     *
+     * @return array
+     */
+    public function rows()
+    {
+        return $this->query()->rows();
+    }
+
+    /**
+     * Get the first row as array
+     *
+     * @return array
+     */
+    public function row()
+    {
+        return $this->query()->row();
+    }
+
+    /**
+     * Get all values from one column
+     *
+     * @param int|string $column
+     * @return array
+     */
+    public function columns($column = 0)
+    {
+        return $this->query()->columns($column);
+    }
+
+    /**
+     * Get the first value from one column
+     *
+     * @param int|string $column
+     * @return mixed
+     */
+    public function column($column = 0)
+    {
+        return $this->query()->column($column);
+    }
+
+    /**
+     * Count number of rows
+     *
+     * @return int
+     */
+    public function count()
+    {
+        return $this->query()->count();
+    }
+
+    /**
+     * Get a (forward-only) iterator
+     *
+     * @return \Generator
+     */
+    public function getIterator()
+    {
+        return $this->query()->getIterator();
+    }
+
+}
