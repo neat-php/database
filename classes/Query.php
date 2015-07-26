@@ -23,11 +23,11 @@ class Query implements \Phrodo\Contract\Database\Query
     protected $type;
 
     /**
-     * Columns
+     * Select expressions
      *
-     * @var string
+     * @var array
      */
-    protected $columns = "*";
+    protected $select = [];
 
     /**
      * Tables by alias
@@ -113,15 +113,19 @@ class Query implements \Phrodo\Contract\Database\Query
     }
 
     /**
-     * Select columns
+     * Select query
      *
-     * @param $columns
+     * @param array|string $select
      * @return $this
      */
-    public function select($columns)
+    public function select($select = '*')
     {
-        $this->type    = self::TYPE_SELECT;
-        $this->columns = $columns;
+        if (!is_array($select)) {
+            $select = explode(',', $select);
+        }
+
+        $this->type   = self::TYPE_SELECT;
+        $this->select = $select;
 
         return $this;
     }
@@ -140,7 +144,7 @@ class Query implements \Phrodo\Contract\Database\Query
             $this->table($table);
         }
         if ($data) {
-            $this->values($data);
+            $this->set($data);
         }
 
         return $this;
@@ -191,15 +195,15 @@ class Query implements \Phrodo\Contract\Database\Query
     }
 
     /**
-     * Add table
+     * Use table
      *
      * @param string $table
-     * @param string $alias
+     * @param string $alias (optional)
      * @return $this
      */
     public function table($table, $alias = null)
     {
-        $this->tables[$alias ?: $table] = "$table $alias";
+        $this->tables[$alias ?: $table] = $alias ? "$table $alias" : $table;
 
         return $this;
     }
@@ -208,7 +212,7 @@ class Query implements \Phrodo\Contract\Database\Query
      * From table
      *
      * @param string $table
-     * @param string $alias
+     * @param string $alias (optional)
      * @return $this
      */
     public function from($table, $alias = null)
@@ -220,7 +224,7 @@ class Query implements \Phrodo\Contract\Database\Query
      * Into table
      *
      * @param string $table
-     * @param string $alias
+     * @param string $alias (optional)
      * @return $this
      */
     public function into($table, $alias = null)
@@ -281,19 +285,6 @@ class Query implements \Phrodo\Contract\Database\Query
     public function innerJoin($table, $alias = null, $on = null)
     {
         return $this->join($table, $alias, $on, "INNER JOIN");
-    }
-
-    /**
-     * Data to insert
-     *
-     * @param array $data
-     * @return $this
-     */
-    public function values(array $data)
-    {
-        $this->data = $data;
-
-        return $this;
     }
 
     /**
@@ -417,9 +408,9 @@ class Query implements \Phrodo\Contract\Database\Query
      *
      * @return string
      */
-    public function getColumns()
+    public function getSelect()
     {
-        return $this->columns;
+        return $this->select;
     }
 
     /**
@@ -427,7 +418,7 @@ class Query implements \Phrodo\Contract\Database\Query
      *
      * @return string
      */
-    public function getTables()
+    public function getTable()
     {
         return implode(',', $this->tables);
     }
@@ -439,7 +430,7 @@ class Query implements \Phrodo\Contract\Database\Query
      */
     public function getFrom()
     {
-        return implode("\n", array_merge([$this->getTables()], $this->joins));
+        return implode("\n", array_merge([$this->getTable()], $this->joins));
     }
 
     /**
@@ -497,9 +488,9 @@ class Query implements \Phrodo\Contract\Database\Query
      *
      * @return string
      */
-    public function getSelect()
+    public function getSelectQuery()
     {
-        $sql = 'SELECT ' . $this->getColumns();
+        $sql = 'SELECT ' . $this->getSelect();
         $sql .= "\nFROM " . $this->getFrom();
         if ($this->where) {
             $sql .= "\nWHERE " . $this->getWhere();
@@ -525,9 +516,9 @@ class Query implements \Phrodo\Contract\Database\Query
      *
      * @return string
      */
-    public function getInsert()
+    public function getInsertQuery()
     {
-        $sql = 'INSERT INTO ' . $this->getTables();
+        $sql = 'INSERT INTO ' . $this->getTable();
         $sql .= "\n(" . implode(',', array_keys($this->data)) . ')';
         $sql .= "\nVALUES (" . implode(',', array_map([$this->connection, 'quote'], $this->data)) . ')';
 
@@ -539,9 +530,9 @@ class Query implements \Phrodo\Contract\Database\Query
      *
      * @return string
      */
-    public function getUpdate()
+    public function getUpdateQuery()
     {
-        $sql = 'UPDATE ' . $this->getTables();
+        $sql = 'UPDATE ' . $this->getTable();
         $sql .= "\nSET " . implode(',', array_map(function($value, $field) {
             return $field . '=' . $this->connection->quote($value);
         }, $this->data));
@@ -563,9 +554,9 @@ class Query implements \Phrodo\Contract\Database\Query
      *
      * @return string
      */
-    public function getDelete()
+    public function getDeleteQuery()
     {
-        $sql = 'DELETE ' . $this->getTables();
+        $sql = 'DELETE ' . $this->getTable();
         if ($this->where) {
             $sql .= "\nWHERE " . $this->getWhere();
         }
@@ -587,7 +578,7 @@ class Query implements \Phrodo\Contract\Database\Query
             throw new \RuntimeException('No query type set');
         }
 
-        return $this->{'get' . $this->type}();
+        return $this->{'get' . $this->type . 'Query'}();
     }
 
     /**
@@ -657,9 +648,9 @@ class Query implements \Phrodo\Contract\Database\Query
      * @param int|string $column
      * @return array
      */
-    public function columns($column = 0)
+    public function values($column = 0)
     {
-        return $this->query()->columns($column);
+        return $this->query()->values($column);
     }
 
     /**
@@ -668,9 +659,9 @@ class Query implements \Phrodo\Contract\Database\Query
      * @param int|string $column
      * @return mixed
      */
-    public function column($column = 0)
+    public function value($column = 0)
     {
-        return $this->query()->column($column);
+        return $this->query()->value($column);
     }
 
     /**

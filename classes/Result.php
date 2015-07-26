@@ -62,7 +62,7 @@ class Result implements ResultContract
      * @param int|string $column
      * @return array
      */
-    public function columns($column = 0)
+    public function values($column = 0)
     {
         return $this->statement->fetchAll(\PDO::FETCH_COLUMN, $column);
     }
@@ -73,7 +73,7 @@ class Result implements ResultContract
      * @param int|string $column
      * @return mixed
      */
-    public function column($column = 0)
+    public function value($column = 0)
     {
         return $this->statement->fetch(\PDO::FETCH_COLUMN, $column);
     }

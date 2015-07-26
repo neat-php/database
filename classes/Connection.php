@@ -175,14 +175,14 @@ class Connection implements \Phrodo\Contract\Database\Connection
     /**
      * Select data from the database
      *
-     * @param string|array $columns
+     * @param string|array $select
      * @return Query
      */
-    public function select($columns = '*')
+    public function select($select = '*')
     {
         $select = new Query($this);
-        if ($columns) {
-            $select->select($columns);
+        if ($select) {
+            $select->select($select);
         }
 
         return $select;
