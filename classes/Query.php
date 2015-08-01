@@ -1,17 +1,15 @@
 <?php namespace Phrodo\Database;
 
-use Phrodo\Contract\Database\Connection as ConnectionContract;
-
 /**
  * Query builder class
  */
-class Query implements \Phrodo\Contract\Database\Query
+class Query implements Contract\Query
 {
 
     /**
      * Connection
      *
-     * @var ConnectionContract
+     * @var Contract\Connection
      */
     protected $connection;
 
@@ -95,9 +93,9 @@ class Query implements \Phrodo\Contract\Database\Query
     /**
      * Constructor
      *
-     * @param ConnectionContract $connection
+     * @param Contract\Connection $connection
      */
-    public function __construct(ConnectionContract $connection)
+    public function __construct(Contract\Connection $connection)
     {
         $this->connection = $connection;
     }

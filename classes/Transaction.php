@@ -1,17 +1,15 @@
 <?php namespace Phrodo\Database;
 
-use Phrodo\Contract\Database\Connection as ConnectionContract;
-
 /**
  * Transaction class
  */
-class Transaction implements \Phrodo\Contract\Database\Transaction
+class Transaction implements Contract\Transaction
 {
 
     /**
      * Connection
      *
-     * @var ConnectionContract
+     * @var Contract\Connection
      */
     protected $connection;
 
@@ -39,9 +37,9 @@ class Transaction implements \Phrodo\Contract\Database\Transaction
     /**
      * Constructor
      *
-     * @param ConnectionContract $connection
+     * @param Contract\Connection $connection
      */
-    public function __construct(ConnectionContract $connection)
+    public function __construct(Contract\Connection $connection)
     {
         $this->connection = $connection;
     }

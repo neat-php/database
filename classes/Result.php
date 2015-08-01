@@ -1,26 +1,27 @@
 <?php namespace Phrodo\Database;
 
-use Phrodo\Contract\Database\Result as ResultContract;
+use PDO;
+use PDOStatement;
 
 /**
  * Result class
  */
-class Result implements ResultContract
+class Result implements Contract\Result
 {
 
     /**
      * PDO Statement to fetch results from
      *
-     * @var \PDOStatement
+     * @var PDOStatement
      */
     protected $statement;
 
     /**
      * Constructor
      *
-     * @param \PDOStatement $statement
+     * @param PDOStatement $statement
      */
-    public function __construct(\PDOStatement $statement)
+    public function __construct(PDOStatement $statement)
     {
         $this->statement = $statement;
     }
@@ -33,7 +34,7 @@ class Result implements ResultContract
      */
     public function each(callable $closure)
     {
-        $this->statement->fetchAll(\PDO::FETCH_FUNC, $closure);
+        $this->statement->fetchAll(PDO::FETCH_FUNC, $closure);
     }
 
     /**
@@ -43,7 +44,7 @@ class Result implements ResultContract
      */
     public function rows()
     {
-        return $this->statement->fetchAll(\PDO::FETCH_ASSOC);
+        return $this->statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -53,7 +54,7 @@ class Result implements ResultContract
      */
     public function row()
     {
-        return $this->statement->fetch(\PDO::FETCH_ASSOC, \PDO::FETCH_ORI_FIRST);
+        return $this->statement->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_FIRST);
     }
 
     /**
@@ -64,7 +65,7 @@ class Result implements ResultContract
      */
     public function values($column = 0)
     {
-        return $this->statement->fetchAll(\PDO::FETCH_COLUMN, $column);
+        return $this->statement->fetchAll(PDO::FETCH_COLUMN, $column);
     }
 
     /**
@@ -75,7 +76,7 @@ class Result implements ResultContract
      */
     public function value($column = 0)
     {
-        return $this->statement->fetch(\PDO::FETCH_COLUMN, $column);
+        return $this->statement->fetch(PDO::FETCH_COLUMN, $column);
     }
 
     /**
