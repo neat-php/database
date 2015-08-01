@@ -76,7 +76,7 @@ class Result implements Contract\Result
      */
     public function value($column = 0)
     {
-        return $this->statement->fetch(PDO::FETCH_COLUMN, $column);
+        return $this->statement->fetchColumn($column);
     }
 
     /**

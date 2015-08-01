@@ -16,6 +16,20 @@ class Connection implements Contract\Connection
     protected $pdo;
 
     /**
+     * PDO query wrapper
+     *
+     * @var \Closure
+     */
+    protected $query;
+
+    /**
+     * PDO exec wrapper
+     *
+     * @var \Closure
+     */
+    protected $exec;
+
+    /**
      * Constructor
      *
      * @param PDO $pdo
@@ -123,7 +137,8 @@ class Connection implements Contract\Connection
         }
 
         $query     = $this->merge($query, $data);
-        $statement = $this->{"query"}($query);
+        $method    = $this->query;
+        $statement = $method($query);
 
         return new Result($statement);
     }
@@ -141,9 +156,10 @@ class Connection implements Contract\Connection
             $data = array_slice(func_get_args(), 1);
         }
 
-        $query = $this->merge($query, $data);
+        $query  = $this->merge($query, $data);
+        $method = $this->exec;
 
-        return $this->{"exec"}($query);
+        return $method($query);
     }
 
     /**
