@@ -29,10 +29,10 @@ interface Query extends Result
     /**
      * Select query
      *
-     * @param array|string $select
+     * @param array|string $expression
      * @return $this
      */
-    public function select($select = '*');
+    public function select($expression = '*');
 
     /**
      * Insert query

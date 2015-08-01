@@ -25,7 +25,7 @@ class Query implements Contract\Query
      *
      * @var array
      */
-    protected $select = [];
+    protected $expressions = [];
 
     /**
      * Tables by alias
@@ -113,17 +113,17 @@ class Query implements Contract\Query
     /**
      * Select query
      *
-     * @param array|string $select
+     * @param array|string $expression
      * @return $this
      */
-    public function select($select = '*')
+    public function select($expression = '*')
     {
-        if (!is_array($select)) {
-            $select = explode(',', $select);
+        if (!is_array($expression)) {
+            $expression = explode(',', $expression);
         }
 
-        $this->type   = self::TYPE_SELECT;
-        $this->select = $select;
+        $this->type        = self::TYPE_SELECT;
+        $this->expressions = $expression;
 
         return $this;
     }
@@ -408,7 +408,7 @@ class Query implements Contract\Query
      */
     public function getSelect()
     {
-        return $this->select;
+        return $this->expressions;
     }
 
     /**

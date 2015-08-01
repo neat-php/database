@@ -58,10 +58,10 @@ interface Connection
     /**
      * Select data from the database
      *
-     * @param array|string $select
+     * @param array|string $expression (optional, defaults to *)
      * @return Query
      */
-    public function select($select = '*');
+    public function select($expression = '*');
 
     /**
      * Insert data into a table

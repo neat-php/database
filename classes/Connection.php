@@ -175,17 +175,12 @@ class Connection implements Contract\Connection
     /**
      * Select data from the database
      *
-     * @param string|array $select
+     * @param string|array $expression (optional, defaults to *)
      * @return Query
      */
-    public function select($select = '*')
+    public function select($expression = '*')
     {
-        $select = new Query($this);
-        if ($select) {
-            $select->select($select);
-        }
-
-        return $select;
+        return $this->build()->select($expression);
     }
 
     /**
@@ -200,8 +195,7 @@ class Connection implements Contract\Connection
      */
     public function insert($table, array $data = null)
     {
-        $insert = new Query($this);
-        $insert->insert($table, $data);
+        $insert = $this->build()->insert($table, $data);
         if ($table && $data) {
             return $insert->execute();
         }
@@ -222,8 +216,7 @@ class Connection implements Contract\Connection
      */
     public function update($table, array $data = null, $where = null)
     {
-        $update = new Query($this);
-        $update->update($table, $data, $where);
+        $update = $this->build()->update($table, $data, $where);
         if ($table && $data && $where) {
             return $update->execute();
         }
@@ -243,8 +236,7 @@ class Connection implements Contract\Connection
      */
     public function delete($table, $where = null)
     {
-        $delete = new Query($this);
-        $delete->delete($table, $where);
+        $delete = $this->build()->delete($table, $where);
         if ($table && $where) {
             return $delete->execute();
         }
