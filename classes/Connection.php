@@ -55,10 +55,10 @@ class Connection implements Contract\Connection
     /**
      * Get or set PDO instance
      *
-     * @param \PDO $pdo (optional)
-     * @return \PDO
+     * @param PDO $pdo (optional)
+     * @return PDO
      */
-    public function pdo(\PDO $pdo = null)
+    public function pdo(PDO $pdo = null)
     {
         if ($pdo) {
             $this->pdo = $pdo;
