@@ -1,20 +1,10 @@
 <?php namespace Phrodo\Database\Contract;
 
-use PDO;
-
 /**
  * Database connection interface
  */
 interface Connection
 {
-
-    /**
-     * Get or set PDO instance
-     *
-     * @param PDO $pdo (optional)
-     * @return PDO
-     */
-    public function pdo(PDO $pdo = null);
 
     /**
      * Quote a value (protecting against SQL injection)
