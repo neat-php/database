@@ -36,7 +36,7 @@ class Connection implements \Phrodo\Contract\Database\Connection
      * Run a query and return the most appropriate result
      *
      * @param string $query
-     * @param array  ... $data
+     * @param mixed  $data
      * @return Result|int
      */
     public function __invoke($query, array $data = null)
@@ -92,10 +92,10 @@ class Connection implements \Phrodo\Contract\Database\Connection
      * Merge data into an SQL query with placeholders
      *
      * @param string $query
-     * @param array  ... $data
+     * @param mixed  $data
      * @return string
      */
-    public function merge($query, array $data = null)
+    public function merge($query, $data = null)
     {
         if (!is_array($data) && func_num_args() > 1) {
             $data = array_slice(func_get_args(), 1);
@@ -113,10 +113,10 @@ class Connection implements \Phrodo\Contract\Database\Connection
      * Run a query and return the result
      *
      * @param string $query
-     * @param array  ... $data
+     * @param mixed  $data
      * @return Result
      */
-    public function query($query, array $data = null)
+    public function query($query, $data = null)
     {
         if (!is_array($data) && func_num_args() > 1) {
             $data = array_slice(func_get_args(), 1);
@@ -132,10 +132,10 @@ class Connection implements \Phrodo\Contract\Database\Connection
      * Execute a query and return the number of rows affected
      *
      * @param string $query
-     * @param array  ... $data
+     * @param mixed  $data
      * @return int
      */
-    public function execute($query, array $data = null)
+    public function execute($query, $data = null)
     {
         if (!is_array($data) && func_num_args() > 1) {
             $data = array_slice(func_get_args(), 1);
