@@ -13,7 +13,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Phrodo\\Database\\": "classes/"
+            "Phrodo\\Database\\": "classes/",
+            "Phrodo\\Database\\Contract\\": "contracts/"
         }
     }
 }
