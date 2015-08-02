@@ -50,7 +50,7 @@ class Result implements Contract\Result
     /**
      * Get the first row as array
      *
-     * @return array
+     * @return array|false
      */
     public function row()
     {
@@ -72,7 +72,7 @@ class Result implements Contract\Result
      * Get the first value from one column
      *
      * @param int|string $column
-     * @return mixed
+     * @return mixed|false
      */
     public function value($column = 0)
     {
@@ -86,6 +86,7 @@ class Result implements Contract\Result
      */
     public function count()
     {
+        // FIXME: rowCount doesn't work on select statements
         return $this->statement->rowCount();
     }
 
@@ -96,8 +97,8 @@ class Result implements Contract\Result
      */
     public function getIterator()
     {
-        $method = $this->statement->columnCount() > 1 ? 'row' : 'field';
-        while ($item = $this->$method) {
+        $method = $this->statement->columnCount() > 1 ? 'row' : 'value';
+        while ($item = $this->$method()) {
             yield $item;
         }
     }
