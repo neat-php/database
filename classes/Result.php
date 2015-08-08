@@ -1,12 +1,13 @@
 <?php namespace Phrodo\Database;
 
-use PDO;
+use IteratorAggregate;
 use PDOStatement;
+use PDO;
 
 /**
  * Result class
  */
-class Result implements Contract\Result
+class Result implements Contract\Result, IteratorAggregate
 {
 
     /**
@@ -77,17 +78,6 @@ class Result implements Contract\Result
     public function value($column = 0)
     {
         return $this->statement->fetchColumn($column);
-    }
-
-    /**
-     * Count number of rows
-     *
-     * @return int
-     */
-    public function count()
-    {
-        // FIXME: rowCount doesn't work on select statements
-        return $this->statement->rowCount();
     }
 
     /**

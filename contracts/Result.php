@@ -1,12 +1,9 @@
 <?php namespace Phrodo\Database\Contract;
 
-use IteratorAggregate;
-use Countable;
-
 /**
  * Result interface
  */
-interface Result extends Countable, IteratorAggregate
+interface Result
 {
 
     /**
