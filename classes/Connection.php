@@ -50,19 +50,19 @@ class Connection implements Contract\Connection
      * Run a query and return the most appropriate result
      *
      * @param string $query
-     * @param mixed  $data
+     * @param mixed  ... $data
      * @return Result|int
      */
-    public function __invoke($query, array $data = null)
+    public function __invoke($query)
     {
-        if (!is_array($data) && func_num_args() > 1) {
-            $data = array_slice(func_get_args(), 1);
+        if (func_num_args() > 1) {
+            $query = $this->merge($query, array_slice(func_get_args(), 1));
         }
 
         if (preg_match('|^\s*SELECT\s+|i', $query)) {
-            return $this->query($query, $data);
+            return $this->query($query);
         } else {
-            return $this->execute($query, $data);
+            return $this->execute($query);
         }
     }
 
@@ -103,19 +103,15 @@ class Connection implements Contract\Connection
      * Merge data into an SQL query with placeholders
      *
      * @param string $query
-     * @param mixed  $data
+     * @param array  $data
      * @return string
      */
-    public function merge($query, $data = null)
+    public function merge($query, array $data)
     {
-        if (!is_array($data) && func_num_args() > 1) {
-            $data = array_slice(func_get_args(), 1);
-        }
-
         $expression = "/(\\?)(?=(?:[^']|'[^']*')*$)/";
         $callback   = function () use (&$data) {
             if (!$data) {
-                throw new \RuntimeException('Missing placeholder argument');
+                return '?';
             }
 
             return $this->quote(array_shift($data));
@@ -128,16 +124,15 @@ class Connection implements Contract\Connection
      * Run a query and return the result
      *
      * @param string $query
-     * @param mixed  $data
+     * @param mixed  ... $data
      * @return Result
      */
-    public function query($query, $data = null)
+    public function query($query)
     {
-        if (!is_array($data) && func_num_args() > 1) {
-            $data = array_slice(func_get_args(), 1);
+        if (func_num_args() > 1) {
+            $query = $this->merge($query, array_slice(func_get_args(), 1));
         }
 
-        $query     = $this->merge($query, $data);
         $method    = $this->query;
         $statement = $method($query);
 
@@ -148,16 +143,15 @@ class Connection implements Contract\Connection
      * Execute a query and return the number of rows affected
      *
      * @param string $query
-     * @param mixed  $data
+     * @param mixed  ... $data
      * @return int
      */
-    public function execute($query, $data = null)
+    public function execute($query)
     {
-        if (!is_array($data) && func_num_args() > 1) {
-            $data = array_slice(func_get_args(), 1);
+        if (func_num_args() > 1) {
+            $query = $this->merge($query, array_slice(func_get_args(), 1));
         }
 
-        $query  = $this->merge($query, $data);
         $method = $this->exec;
 
         return $method($query);

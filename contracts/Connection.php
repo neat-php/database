@@ -18,28 +18,28 @@ interface Connection
      * Merge data into an SQL query with placeholders
      *
      * @param string $query
-     * @param mixed  $data
+     * @param array  $data
      * @return string
      */
-    public function merge($query, $data = null);
+    public function merge($query, array $data);
 
     /**
      * Run a query and return the result
      *
      * @param string $query
-     * @param mixed  $data
+     * @param mixed  ... $data
      * @return Result
      */
-    public function query($query, $data = null);
+    public function query($query);
 
     /**
      * Execute a query and return the number of rows affected
      *
      * @param string $query
-     * @param mixed  $data
+     * @param mixed  ... $data
      * @return int
      */
-    public function execute($query, $data = null);
+    public function execute($query);
 
     /**
      * Intercept queries
