@@ -9,7 +9,7 @@ interface Connection
     /**
      * Quote a value (protecting against SQL injection)
      *
-     * @param string|array|null $value
+     * @param string|null $value
      * @return string
      */
     public function quote($value);

@@ -84,7 +84,7 @@ class Connection implements Contract\Connection
     /**
      * Quote a value (protecting against SQL injection)
      *
-     * @param string|array|null $value
+     * @param string|null $value
      * @return string
      */
     public function quote($value)
@@ -94,9 +94,6 @@ class Connection implements Contract\Connection
         }
         if ($value instanceof \DateTimeInterface) {
             return $this->pdo->quote($value->format('Y-m-d H:i:s'));
-        }
-        if (is_array($value)) {
-            return implode(',', array_map([$this, 'quote'], $value));
         }
 
         return $this->pdo->quote($value);
@@ -117,6 +114,10 @@ class Connection implements Contract\Connection
 
         $expression = "/(\\?)(?=(?:[^']|'[^']*')*$)/";
         $callback   = function () use (&$data) {
+            if (!$data) {
+                throw new \RuntimeException('Missing placeholder argument');
+            }
+
             return $this->quote(array_shift($data));
         };
 

@@ -16,5 +16,9 @@
             "Phrodo\\Database\\": "classes/",
             "Phrodo\\Database\\Contract\\": "contracts/"
         }
+    },
+    "require-dev": {
+        "mockery/mockery": "0.9.*",
+        "phpunit/phpunit": "4.7.*"
     }
 }
