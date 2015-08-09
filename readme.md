@@ -233,34 +233,6 @@ $db->transaction()
    ->run($closure);
 ```
 
-Listening to and intercepting queries
--------------------------------------
-
-To log, profile and manage query execution in any way possible, you can
-```intercept``` queries and run them through a closure of your own:
-
-```php
-// Profile and log each query
-$db->intercept(function (callable $execute, $query)
-{
-    $start  = microtime(true);
-    $result = $execute($query);
-    $finish = microtime(true);
-
-    log($sql, $finish - $start);
-
-    return $result;
-});
-```
-
-The possibilities with interception are huge because you can take control over
-all queries. You could for example:
-* Rewrite queries
-* Catch PDO exceptions
-* Block certain queries
-* Automatically retry queries
-* Reconnect after losing the connection
-
 Todo
 ----
 * Database, table and column definition read, create, alter and drop operations

@@ -16,20 +16,6 @@ class Connection implements Contract\Connection
     protected $pdo;
 
     /**
-     * PDO query wrapper
-     *
-     * @var \Closure
-     */
-    protected $query;
-
-    /**
-     * PDO exec wrapper
-     *
-     * @var \Closure
-     */
-    protected $exec;
-
-    /**
      * Constructor
      *
      * @param PDO $pdo
@@ -37,13 +23,6 @@ class Connection implements Contract\Connection
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-
-        $this->query = function ($query) {
-            return $this->pdo->query($query);
-        };
-        $this->exec  = function ($query) {
-            return $this->pdo->exec($query);
-        };
     }
 
     /**
@@ -133,8 +112,7 @@ class Connection implements Contract\Connection
             $query = $this->merge($query, array_slice(func_get_args(), 1));
         }
 
-        $method    = $this->query;
-        $statement = $method($query);
+        $statement = $this->pdo->query($query);
 
         return new Result($statement);
     }
@@ -152,25 +130,7 @@ class Connection implements Contract\Connection
             $query = $this->merge($query, array_slice(func_get_args(), 1));
         }
 
-        $method = $this->exec;
-
-        return $method($query);
-    }
-
-    /**
-     * Intercept queries
-     *
-     * @param callable $closure
-     */
-    public function intercept(callable $closure)
-    {
-        foreach (['query', 'exec'] as $method) {
-            $original = $this->$method;
-
-            $this->$method = function ($query) use ($closure, $original) {
-                return $closure($original, $query);
-            };
-        }
+        return $this->pdo->exec($query);
     }
 
     /**

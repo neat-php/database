@@ -42,13 +42,6 @@ interface Connection
     public function execute($query);
 
     /**
-     * Intercept queries
-     *
-     * @param callable $closure
-     */
-    public function intercept(callable $closure);
-
-    /**
      * Build a query
      *
      * @return Query
