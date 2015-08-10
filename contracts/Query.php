@@ -196,6 +196,14 @@ interface Query extends Result
     public function orInsert();
 
     /**
+     * Is this a select, insert, update or delete query?
+     *
+     * @param string $type
+     * @return bool
+     */
+    public function is($type);
+
+    /**
      * Get columns
      *
      * @return string

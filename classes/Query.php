@@ -402,6 +402,17 @@ class Query implements Contract\Query
     }
 
     /**
+     * Is this a select, insert, update or delete query?
+     *
+     * @param string $type
+     * @return bool
+     */
+    public function is($type)
+    {
+        return strtoupper($type) == $this->type;
+    }
+
+    /**
      * Get select columns query part
      *
      * @return string
