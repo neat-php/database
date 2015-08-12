@@ -16,20 +16,6 @@ class Transaction implements Contract\Transaction
     protected $pdo;
 
     /**
-     * Locks
-     *
-     * @var array
-     */
-    protected $locks = [];
-
-    /**
-     * Lock status
-     *
-     * @var bool
-     */
-    protected $locked = false;
-
-    /**
      * Transaction status
      *
      * @var bool
@@ -44,93 +30,6 @@ class Transaction implements Contract\Transaction
     public function __construct(\PDO $pdo)
     {
         $this->pdo = $pdo;
-    }
-
-    /**
-     * Set locks
-     *
-     * @param string|array $tables
-     * @param string       $type   'READ' or 'WRITE'
-     * @return $this
-     */
-    public function withLock($tables, $type)
-    {
-        $tables = is_array($tables) ? $tables : [$tables];
-        $type   = strtoupper($type);
-        $format = function ($table, $alias) use ($type) {
-            return $table . (is_string($alias) ? " $alias " : ' ')  . $type;
-        };
-
-        $this->locks = array_merge(
-            $this->locks,
-            array_map($format, $tables, array_keys($tables))
-        );
-
-        return $this;
-    }
-
-    /**
-     * Set read locks
-     *
-     * @param string|array $tables
-     * @return $this
-     */
-    public function withReadLock($tables)
-    {
-        return $this->withLock($tables, 'READ');
-    }
-
-    /**
-     * Set write locks
-     *
-     * @param string|array $tables
-     * @return $this
-     */
-    public function withWriteLock($tables)
-    {
-        return $this->withLock($tables, 'WRITE');
-    }
-
-    /**
-     * Get locks
-     *
-     * @return array
-     */
-    public function getLocks()
-    {
-        return implode(',', $this->locks);
-    }
-
-    /**
-     * Acquire table locks
-     */
-    public function lock()
-    {
-        if (!$this->locks) {
-            return;
-        }
-        if ($this->locked) {
-            throw new \RuntimeException('Locking tables when already locked causes existing locks to be released');
-        }
-
-        $this->pdo->exec('LOCK TABLES ' . $this->getLocks());
-        $this->locked = true;
-    }
-
-    /**
-     * Release table locks
-     */
-    public function unlock()
-    {
-        if (!$this->locks) {
-            return;
-        }
-        if (!$this->locked) {
-            throw new \RuntimeException('Cannot release locks when none are acquired');
-        }
-
-        $this->pdo->exec('UNLOCK TABLES');
-        $this->locked = false;
     }
 
     /**
@@ -188,19 +87,16 @@ class Transaction implements Contract\Transaction
      * @param callable $closure Closure without required parameters
      * @return mixed Closure return value
      * @throws \Throwable|\Exception When the transaction fails
+     * @codeCoverageIgnore Because one catch block is unreachable in PHP 5 or 7
      */
     public function run(callable $closure)
     {
         try {
             $this->start();
-            $this->lock();
             $result = $closure();
         } catch (\Throwable $e) {
             if ($this->started) {
                 $this->rollback();
-            }
-            if ($this->locked) {
-                $this->unlock();
             }
 
             throw $e;
@@ -208,15 +104,11 @@ class Transaction implements Contract\Transaction
             if ($this->started) {
                 $this->rollback();
             }
-            if ($this->locked) {
-                $this->unlock();
-            }
 
             throw $e;
         }
 
         $this->commit();
-        $this->unlock();
 
         return $result;
 

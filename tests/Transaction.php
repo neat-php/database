@@ -176,18 +176,4 @@ class Transaction extends \PHPUnit_Framework_TestCase
         });
     }
 
-    public function testLocks()
-    {
-        $pdo = $this->createMockPDO();
-
-        $connection  = $this->createConnection($pdo);
-        $transaction = $connection->transaction();
-        $transaction->withReadLock('privileges p');
-        $transaction->withReadLock(['g' => 'groups']);
-        $transaction->withWriteLock('users u');
-        $transaction->withWriteLock(['ug' => 'user_groups']);
-        $this->assertEquals('privileges p READ,groups g READ,users u WRITE,user_groups ug WRITE', $transaction->getLocks());
-
-    }
-
 }
