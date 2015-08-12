@@ -16,7 +16,7 @@ class Transaction implements Contract\Transaction
     protected $pdo;
 
     /**
-     * Transaction status
+     * Transaction started?
      *
      * @var bool
      */
@@ -91,27 +91,19 @@ class Transaction implements Contract\Transaction
      */
     public function run(callable $closure)
     {
+        $this->start();
         try {
-            $this->start();
             $result = $closure();
         } catch (\Throwable $e) {
-            if ($this->started) {
-                $this->rollback();
-            }
-
+            $this->rollback();
             throw $e;
         } catch (\Exception $e) {
-            if ($this->started) {
-                $this->rollback();
-            }
-
+            $this->rollback();
             throw $e;
         }
-
         $this->commit();
 
         return $result;
-
     }
 
 }
