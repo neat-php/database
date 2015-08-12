@@ -17,12 +17,16 @@ interface Result
     /**
      * Get all rows as array
      *
+     * Moves the cursor to the end of the result
+     *
      * @return array
      */
     public function rows();
 
     /**
-     * Get the first row as array
+     * Get a single row as array
+     *
+     * Moves the cursor to the next row
      *
      * @return array
      */
@@ -31,13 +35,17 @@ interface Result
     /**
      * Get all values from one column
      *
+     * Moves the cursor to the end of the result
+     *
      * @param int|string $column
      * @return array
      */
     public function values($column = 0);
 
     /**
-     * Get the first value from one column
+     * Get a single value from one column
+     *
+     * Moves the cursor to the next row
      *
      * @param int|string $column
      * @return mixed

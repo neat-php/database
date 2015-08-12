@@ -113,10 +113,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Select query
-     *
-     * @param array|string $expression
-     * @return $this
+     * @inheritdoc
      */
     public function select($expression = '*')
     {
@@ -131,11 +128,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Insert query
-     *
-     * @param string $table (optional)
-     * @param array  $data  (optional)
-     * @return $this
+     * @inheritdoc
      */
     public function insert($table = null, array $data = null)
     {
@@ -151,12 +144,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Update query
-     *
-     * @param string       $table (optional)
-     * @param array        $data  (optional)
-     * @param array|string $where (optional)
-     * @return $this
+     * @inheritdoc
      */
     public function update($table = null, array $data = null, $where = null)
     {
@@ -175,11 +163,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Delete query
-     *
-     * @param string       $table (optional)
-     * @param array|string $where (optional)
-     * @return $this
+     * @inheritdoc
      */
     public function delete($table = null, $where = null)
     {
@@ -195,11 +179,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Use table
-     *
-     * @param string $table
-     * @param string $alias (optional)
-     * @return $this
+     * @inheritdoc
      */
     public function table($table, $alias = null)
     {
@@ -209,11 +189,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * From table
-     *
-     * @param string $table
-     * @param string $alias (optional)
-     * @return $this
+     * @inheritdoc
      */
     public function from($table, $alias = null)
     {
@@ -221,11 +197,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Into table
-     *
-     * @param string $table
-     * @param string $alias (optional)
-     * @return $this
+     * @inheritdoc
      */
     public function into($table, $alias = null)
     {
@@ -233,13 +205,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Join a table
-     *
-     * @param string $table
-     * @param string $alias
-     * @param string $on
-     * @param string $type
-     * @return $this
+     * @inheritdoc
      */
     public function join($table, $alias = null, $on = null, $type = "INNER JOIN")
     {
@@ -249,12 +215,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * LEFT OUTER Join a table
-     *
-     * @param string $table
-     * @param string $alias
-     * @param string $on
-     * @return $this
+     * @inheritdoc
      */
     public function leftJoin($table, $alias = null, $on = null)
     {
@@ -262,12 +223,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * RIGHT OUTER Join a table
-     *
-     * @param string $table
-     * @param string $alias
-     * @param string $on
-     * @return $this
+     * @inheritdoc
      */
     public function rightJoin($table, $alias = null, $on = null)
     {
@@ -275,12 +231,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * INNER Join a table
-     *
-     * @param string $table
-     * @param string $alias
-     * @param string $on
-     * @return $this
+     * @inheritdoc
      */
     public function innerJoin($table, $alias = null, $on = null)
     {
@@ -288,10 +239,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Data to set
-     *
-     * @param array $data
-     * @return $this
+     * @inheritdoc
      */
     public function set(array $data)
     {
@@ -301,11 +249,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Where condition
-     *
-     * @param array|string $conditions
-     * @param array        $parameters
-     * @return $this
+     * @inheritdoc
      */
     public function where($conditions, $parameters = null)
     {
@@ -325,10 +269,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Group by column
-     *
-     * @param string $groupBy
-     * @return $this
+     * @inheritdoc
      */
     public function groupBy($groupBy)
     {
@@ -338,10 +279,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Having condition
-     *
-     * @param $condition
-     * @return $this;
+     * @inheritdoc
      */
     public function having($condition)
     {
@@ -351,10 +289,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Order by column
-     *
-     * @param string $orderBy
-     * @return $this
+     * @inheritdoc
      */
     public function orderBy($orderBy)
     {
@@ -364,11 +299,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Limit number of results/items
-     *
-     * @param int $limit
-     * @param int $offset
-     * @return $this
+     * @inheritdoc
      */
     public function limit($limit, $offset = 0)
     {
@@ -378,10 +309,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Fail hard and throw an exception when no result can be found
-     *
-     * @param string $message
-     * @return $this
+     * @inheritdoc
      */
     public function orFail($message = "No rows found or affected")
     {
@@ -393,9 +321,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * No rows affected? Insert row instead
-     *
-     * @return $this
+     * @inheritdoc
      */
     public function orInsert()
     {
@@ -409,10 +335,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Is this a select, insert, update or delete query?
-     *
-     * @param string $type
-     * @return bool
+     * @inheritdoc
      */
     public function is($type)
     {
@@ -420,9 +343,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get select columns query part
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getSelect()
     {
@@ -430,9 +351,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get tables
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getTable()
     {
@@ -440,9 +359,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get from query part
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getFrom()
     {
@@ -450,9 +367,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get where query part
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getWhere()
     {
@@ -460,9 +375,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get group by query part
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getGroupBy()
     {
@@ -470,9 +383,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get having query part
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getHaving()
     {
@@ -480,9 +391,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get order by query part
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getOrderBy()
     {
@@ -490,9 +399,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get limit query part
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getLimit()
     {
@@ -500,9 +407,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get select query
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getSelectQuery()
     {
@@ -528,9 +433,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get insert query
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getInsertQuery()
     {
@@ -542,9 +445,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get update query
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getUpdateQuery()
     {
@@ -566,9 +467,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get delete query
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getDeleteQuery()
     {
@@ -584,9 +483,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get SQL Query
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getQuery()
     {
@@ -598,10 +495,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Run a query and return the results
-     *
-     * @note Query will not fail with an exception when empty
-     * @return Result
+     * @inheritdoc
      */
     public function query()
     {
@@ -609,9 +503,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Execute the query and return the number of rows affected
-     *
-     * @return int
+     * @inheritdoc
      */
     public function execute()
     {
@@ -624,10 +516,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Call a closure for each row
-     *
-     * @param callable $closure
-     * @return array
+     * @inheritdoc
      */
     public function each(callable $closure)
     {
@@ -635,9 +524,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get all rows as array
-     *
-     * @return array
+     * @inheritdoc
      */
     public function rows()
     {
@@ -645,9 +532,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get the first row as array
-     *
-     * @return array
+     * @inheritdoc
      */
     public function row()
     {
@@ -655,10 +540,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get all values from one column
-     *
-     * @param int|string $column
-     * @return array
+     * @inheritdoc
      */
     public function values($column = 0)
     {
@@ -666,10 +548,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get the first value from one column
-     *
-     * @param int|string $column
-     * @return mixed
+     * @inheritdoc
      */
     public function value($column = 0)
     {
@@ -677,9 +556,7 @@ class Query implements Contract\Query, IteratorAggregate
     }
 
     /**
-     * Get a (forward-only) iterator
-     *
-     * @return \Generator
+     * @inheritdoc
      */
     public function getIterator()
     {

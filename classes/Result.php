@@ -28,10 +28,7 @@ class Result implements Contract\Result, IteratorAggregate
     }
 
     /**
-     * Call a closure for each row
-     *
-     * @param callable $closure
-     * @return array Results of each closure call
+     * @inheritdoc
      */
     public function each(callable $closure)
     {
@@ -39,9 +36,7 @@ class Result implements Contract\Result, IteratorAggregate
     }
 
     /**
-     * Get all rows as array
-     *
-     * @return array
+     * @inheritdoc
      */
     public function rows()
     {
@@ -49,9 +44,7 @@ class Result implements Contract\Result, IteratorAggregate
     }
 
     /**
-     * Get the first row as array
-     *
-     * @return array|false
+     * @inheritdoc
      */
     public function row()
     {
@@ -59,10 +52,7 @@ class Result implements Contract\Result, IteratorAggregate
     }
 
     /**
-     * Get all values from one column
-     *
-     * @param int|string $column
-     * @return array
+     * @inheritdoc
      */
     public function values($column = 0)
     {
@@ -70,10 +60,7 @@ class Result implements Contract\Result, IteratorAggregate
     }
 
     /**
-     * Get the first value from one column
-     *
-     * @param int|string $column
-     * @return mixed|false
+     * @inheritdoc
      */
     public function value($column = 0)
     {
@@ -81,9 +68,7 @@ class Result implements Contract\Result, IteratorAggregate
     }
 
     /**
-     * Get a (forward-only) iterator
-     *
-     * @return \Generator
+     * @inheritdoc
      */
     public function getIterator()
     {

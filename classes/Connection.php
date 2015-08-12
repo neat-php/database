@@ -26,7 +26,7 @@ class Connection implements Contract\Connection
     }
 
     /**
-     * Run a query and return the most appropriate result
+     * Run a query and return the result or number of rows affected
      *
      * @param string $query
      * @param mixed  ... $data
@@ -61,10 +61,7 @@ class Connection implements Contract\Connection
     }
 
     /**
-     * Quote a value (protecting against SQL injection)
-     *
-     * @param string|null $value
-     * @return string
+     * @inheritdoc
      */
     public function quote($value)
     {
@@ -79,11 +76,7 @@ class Connection implements Contract\Connection
     }
 
     /**
-     * Merge data into an SQL query with placeholders
-     *
-     * @param string $query
-     * @param array  $data
-     * @return string
+     * @inheritdoc
      */
     public function merge($query, array $data)
     {
@@ -100,11 +93,7 @@ class Connection implements Contract\Connection
     }
 
     /**
-     * Run a query and return the result
-     *
-     * @param string $query
-     * @param mixed  ... $data
-     * @return Result
+     * @inheritdoc
      */
     public function query($query)
     {
@@ -118,11 +107,7 @@ class Connection implements Contract\Connection
     }
 
     /**
-     * Execute a query and return the number of rows affected
-     *
-     * @param string $query
-     * @param mixed  ... $data
-     * @return int
+     * @inheritdoc
      */
     public function execute($query)
     {
@@ -144,10 +129,7 @@ class Connection implements Contract\Connection
     }
 
     /**
-     * Select data from the database
-     *
-     * @param string|array $expression (optional, defaults to *)
-     * @return Query
+     * @inheritdoc
      */
     public function select($expression = '*')
     {
@@ -155,14 +137,7 @@ class Connection implements Contract\Connection
     }
 
     /**
-     * Insert data into a table
-     *
-     * When all parameters are specified, the insert query is immediately
-     * executed and the number of rows affected will be returned.
-     *
-     * @param string $table
-     * @param array  $data  (optional)
-     * @return Query|int
+     * @inheritdoc
      */
     public function insert($table, array $data = null)
     {
@@ -175,15 +150,7 @@ class Connection implements Contract\Connection
     }
 
     /**
-     * Update data in a table
-     *
-     * When all parameters are specified, the update query is immediately
-     * executed and the number of rows affected will be returned.
-     *
-     * @param string       $table
-     * @param array        $data  (optional)
-     * @param array|string $where (optional)
-     * @return Query|int
+     * @inheritdoc
      */
     public function update($table, array $data = null, $where = null)
     {
@@ -196,14 +163,7 @@ class Connection implements Contract\Connection
     }
 
     /**
-     * Delete from a table
-     *
-     * When all parameters are specified, the delete query is immediately
-     * executed and the number of rows affected will be returned.
-     *
-     * @param string       $table
-     * @param array|string $where (optional)
-     * @return Query|int
+     * @inheritdoc
      */
     public function delete($table, $where = null)
     {
@@ -216,10 +176,7 @@ class Connection implements Contract\Connection
     }
 
     /**
-     * Run a closure wrapping it in a transaction
-     *
-     * @param callable $closure
-     * @return Transaction|mixed
+     * @inheritdoc
      */
     public function transaction(callable $closure = null)
     {
