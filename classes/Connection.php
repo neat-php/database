@@ -223,7 +223,7 @@ class Connection implements Contract\Connection
      */
     public function transaction(callable $closure = null)
     {
-        $transaction = new Transaction($this);
+        $transaction = new Transaction($this->pdo);
         if ($closure) {
             $transaction->run($closure);
         }
