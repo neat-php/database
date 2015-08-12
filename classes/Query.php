@@ -1,9 +1,11 @@
 <?php namespace Phrodo\Database;
 
+use IteratorAggregate;
+
 /**
  * Query builder class
  */
-class Query implements Contract\Query
+class Query implements Contract\Query, IteratorAggregate
 {
 
     /**
@@ -307,12 +309,17 @@ class Query implements Contract\Query
      */
     public function where($conditions, $parameters = null)
     {
-        if (!is_array($parameters)) {
-            $parameters = func_get_args();
-            array_shift($parameters);
+        if (is_array($conditions)) {
+            $this->where = array_merge($this->where, array_map(function($value, $field) {
+                return $field . '=' . $this->connection->quote($value);
+            }, $conditions, array_keys($conditions)));
+        } else {
+            if (func_num_args() > 1) {
+                $parameters = array_slice(func_get_args(), 1);
+                $conditions = $this->connection->merge($conditions, $parameters);
+            }
+            $this->where[] = $conditions;
         }
-
-        $this->where[] = $this->connection->merge($conditions, $parameters);
 
         return $this;
     }
@@ -544,7 +551,7 @@ class Query implements Contract\Query
         $sql = 'UPDATE ' . $this->getTable();
         $sql .= "\nSET " . implode(',', array_map(function($value, $field) {
             return $field . '=' . $this->connection->quote($value);
-        }, $this->data));
+        }, $this->data, array_keys($this->data)));
         if ($this->where) {
             $sql .= "\nWHERE " . $this->getWhere();
         }
@@ -565,7 +572,7 @@ class Query implements Contract\Query
      */
     public function getDeleteQuery()
     {
-        $sql = 'DELETE ' . $this->getTable();
+        $sql = 'DELETE FROM ' . $this->getTable();
         if ($this->where) {
             $sql .= "\nWHERE " . $this->getWhere();
         }
@@ -593,16 +600,12 @@ class Query implements Contract\Query
     /**
      * Run a query and return the results
      *
+     * @note Query will not fail with an exception when empty
      * @return Result
      */
     public function query()
     {
-        $result = $this->connection->query($this->getQuery());
-        if (!$result->count() && $this->alternative) {
-            $this->{"alternative"}();
-        }
-
-        return $result;
+        return $this->connection->query($this->getQuery());
     }
 
     /**
@@ -671,16 +674,6 @@ class Query implements Contract\Query
     public function value($column = 0)
     {
         return $this->query()->value($column);
-    }
-
-    /**
-     * Count number of rows
-     *
-     * @return int
-     */
-    public function count()
-    {
-        return $this->query()->count();
     }
 
     /**
