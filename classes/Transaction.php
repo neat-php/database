@@ -53,7 +53,7 @@ class Transaction implements Contract\Transaction
     public function commit()
     {
         if (!$this->started) {
-            throw new \RuntimeException('Cannot commit transaction when none was started');
+            throw new \RuntimeException('Cannot commit transaction before start');
         }
         if (!$this->pdo->commit()) {
             throw new \RuntimeException('Failed to commit transaction');
@@ -68,7 +68,7 @@ class Transaction implements Contract\Transaction
     public function rollback()
     {
         if (!$this->started) {
-            throw new \RuntimeException('Cannot rollback transaction when none was started');
+            throw new \RuntimeException('Cannot rollback transaction before start');
         }
         if (!$this->pdo->rollBack()) {
             throw new \RuntimeException('Failed to rollback transaction');
