@@ -42,13 +42,6 @@ interface Connection
     public function execute($query);
 
     /**
-     * Build a query
-     *
-     * @return Query
-     */
-    public function build();
-
-    /**
      * Select data from the database
      *
      * @param array|string $expression (optional, defaults to *)

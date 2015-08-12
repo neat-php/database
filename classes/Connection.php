@@ -138,7 +138,7 @@ class Connection implements Contract\Connection
      *
      * @return Query
      */
-    public function build()
+    protected function build()
     {
         return new Query($this);
     }

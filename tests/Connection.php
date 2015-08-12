@@ -11,9 +11,10 @@ class Connection extends \PHPUnit_Framework_TestCase
      *
      * @return PDO
      */
-    private function getPDO()
+    private function createPDO()
     {
         $pdo = new PDO('sqlite::memory:');
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->exec('CREATE TABLE users (
                         id INTEGER PRIMARY KEY,
                         username TEXT
@@ -27,13 +28,24 @@ class Connection extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Get mocked PDO instance
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject|PDO
+     */
+    private function createMockPDO()
+    {
+        return $this->getMock('PDO', [], ['sqlite::memory:']);
+    }
+
+    /**
      * Get a PDO instance
      *
+     * @param object $pdo
      * @return \Phrodo\Database\Connection
      */
-    private function getConnection()
+    private function createConnection($pdo = null)
     {
-        return new \Phrodo\Database\Connection($this->getPDO());
+        return new \Phrodo\Database\Connection($pdo ?: $this->createPDO());
     }
 
     /**
@@ -41,8 +53,8 @@ class Connection extends \PHPUnit_Framework_TestCase
      */
     public function testGetOrSetPDO()
     {
-        $pdo1 = $this->getPDO();
-        $pdo2 = $this->getPDO();
+        $pdo1 = $this->createPDO();
+        $pdo2 = $this->createPDO();
         $connection = new \Phrodo\Database\Connection($pdo1);
 
         $this->assertInstanceOf('PDO', $connection->pdo());
@@ -56,10 +68,11 @@ class Connection extends \PHPUnit_Framework_TestCase
      */
     public function testQuoteParameter()
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection();
 
         $this->assertSame('NULL', $connection->quote(null));
         $this->assertSame("'34'", $connection->quote(34));
+        $this->assertSame("'bilbo'", $connection->quote("bilbo"));
         $this->assertSame("'''; --'", $connection->quote("'; --"));
         $this->assertSame("'2020-02-15 01:23:45'", $connection->quote(new \DateTime('2020-02-15 01:23:45')));
     }
@@ -69,12 +82,8 @@ class Connection extends \PHPUnit_Framework_TestCase
      */
     public function testMergeParameters()
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection();
 
-        $this->assertEquals(
-            'SELECT stuff',
-            $connection->merge('SELECT stuff')
-        );
         $this->assertEquals(
             'SELECT stuff',
             $connection->merge('SELECT stuff', [])
@@ -85,23 +94,12 @@ class Connection extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
             "SELECT stuff WHERE foo='1' AND bar='3'",
-            $connection->merge('SELECT stuff WHERE foo=? AND bar=?', 1, 3)
-        );
-        $this->assertEquals(
-            "SELECT stuff WHERE foo='1' AND bar='3'",
             $connection->merge('SELECT stuff WHERE foo=? AND bar=?', [1, 3, 5])
         );
-    }
-
-    /**
-     * Test merge with missing parameters
-     */
-    public function testMergeMissingParameters()
-    {
-        $connection = $this->getConnection();
-
-        $this->setExpectedException('RuntimeException');
-        $connection->merge('SELECT stuff WHERE foo=? AND bar=?', 1);
+        $this->assertEquals(
+            "SELECT stuff WHERE foo='1' AND bar=?",
+            $connection->merge('SELECT stuff WHERE foo=? AND bar=?', [1])
+        );
     }
 
     /**
@@ -109,7 +107,23 @@ class Connection extends \PHPUnit_Framework_TestCase
      */
     public function testQuery()
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection();
+
+        $result = $connection->query('SELECT username FROM users WHERE id = 1');
+        $this->assertInstanceOf('Phrodo\Database\Contract\Result', $result);
+        $this->assertEquals([['username' => 'john']], $result->rows());
+
+        $result = $connection->query('SELECT username FROM users WHERE id = ?', 1);
+        $this->assertInstanceOf('Phrodo\Database\Contract\Result', $result);
+        $this->assertEquals([['username' => 'john']], $result->rows());
+    }
+
+    /**
+     * Test query result
+     */
+    public function testQueryResult()
+    {
+        $connection = $this->createConnection();
 
         $query = function () use ($connection) {
             return $connection->query('SELECT * FROM users ORDER BY username');
@@ -126,7 +140,7 @@ class Connection extends \PHPUnit_Framework_TestCase
 
     public function testTraverse()
     {
-        $connection = $this->getConnection();
+        $connection = $this->createConnection();
 
         $result = $connection->query('SELECT * FROM users ORDER BY username');
         $this->assertEquals(['id' => '3', 'username' => 'bob'], $result->row());
@@ -156,11 +170,115 @@ class Connection extends \PHPUnit_Framework_TestCase
         });
     }
 
-    //
-    //public function testCount()
-    //{
-    //    //$this->assertEquals(3, $query()->count());
-    //    //$this->assertEquals(3, count($query()));
-    //}
+    public function testQueryBuilder()
+    {
+        $connection = $this->createConnection();
 
+        $select = $connection->select();
+        $this->assertInstanceOf('Phrodo\Database\Query', $select);
+        $this->assertTrue($select->is('select'));
+    }
+
+    public function testExecute()
+    {
+        $pdo        = $this->createMockPDO();
+        $connection = $this->createConnection($pdo);
+
+        $pdo->expects($this->exactly(2))
+            ->method('exec')
+            ->willReturnMap([
+                ['DELETE FROM users', 3],
+                ["DELETE FROM users WHERE id = '1'", 1],
+            ]);
+        $pdo->expects($this->once())
+            ->method('quote')
+            ->willReturnMap([
+                [1, null, "'1'"],
+                ['bilbo', null, "'bilbo'"],
+            ]);
+
+        $this->assertEquals(3, $connection->execute('DELETE FROM users'));
+        $this->assertEquals(1, $connection->execute('DELETE FROM users WHERE id = ?', 1));
+    }
+
+    public function testInsert()
+    {
+        $pdo        = $this->createMockPDO();
+        $connection = $this->createConnection($pdo);
+        $query      = $connection->insert('users');
+
+        $this->assertInstanceOf('Phrodo\Database\Query', $query);
+        $this->assertTrue($query->is('insert'));
+        $this->assertSame('users', $query->getTable());
+
+        $pdo->expects($this->once())
+            ->method('exec')
+            ->with($this->callback(function ($query) {
+                return preg_replace('/\s+/', ' ', $query) == "INSERT INTO users (username) VALUES ('bilbo')";
+            }))
+            ->willReturn(1);
+        $pdo->expects($this->once())
+            ->method('quote')
+            ->with('bilbo')
+            ->willReturn("'bilbo'");
+
+        $this->assertEquals(1, $connection->insert('users', ['username' => 'bilbo']));
+    }
+
+    public function testUpdate()
+    {
+        $pdo        = $this->createMockPDO();
+        $connection = $this->createConnection($pdo);
+        $query      = $connection->update('users');
+
+        $this->assertInstanceOf('Phrodo\Database\Query', $query);
+        $this->assertTrue($query->is('update'));
+        $this->assertSame('users', $query->getTable());
+
+        $pdo->expects($this->exactly(2))
+            ->method('quote')
+            ->willReturnMap([['pippin', null, "'pippin'"], [2, null, "'2'"]]);
+        $pdo->expects($this->once())
+            ->method('exec')
+            ->with($this->callback(function ($query) {
+                return preg_replace('/\s+/', ' ', $query) == "UPDATE users SET username='pippin' WHERE id='2'";
+            }))
+            ->willReturn(1);
+
+        $this->assertEquals(1, $connection->update('users', ['username' => 'pippin'], ['id' => 2]));
+    }
+
+    public function testDelete()
+    {
+        $pdo        = $this->createMockPDO();
+        $connection = $this->createConnection($pdo);
+        $query      = $connection->delete('users');
+
+        $this->assertInstanceOf('Phrodo\Database\Query', $query);
+        $this->assertTrue($query->is('delete'));
+        $this->assertSame('users', $query->getTable());
+
+        $pdo->expects($this->once())
+            ->method('quote')
+            ->with(1)
+            ->willReturn("'1'");
+        $pdo->expects($this->once())
+            ->method('exec')
+            ->with($this->callback(function ($query) {
+                return preg_replace('/\s+/', ' ', $query) == "DELETE FROM users WHERE id='1'";
+            }))
+            ->willReturn(1);
+
+        $this->assertEquals(1, $connection->delete('users', ['id' => 1]));
+    }
+
+    /**
+     * Test direct object invocation
+     */
+    function testInvoke()
+    {
+        $connection = $this->createConnection();
+        $this->assertSame(1, $connection("DELETE FROM users WHERE id=?", 1));
+        $this->assertInstanceOf('Phrodo\Database\Result', $connection("SELECT * FROM users"));
+    }
 }
