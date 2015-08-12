@@ -1,5 +1,7 @@
 <?php namespace Phrodo\Database;
 
+use PDO;
+
 /**
  * Transaction class
  */
@@ -7,11 +9,11 @@ class Transaction implements Contract\Transaction
 {
 
     /**
-     * Connection
+     * PDO
      *
-     * @var Contract\Connection
+     * @var PDO
      */
-    protected $connection;
+    protected $pdo;
 
     /**
      * Locks
@@ -37,11 +39,11 @@ class Transaction implements Contract\Transaction
     /**
      * Constructor
      *
-     * @param Contract\Connection $connection
+     * @param PDO $pdo
      */
-    public function __construct(Contract\Connection $connection)
+    public function __construct(\PDO $pdo)
     {
-        $this->connection = $connection;
+        $this->pdo = $pdo;
     }
 
     /**
@@ -56,10 +58,13 @@ class Transaction implements Contract\Transaction
         $tables = is_array($tables) ? $tables : [$tables];
         $type   = strtoupper($type);
         $format = function ($table, $alias) use ($type) {
-            return $table . (is_string($alias) ? " AS $alias " : ' ')  . $type;
+            return $table . (is_string($alias) ? " $alias " : ' ')  . $type;
         };
 
-        $this->locks = array_merge($this->locks, array_map($format, $tables));
+        $this->locks = array_merge(
+            $this->locks,
+            array_map($format, $tables, array_keys($tables))
+        );
 
         return $this;
     }
@@ -108,7 +113,7 @@ class Transaction implements Contract\Transaction
             throw new \RuntimeException('Locking tables when already locked causes existing locks to be released');
         }
 
-        $this->connection->execute('LOCK TABLES ' . $this->getLocks());
+        $this->pdo->exec('LOCK TABLES ' . $this->getLocks());
         $this->locked = true;
     }
 
@@ -124,7 +129,7 @@ class Transaction implements Contract\Transaction
             throw new \RuntimeException('Cannot release locks when none are acquired');
         }
 
-        $this->connection->execute('UNLOCK TABLES');
+        $this->pdo->exec('UNLOCK TABLES');
         $this->locked = false;
     }
 
@@ -136,7 +141,7 @@ class Transaction implements Contract\Transaction
         if ($this->started) {
             throw new \RuntimeException('Cannot start nested transaction');
         }
-        if (!$this->connection->pdo()->beginTransaction()) {
+        if (!$this->pdo->beginTransaction()) {
             throw new \RuntimeException('Failed to start transaction');
         }
 
@@ -151,7 +156,7 @@ class Transaction implements Contract\Transaction
         if (!$this->started) {
             throw new \RuntimeException('Cannot commit transaction when none was started');
         }
-        if (!$this->connection->pdo()->commit()) {
+        if (!$this->pdo->commit()) {
             throw new \RuntimeException('Failed to commit transaction');
         }
 
@@ -166,7 +171,7 @@ class Transaction implements Contract\Transaction
         if (!$this->started) {
             throw new \RuntimeException('Cannot rollback transaction when none was started');
         }
-        if (!$this->connection->pdo()->rollBack()) {
+        if (!$this->pdo->rollBack()) {
             throw new \RuntimeException('Failed to rollback transaction');
         }
 
@@ -190,10 +195,6 @@ class Transaction implements Contract\Transaction
             $this->start();
             $this->lock();
             $result = $closure();
-            $this->commit();
-            $this->unlock();
-
-            return $result;
         } catch (\Throwable $e) {
             if ($this->started) {
                 $this->rollback();
@@ -213,6 +214,12 @@ class Transaction implements Contract\Transaction
 
             throw $e;
         }
+
+        $this->commit();
+        $this->unlock();
+
+        return $result;
+
     }
 
 }
