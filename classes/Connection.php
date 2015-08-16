@@ -5,7 +5,7 @@ use PDO;
 /**
  * Connection class
  */
-class Connection implements Contract\Connection
+class Connection implements \Some\Database\Connection
 {
 
     /**

@@ -1,5 +1,6 @@
 <?php namespace Phrodo\Database;
 
+use Some\Database\Result as ResultContract;
 use IteratorAggregate;
 use PDOStatement;
 use PDO;
@@ -7,7 +8,7 @@ use PDO;
 /**
  * Result class
  */
-class Result implements Contract\Result, IteratorAggregate
+class Result implements ResultContract, IteratorAggregate
 {
 
     /**

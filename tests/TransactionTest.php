@@ -1,6 +1,8 @@
 <?php namespace Phrodo\Database\Test;
 
-class Transaction extends \PHPUnit_Framework_TestCase
+use Phrodo\Database\Connection;
+
+class TransactionTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -17,11 +19,11 @@ class Transaction extends \PHPUnit_Framework_TestCase
      * Get a PDO instance
      *
      * @param object $pdo
-     * @return \Phrodo\Database\Connection
+     * @return Connection
      */
     private function createConnection($pdo = null)
     {
-        return new \Phrodo\Database\Connection($pdo ?: $this->createMockPDO());
+        return new Connection($pdo ?: $this->createMockPDO());
     }
 
     public function testTransaction()

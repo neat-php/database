@@ -1,11 +1,12 @@
 <?php namespace Phrodo\Database;
 
+use Some\Database\Transaction as TransactionContract;
 use PDO;
 
 /**
  * Transaction class
  */
-class Transaction implements Contract\Transaction
+class Transaction implements TransactionContract
 {
 
     /**

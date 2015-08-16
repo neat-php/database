@@ -1,17 +1,40 @@
 <?php namespace Phrodo\Database;
 
-use IteratorAggregate;
+use Some\Database\Query\Select;
+use Some\Database\Query\Insert;
+use Some\Database\Query\Update;
+use Some\Database\Query\Delete;
 
 /**
  * Query builder class
  */
-class Query implements Contract\Query, IteratorAggregate
+class Query implements Select, Insert, Update, Delete
 {
+
+    /**
+     * Select type
+     */
+    const TYPE_SELECT = 'SELECT';
+
+    /**
+     * Insert type
+     */
+    const TYPE_INSERT = 'INSERT';
+
+    /**
+     * Update type
+     */
+    const TYPE_UPDATE = 'UPDATE';
+
+    /**
+     * Delete type
+     */
+    const TYPE_DELETE = 'DELETE';
 
     /**
      * Connection
      *
-     * @var Contract\Connection
+     * @var Connection
      */
     protected $connection;
 
@@ -79,11 +102,18 @@ class Query implements Contract\Query, IteratorAggregate
     protected $orderBy;
 
     /**
-     * Limit clause
+     * Limit
      *
-     * @var string
+     * @var int
      */
     protected $limit;
+
+    /**
+     * Offset
+     *
+     * @var int
+     */
+    protected $offset;
 
     /**
      * Alternative action
@@ -95,9 +125,9 @@ class Query implements Contract\Query, IteratorAggregate
     /**
      * Constructor
      *
-     * @param Contract\Connection $connection
+     * @param Connection $connection
      */
-    public function __construct(Contract\Connection $connection)
+    public function __construct(Connection $connection)
     {
         $this->connection = $connection;
     }
@@ -301,9 +331,19 @@ class Query implements Contract\Query, IteratorAggregate
     /**
      * @inheritdoc
      */
-    public function limit($limit, $offset = 0)
+    public function limit($limit)
     {
-        $this->limit = ($offset ? "$offset," : "") . $limit;
+        $this->limit = $limit;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function offset($offset)
+    {
+        $this->offset = $offset;
 
         return $this;
     }
@@ -403,7 +443,11 @@ class Query implements Contract\Query, IteratorAggregate
      */
     public function getLimit()
     {
-        return $this->limit;
+        if ($this->offset) {
+            return $this->offset . ',' . $this->limit;
+        }
+
+        return (string) $this->limit;
     }
 
     /**
@@ -513,54 +557,6 @@ class Query implements Contract\Query, IteratorAggregate
         }
 
         return $rows;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function each(callable $closure)
-    {
-        return $this->query()->each($closure);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function rows()
-    {
-        return $this->query()->rows();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function row()
-    {
-        return $this->query()->row();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function values($column = 0)
-    {
-        return $this->query()->values($column);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function value($column = 0)
-    {
-        return $this->query()->value($column);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getIterator()
-    {
-        return $this->query()->getIterator();
     }
 
 }

@@ -2,8 +2,9 @@
 
 use Mockery;
 use PDO;
+use Phrodo\Database\Connection;
 
-class Connection extends \PHPUnit_Framework_TestCase
+class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -41,11 +42,11 @@ class Connection extends \PHPUnit_Framework_TestCase
      * Get a PDO instance
      *
      * @param object $pdo
-     * @return \Phrodo\Database\Connection
+     * @return Connection
      */
     private function createConnection($pdo = null)
     {
-        return new \Phrodo\Database\Connection($pdo ?: $this->createPDO());
+        return new Connection($pdo ?: $this->createPDO());
     }
 
     /**
@@ -55,7 +56,7 @@ class Connection extends \PHPUnit_Framework_TestCase
     {
         $pdo1 = $this->createPDO();
         $pdo2 = $this->createPDO();
-        $connection = new \Phrodo\Database\Connection($pdo1);
+        $connection = new Connection($pdo1);
 
         $this->assertInstanceOf('PDO', $connection->pdo());
         $this->assertSame($pdo1, $connection->pdo());
@@ -110,11 +111,11 @@ class Connection extends \PHPUnit_Framework_TestCase
         $connection = $this->createConnection();
 
         $result = $connection->query('SELECT username FROM users WHERE id = 1');
-        $this->assertInstanceOf('Phrodo\Database\Contract\Result', $result);
+        $this->assertInstanceOf('Phrodo\Database\Result', $result);
         $this->assertEquals([['username' => 'john']], $result->rows());
 
         $result = $connection->query('SELECT username FROM users WHERE id = ?', 1);
-        $this->assertInstanceOf('Phrodo\Database\Contract\Result', $result);
+        $this->assertInstanceOf('Phrodo\Database\Result', $result);
         $this->assertEquals([['username' => 'john']], $result->rows());
     }
 
@@ -129,7 +130,7 @@ class Connection extends \PHPUnit_Framework_TestCase
             return $connection->query('SELECT * FROM users ORDER BY username');
         };
 
-        $this->assertInstanceOf('Phrodo\Database\Contract\Result', $query());
+        $this->assertInstanceOf('Phrodo\Database\Result', $query());
         $this->assertEquals([['id' => '3', 'username' => 'bob'], ['id' => '2', 'username' => 'jane'], ['id' => '1', 'username' => 'john']], $query()->rows());
         $this->assertEquals(['id' => '3', 'username' => 'bob'], $query()->row());
         $this->assertEquals([3, 2, 1], $query()->values());
@@ -176,7 +177,6 @@ class Connection extends \PHPUnit_Framework_TestCase
 
         $select = $connection->select();
         $this->assertInstanceOf('Phrodo\Database\Query', $select);
-        $this->assertTrue($select->is('select'));
     }
 
     public function testExecute()
@@ -208,7 +208,6 @@ class Connection extends \PHPUnit_Framework_TestCase
         $query      = $connection->insert('users');
 
         $this->assertInstanceOf('Phrodo\Database\Query', $query);
-        $this->assertTrue($query->is('insert'));
         $this->assertSame('users', $query->getTable());
 
         $pdo->expects($this->once())
@@ -232,7 +231,6 @@ class Connection extends \PHPUnit_Framework_TestCase
         $query      = $connection->update('users');
 
         $this->assertInstanceOf('Phrodo\Database\Query', $query);
-        $this->assertTrue($query->is('update'));
         $this->assertSame('users', $query->getTable());
 
         $pdo->expects($this->exactly(2))
@@ -255,7 +253,6 @@ class Connection extends \PHPUnit_Framework_TestCase
         $query      = $connection->delete('users');
 
         $this->assertInstanceOf('Phrodo\Database\Query', $query);
-        $this->assertTrue($query->is('delete'));
         $this->assertSame('users', $query->getTable());
 
         $pdo->expects($this->once())
