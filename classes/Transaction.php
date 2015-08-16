@@ -34,7 +34,7 @@ class Transaction implements TransactionContract
     }
 
     /**
-     * Start transaction
+     * @inheritdoc
      */
     public function start()
     {
@@ -49,7 +49,7 @@ class Transaction implements TransactionContract
     }
 
     /**
-     * Commit transaction
+     * @inheritdoc
      */
     public function commit()
     {
@@ -64,7 +64,7 @@ class Transaction implements TransactionContract
     }
 
     /**
-     * Rollback transaction
+     * @inheritdoc
      */
     public function rollback()
     {
@@ -79,15 +79,7 @@ class Transaction implements TransactionContract
     }
 
     /**
-     * Run a closure inside a transaction and acquire locks
-     *
-     * Begins a transaction before running the closure and commits the
-     * transaction afterwards. When the closure emits an exception or
-     * throwable (PHP 7 fatal), the transaction will be rolled back.
-     *
-     * @param callable $closure Closure without required parameters
-     * @return mixed Closure return value
-     * @throws \Throwable|\Exception When the transaction fails
+     * @inheritdoc
      * @codeCoverageIgnore Because one catch block is unreachable in PHP 5 or 7
      */
     public function run(callable $closure)
