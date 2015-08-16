@@ -148,8 +148,8 @@ $query = $db->select('u.*')
             ->from('users', 'u')
             ->where('active = 1');
 if ($searchGroup) {
-    $query->leftJoin('users_groups', 'ug', 'u.id = ug.user_id')
-          ->leftJoin('groups', 'g', 'g.id = ug.group_id')
+    $query->join('users_groups', 'ug', 'u.id = ug.user_id')
+          ->join('groups', 'g', 'g.id = ug.group_id')
           ->where('g.name LIKE ?', "%searchGroup%");
 }
 
@@ -194,13 +194,11 @@ One API to rule them all
 And there it is...
 
 ```php
-    $db('INSERT INTO mount_doom VALUES (?)', 'ring');
+$db('INSERT INTO mount_doom VALUES (?)', 'ring');
 ```
 
-The connection itself is invokable and returns the type of result you'd most
-likely be interested in based on the query you've passed. So a select query
-will return a result, an insert query will return the last insert id and any
-other type of query will return the number of rows affected.
+The connection itself is invokable and returns the number of rows affected or
+the result when you issue a select query.
 
 Transactions and locking
 ------------------------
@@ -226,11 +224,11 @@ Todo
 * Result value(s) from named column
 * Last insert id
 * Replace inserted id in data
-* Database, table and column definition read, create, alter and drop operations
-* Database migrations
 * Unit testing
 * Performance testing
 * Compatibility testing (MySQL, sqlite, pgSQL)
+* Database, table and column definition read, create, alter and drop operations
+* Database migrations
 
 Unsupported
 -----------
