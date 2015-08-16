@@ -109,6 +109,20 @@ class Connection implements \Some\Database\Connection
     /**
      * @inheritdoc
      */
+    public function fetch($query)
+    {
+        if (func_num_args() > 1) {
+            $query = $this->merge($query, array_slice(func_get_args(), 1));
+        }
+
+        $statement = $this->pdo->query($query);
+
+        return new FetchedResult($statement->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function execute($query)
     {
         if (func_num_args() > 1) {
