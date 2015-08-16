@@ -220,21 +220,12 @@ $db->transaction(function () use ($db)
 });
 ```
 
-In addition to Atomicity, Consistency, Isolation and Durability (ACID), the
-transaction API also lets you add locks into the mix. By acquiring read
-and/or write locks, you can make sure you have exclusive access to a table
-for the duration of the transaction.
-
-```php
-// Run a transaction with locks
-$db->transaction()
-   ->withWriteLock(['users', 'groups'])
-   ->withReadLock('permissions')
-   ->run($closure);
-```
 
 Todo
 ----
+* Result value(s) from named column
+* Last insert id
+* Replace inserted id in data
 * Database, table and column definition read, create, alter and drop operations
 * Database migrations
 * Unit testing
