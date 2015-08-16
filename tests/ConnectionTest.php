@@ -29,7 +29,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Get mocked PDO instance
+     * Create mocked PDO instance
      *
      * @return \PHPUnit_Framework_MockObject_MockObject|PDO
      */
@@ -39,7 +39,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Get a PDO instance
+     * Create a connection
      *
      * @param object $pdo
      * @return Connection
@@ -120,6 +120,22 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test fetch
+     */
+    public function testFetch()
+    {
+        $connection = $this->createConnection();
+
+        $result = $connection->fetch('SELECT username FROM users WHERE id = 1');
+        $this->assertInstanceOf('Phrodo\Database\FetchedResult', $result);
+        $this->assertEquals([['username' => 'john']], $result->rows());
+
+        $result = $connection->fetch('SELECT username FROM users WHERE id = ?', 1);
+        $this->assertInstanceOf('Phrodo\Database\FetchedResult', $result);
+        $this->assertEquals([['username' => 'john']], $result->rows());
+    }
+
+    /**
      * Test query result
      */
     public function testQueryResult()
@@ -139,6 +155,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('bob', $query()->value(1));
     }
 
+    /**
+     * Test result traversal
+     */
     public function testTraverse()
     {
         $connection = $this->createConnection();
@@ -171,14 +190,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         });
     }
 
-    public function testQueryBuilder()
-    {
-        $connection = $this->createConnection();
-
-        $select = $connection->select();
-        $this->assertInstanceOf('Phrodo\Database\Query', $select);
-    }
-
+    /**
+     * Test execute
+     */
     public function testExecute()
     {
         $pdo        = $this->createMockPDO();
@@ -201,6 +215,20 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $connection->execute('DELETE FROM users WHERE id = ?', 1));
     }
 
+    /**
+     * Test select
+     */
+    public function testSelectBuilder()
+    {
+        $connection = $this->createConnection();
+
+        $select = $connection->select();
+        $this->assertInstanceOf('Phrodo\Database\Query', $select);
+    }
+
+    /**
+     * Test insert
+     */
     public function testInsert()
     {
         $pdo        = $this->createMockPDO();
@@ -224,6 +252,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $connection->insert('users', ['username' => 'bilbo']));
     }
 
+    /**
+     * Test update
+     */
     public function testUpdate()
     {
         $pdo        = $this->createMockPDO();
@@ -246,6 +277,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $connection->update('users', ['username' => 'pippin'], ['id' => 2]));
     }
 
+    /**
+     * Test delete
+     */
     public function testDelete()
     {
         $pdo        = $this->createMockPDO();
