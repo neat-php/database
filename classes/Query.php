@@ -271,6 +271,16 @@ class Query implements Select, Insert, Update, Delete
     /**
      * @inheritdoc
      */
+    public function values(array $data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function set(array $data)
     {
         $this->data = $data;
@@ -399,6 +409,38 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
+     * Get columns
+     *
+     * @return string
+     */
+    public function getColumns()
+    {
+        return '(' . implode(',', array_keys($this->data)) . ')';
+    }
+
+    /**
+     * Get values
+     *
+     * @return string
+     */
+    public function getValues()
+    {
+        return '(' . implode(',', array_map([$this->connection, 'quote'], $this->data)) . ')';
+    }
+
+    /**
+     * Get values
+     *
+     * @return string
+     */
+    public function getSet()
+    {
+        return implode(',', array_map(function($value, $field) {
+            return $field . '=' . $this->connection->quote($value);
+        }, $this->data, array_keys($this->data)));
+    }
+
+    /**
      * @inheritdoc
      */
     public function getFrom()
@@ -482,8 +524,8 @@ class Query implements Select, Insert, Update, Delete
     public function getInsertQuery()
     {
         $sql = 'INSERT INTO ' . $this->getTable();
-        $sql .= "\n(" . implode(',', array_keys($this->data)) . ')';
-        $sql .= "\nVALUES (" . implode(',', array_map([$this->connection, 'quote'], $this->data)) . ')';
+        $sql .= "\n" . $this->getColumns();
+        $sql .= "\nVALUES " . $this->getValues();
 
         return $sql;
     }
@@ -494,9 +536,7 @@ class Query implements Select, Insert, Update, Delete
     public function getUpdateQuery()
     {
         $sql = 'UPDATE ' . $this->getTable();
-        $sql .= "\nSET " . implode(',', array_map(function($value, $field) {
-            return $field . '=' . $this->connection->quote($value);
-        }, $this->data, array_keys($this->data)));
+        $sql .= "\nSET " . $this->getSet();
         if ($this->where) {
             $sql .= "\nWHERE " . $this->getWhere();
         }
