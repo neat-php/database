@@ -88,7 +88,7 @@ $rows = $db->execute('DELETE FROM users WHERE active = 0');
 
 // Insert a user and get the auto_increment id value
 $rows = $db->execute('INSERT INTO users (username, password) VALUES (?, ?)',
-                     'john', hash('secret'));
+                     'john', password_hash('secret', PASSWORD_DEFAULT));
 ```
 
 Notice how an insert with only 2 fields already gets quite long and unreadable.
@@ -126,7 +126,7 @@ representation using a typecast or its get* methods.
 
 ```php
 // Look mama, without SQL!
-$users = $db->select('*')->from('users')->where('active = 1')->rows();
+$users = $db->select('*')->from('users')->where('active = 1')->query()->rows();
 
 // Or just get the SQL... this prints "SELECT * FROM users"
 echo $db->select('*')->from('users');
@@ -141,6 +141,7 @@ $db->select('g.*, COUNT(1) as active_users')
    ->having('COUNT(u.id) > 1)')
    ->orderBy('g.name')
    ->limit(25)
+   ->query()
    ->rows();
    
 // Mixing the order of your calls can be useful too
@@ -152,7 +153,6 @@ if ($searchGroup) {
           ->join('groups', 'g', 'g.id = ug.group_id')
           ->where('g.name LIKE ?', "%searchGroup%");
 }
-
 ```
 
 The ```insert```, ```update``` and ```delete``` methods also return a query
@@ -161,12 +161,12 @@ builder instance when you don't pass all their parameters.
 ```php
 // A simple insert query
 $db->insert('users')
-   ->set(['username' => 'john', 'password' => $hash)]
+   ->values(['username' => 'john', 'password' => $hash])
    ->execute();
 
 // Or an update query
 $db->update('users')
-   ->set(['login_at' => new DateTime('now')]
+   ->set(['login_at' => new DateTime('now')])
    ->where(['username' => 'john'])
    ->execute();
 ```
@@ -177,16 +177,17 @@ alternative behaviour:
 // Throw an exception when no row was found (notice the orFail)
 $db->select('*')
    ->from('users')
-   ->where('username = ? AND password = ?', ['john', hash('password')])
+   ->where('username = ? AND password = ?', ['john', $hash])
    ->orFail('Invalid username/password combo')
-   ->row()
+   ->query()
+   ->row();
 
 // Update a row or insert a new one (notice the orInsert)
 $db->update('groups')
    ->set(['name' => 'administrators', 'allow_all' => 1])
    ->where('id = ?', 1)
    ->orInsert()
-   ->execute()
+   ->execute();
 ```
 
 One API to rule them all
@@ -212,7 +213,7 @@ if an exception is thrown, the transaction will rollback itself.
 $db->transaction(function () use ($db)
 {
     $db->execute('UPDATE users SET active = 0 WHERE username = ?', 'john');
-    if (!mail('john@example.com', 'Your account was deactivated')) {
+    if (!mail('john@example.com', 'Confirmation', 'Account terminated')) {
         throw new \RuntimeException('E-mail failure, please rollback!');
     }
 });
