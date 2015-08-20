@@ -148,10 +148,10 @@ $db->select('g.*, COUNT(1) as active_users')
 $query = $db->select('u.*')
             ->from('users', 'u')
             ->where('active = 1');
-if ($searchGroup) {
+if (isset($searchGroup)) {
     $query->join('users_groups', 'ug', 'u.id = ug.user_id')
           ->join('groups', 'g', 'g.id = ug.group_id')
-          ->where('g.name LIKE ?', "%searchGroup%");
+          ->where('g.name LIKE ?', "%$searchGroup%");
 }
 ```
 
