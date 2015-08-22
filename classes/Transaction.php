@@ -82,7 +82,7 @@ class Transaction implements TransactionContract
      * @inheritdoc
      * @codeCoverageIgnore Because one catch block is unreachable in PHP 5 or 7
      */
-    public function run(callable $closure)
+    public function transaction(callable $closure)
     {
         $this->start();
         try {
