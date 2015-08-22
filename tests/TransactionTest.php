@@ -42,10 +42,9 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             ->method('rollBack')
             ->willReturn(true);
 
-        $connection  = $this->createConnection($pdo);
-        $transaction = $connection->transaction();
+        $transaction = $this->createConnection($pdo);
 
-        $this->assertInstanceOf('Phrodo\Database\Transaction', $transaction);
+        $this->assertInstanceOf('Some\Database\Transaction', $transaction);
         $transaction->start();
         $transaction->commit();
         $transaction->start();
@@ -99,8 +98,7 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedExceptionRegExp('RuntimeException', '|cannot.+start|i');
 
-        $connection  = $this->createConnection($pdo);
-        $transaction = $connection->transaction();
+        $transaction = $this->createConnection($pdo);
         $transaction->start();
         $transaction->start();
     }
@@ -113,8 +111,7 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedExceptionRegExp('RuntimeException', '|cannot.+commit|i');
 
-        $connection  = $this->createConnection($pdo);
-        $transaction = $connection->transaction();
+        $transaction = $this->createConnection($pdo);
         $transaction->commit();
     }
 
@@ -126,8 +123,7 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedExceptionRegExp('RuntimeException', '|cannot.+rollback|i');
 
-        $connection  = $this->createConnection($pdo);
-        $transaction = $connection->transaction();
+        $transaction = $this->createConnection($pdo);
         $transaction->rollback();
     }
 

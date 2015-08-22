@@ -1,5 +1,6 @@
 <?php namespace Phrodo\Database;
 
+use Some\Database\Transaction as TransactionContract;
 use Some\Database\Connection as ConnectionContract;
 use Some\Database\Query as QueryContract;
 use PDO;
@@ -7,7 +8,7 @@ use PDO;
 /**
  * Connection class
  */
-class Connection implements ConnectionContract, QueryContract
+class Connection implements ConnectionContract, QueryContract, TransactionContract
 {
 
     /**
@@ -16,6 +17,13 @@ class Connection implements ConnectionContract, QueryContract
      * @var PDO
      */
     protected $pdo;
+
+    /**
+     * Transaction started?
+     *
+     * @var bool
+     */
+    protected $started = false;
 
     /**
      * Constructor
@@ -194,14 +202,67 @@ class Connection implements ConnectionContract, QueryContract
     /**
      * @inheritdoc
      */
-    public function transaction(callable $closure = null)
+    public function start()
     {
-        $transaction = new Transaction($this->pdo);
-        if ($closure) {
-            $transaction->run($closure);
+        if ($this->started) {
+            throw new \RuntimeException('Cannot start nested transaction');
+        }
+        if (!$this->pdo->beginTransaction()) {
+            throw new \RuntimeException('Failed to start transaction');
         }
 
-        return $transaction;
+        $this->started = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function commit()
+    {
+        if (!$this->started) {
+            throw new \RuntimeException('Cannot commit transaction before start');
+        }
+        if (!$this->pdo->commit()) {
+            throw new \RuntimeException('Failed to commit transaction');
+        }
+
+        $this->started = false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rollback()
+    {
+        if (!$this->started) {
+            throw new \RuntimeException('Cannot rollback transaction before start');
+        }
+        if (!$this->pdo->rollBack()) {
+            throw new \RuntimeException('Failed to rollback transaction');
+        }
+
+        $this->started = false;
+    }
+
+    /**
+     * @inheritdoc
+     * @codeCoverageIgnore Because one catch block is unreachable in PHP 5 or 7
+     */
+    public function transaction(callable $closure)
+    {
+        $this->start();
+        try {
+            $result = $closure();
+        } catch (\Throwable $e) {
+            $this->rollback();
+            throw $e;
+        } catch (\Exception $e) {
+            $this->rollback();
+            throw $e;
+        }
+        $this->commit();
+
+        return $result;
     }
 
 }
