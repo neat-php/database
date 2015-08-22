@@ -1,11 +1,13 @@
 <?php namespace Phrodo\Database;
 
+use Some\Database\Connection as ConnectionContract;
+use Some\Database\Query as QueryContract;
 use PDO;
 
 /**
  * Connection class
  */
-class Connection implements \Some\Database\Connection
+class Connection implements ConnectionContract, QueryContract
 {
 
     /**
