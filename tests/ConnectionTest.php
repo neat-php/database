@@ -1,52 +1,21 @@
 <?php namespace Phrodo\Database\Test;
 
-use Phrodo\Database\Connection;
-use Mockery;
-use PDO;
-
 class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * Get a PDO instance
+     * Factory
      *
-     * @return PDO
+     * @var Factory
      */
-    private function createPDO()
-    {
-        $pdo = new PDO('sqlite::memory:');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $pdo->exec('CREATE TABLE users (
-                        id INTEGER PRIMARY KEY,
-                        username TEXT
-                    )');
-        $pdo->exec("INSERT INTO users (id, username) VALUES
-                    (1, 'john'),
-                    (2, 'jane'),
-                    (3, 'bob')");
-
-        return $pdo;
-    }
+    private $create;
 
     /**
-     * Create mocked PDO instance
-     *
-     * @return \PHPUnit_Framework_MockObject_MockObject|PDO
+     * Setup factory
      */
-    private function createMockPDO()
+    public function setup()
     {
-        return $this->getMock('PDO', [], ['sqlite::memory:']);
-    }
-
-    /**
-     * Create a connection
-     *
-     * @param object $pdo
-     * @return Connection
-     */
-    private function createConnection($pdo = null)
-    {
-        return new Connection($pdo ?: $this->createPDO());
+        $this->create = new Factory($this);
     }
 
     /**
@@ -54,9 +23,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetOrSetPDO()
     {
-        $pdo1 = $this->createPDO();
-        $pdo2 = $this->createPDO();
-        $connection = new Connection($pdo1);
+        $pdo1 = $this->create->pdo();
+        $pdo2 = $this->create->pdo();
+        $connection = $this->create->connection($pdo1);
 
         $this->assertInstanceOf('PDO', $connection->pdo());
         $this->assertSame($pdo1, $connection->pdo());
@@ -69,7 +38,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testQuoteParameter()
     {
-        $connection = $this->createConnection();
+        $connection = $this->create->connection();
 
         $this->assertSame('NULL', $connection->quote(null));
         $this->assertSame("'34'", $connection->quote(34));
@@ -83,7 +52,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testMergeParameters()
     {
-        $connection = $this->createConnection();
+        $connection = $this->create->connection();
 
         $this->assertEquals(
             'SELECT stuff',
@@ -108,7 +77,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testQuery()
     {
-        $connection = $this->createConnection();
+        $connection = $this->create->connection();
 
         $result = $connection->query('SELECT username FROM users WHERE id = 1');
         $this->assertInstanceOf('Phrodo\Database\Result', $result);
@@ -124,7 +93,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testFetch()
     {
-        $connection = $this->createConnection();
+        $connection = $this->create->connection();
 
         $result = $connection->fetch('SELECT username FROM users WHERE id = 1');
         $this->assertInstanceOf('Phrodo\Database\FetchedResult', $result);
@@ -140,7 +109,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testQueryResult()
     {
-        $connection = $this->createConnection();
+        $connection = $this->create->connection();
 
         $query = function () use ($connection) {
             return $connection->query('SELECT * FROM users ORDER BY username');
@@ -160,7 +129,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testTraverse()
     {
-        $connection = $this->createConnection();
+        $connection = $this->create->connection();
 
         $result = $connection->query('SELECT * FROM users ORDER BY username');
         $this->assertEquals(['id' => '3', 'username' => 'bob'], $result->row());
@@ -195,8 +164,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     public function testExecute()
     {
-        $pdo        = $this->createMockPDO();
-        $connection = $this->createConnection($pdo);
+        $pdo        = $this->create->mockedPdo();
+        $connection = $this->create->connection($pdo);
 
         $pdo->expects($this->exactly(2))
             ->method('exec')
@@ -220,8 +189,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
      */
     function testInvoke()
     {
-        $connection = $this->createConnection();
+        $connection = $this->create->connection();
+
         $this->assertSame(1, $connection("DELETE FROM users WHERE id=?", 1));
         $this->assertInstanceOf('Phrodo\Database\Result', $connection("SELECT * FROM users"));
     }
+
 }

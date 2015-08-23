@@ -1,59 +1,21 @@
 <?php namespace Phrodo\Database\Test;
 
-use Phrodo\Database\Connection;
-use Phrodo\Database\Query;
-use PDO;
-
 class QueryTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * Create PDO
+     * Factory
      *
-     * @return PDO
+     * @var Factory
      */
-    private function createPDO()
-    {
-        $pdo = new PDO('sqlite::memory:');
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        return $pdo;
-    }
+    protected $create;
 
     /**
-     * Get mocked connection
-     *
-     * @return Connection|\PHPUnit_Framework_MockObject_MockObject
+     * Setup factory
      */
-    protected function createConnection()
+    protected function setup()
     {
-        $connection = $this->getMock(Connection::class, ['quote', 'query', 'execute'], [$this->createPDO()]);
-        $connection
-            ->expects($this->any())
-            ->method('quote')
-            ->willReturnMap([
-                ['bilbo', "'bilbo'"],
-                ['pippin', "'pippin'"],
-                [1, "'1'"],
-                [2, "'2'"],
-            ]);
-
-        return $connection;
-    }
-
-    /**
-     * Get query builder
-     *
-     * @param $connection
-     * @return Query
-     */
-    protected function createQuery($connection)
-    {
-        if (!$connection) {
-            $connection = $this->createConnection();
-        }
-
-        return new Query($connection);
+        $this->create = new Factory($this);
     }
 
     /**
@@ -76,7 +38,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
      */
     public function testSelectBuilder()
     {
-        $connection = $this->createConnection();
+        $connection = $this->create->connection();
 
         $select = $connection->select();
         $this->assertInstanceOf('Phrodo\Database\Query', $select);
@@ -87,7 +49,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
      */
     public function testInsert()
     {
-        $connection = $this->createConnection();
+        $connection = $this->create->mockedConnection(null, ['execute']);
         $query      = $connection->insert('users');
 
         $this->assertInstanceOf('Phrodo\Database\Query', $query);
@@ -111,7 +73,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
      */
     public function testUpdate()
     {
-        $connection = $this->createConnection();
+        $connection = $this->create->mockedConnection(null, ['execute']);
         $query      = $connection->update('users');
 
         $this->assertInstanceOf('Phrodo\Database\Query', $query);
@@ -136,7 +98,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
      */
     public function testDelete()
     {
-        $connection = $this->createConnection();
+        $connection = $this->create->mockedConnection(null, ['execute']);
         $query      = $connection->delete('users');
 
         $this->assertInstanceOf('Phrodo\Database\Query', $query);

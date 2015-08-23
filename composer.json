@@ -13,6 +13,11 @@
             "Phrodo\\Database\\": "classes/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Phrodo\\Database\\Test\\": "tests/"
+        }
+    },
     "require": {
         "php": ">=5.5.0",
         "some/database-contracts": "*@dev"

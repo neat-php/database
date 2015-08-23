@@ -10,35 +10,52 @@ class FetchedResultTest extends \PHPUnit_Framework_TestCase
      *
      * @var array
      */
-    private $rows = [
+    protected $rows = [
         ['id' => '3', 'username' => 'bob'],
         ['id' => '2', 'username' => 'jane'],
         ['id' => '1', 'username' => 'john'],
     ];
 
-    public function testRead()
+    /**
+     * Fetch fake rows into a fetched result
+     *
+     * @param array $rows (optional)
+     * @return FetchedResult
+     */
+    protected function fetch($rows = null)
     {
-        $query = function () {
-            return new FetchedResult($this->rows);
-        };
+        if (!$rows) {
+            $rows = $this->rows;
+        }
 
-        $this->assertEquals($this->rows, $query()->rows());
-        $this->assertEquals(['id' => '3', 'username' => 'bob'], $query()->row());
-        $this->assertEquals([3, 2, 1], $query()->values());
-        $this->assertEquals(['bob', 'jane', 'john'], $query()->values(1));
-        $this->assertEquals(3, $query()->value());
-        $this->assertEquals('bob', $query()->value(1));
+        return new FetchedResult($rows);
     }
 
+    /**
+     * Test read fetched result
+     */
+    public function testRead()
+    {
+        $this->assertEquals($this->rows, $this->fetch()->rows());
+        $this->assertEquals(['id' => '3', 'username' => 'bob'], $this->fetch()->row());
+        $this->assertEquals([3, 2, 1], $this->fetch()->values());
+        $this->assertEquals(['bob', 'jane', 'john'], $this->fetch()->values(1));
+        $this->assertEquals(3, $this->fetch()->value());
+        $this->assertEquals('bob', $this->fetch()->value(1));
+    }
+
+    /**
+     * Test traversing fetched result
+     */
     public function testTraverse()
     {
-        $result = new FetchedResult($this->rows);
+        $result = $this->fetch();
         $this->assertEquals(['id' => '3', 'username' => 'bob'], $result->row());
         $this->assertEquals(['id' => '2', 'username' => 'jane'], $result->row());
         $this->assertEquals(['id' => '1', 'username' => 'john'], $result->row());
         $this->assertFalse($result->row());
 
-        $result = new FetchedResult([['username' => 'bob'], ['username' => 'jane'], ['username' => 'john']]);
+        $result = $this->fetch([['username' => 'bob'], ['username' => 'jane'], ['username' => 'john']]);
         $this->assertEquals(0, $result->key());
         $this->assertTrue($result->valid());
         $this->assertEquals('bob', $result->value());
@@ -55,28 +72,29 @@ class FetchedResultTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('jane', $result->value());
 
         $expected = $this->rows;
-        foreach (new FetchedResult($this->rows) as $username) {
+        foreach ($this->fetch() as $username) {
             $this->assertEquals(array_shift($expected), $username);
         }
 
         $expected = ['bob', 'jane', 'john'];
-        $result = new FetchedResult([['username' => 'bob'], ['username' => 'jane'], ['username' => 'john']]);
+        $result = $this->fetch([['username' => 'bob'], ['username' => 'jane'], ['username' => 'john']]);
         foreach ($result as $username) {
             $this->assertEquals(array_shift($expected), $username);
         }
 
         $expected = $this->rows;
-        $result = new FetchedResult($this->rows);
+        $result = $this->fetch($this->rows);
         $result->each(function ($id, $username) use (&$expected) {
             $this->assertEquals(array_shift($expected), ['id' => $id, 'username' => $username]);
         });
     }
 
+    /**
+     * Test count fetched result
+     */
     public function testCount()
     {
-        $result = new FetchedResult($this->rows);
-
-        $this->assertEquals(3, count($result));
+        $this->assertEquals(3, count($this->fetch()));
     }
 
 }
