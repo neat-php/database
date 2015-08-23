@@ -1,8 +1,8 @@
 <?php namespace Phrodo\Database\Test;
 
+use Phrodo\Database\Connection;
 use Mockery;
 use PDO;
-use Phrodo\Database\Connection;
 
 class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -213,94 +213,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(3, $connection->execute('DELETE FROM users'));
         $this->assertEquals(1, $connection->execute('DELETE FROM users WHERE id = ?', 1));
-    }
-
-    /**
-     * Test select
-     */
-    public function testSelectBuilder()
-    {
-        $connection = $this->createConnection();
-
-        $select = $connection->select();
-        $this->assertInstanceOf('Phrodo\Database\Query', $select);
-    }
-
-    /**
-     * Test insert
-     */
-    public function testInsert()
-    {
-        $pdo        = $this->createMockPDO();
-        $connection = $this->createConnection($pdo);
-        $query      = $connection->insert('users');
-
-        $this->assertInstanceOf('Phrodo\Database\Query', $query);
-        $this->assertSame('users', $query->getTable());
-
-        $pdo->expects($this->once())
-            ->method('exec')
-            ->with($this->callback(function ($query) {
-                return preg_replace('/\s+/', ' ', $query) == "INSERT INTO users (username) VALUES ('bilbo')";
-            }))
-            ->willReturn(1);
-        $pdo->expects($this->once())
-            ->method('quote')
-            ->with('bilbo')
-            ->willReturn("'bilbo'");
-
-        $this->assertEquals(1, $connection->insert('users', ['username' => 'bilbo']));
-    }
-
-    /**
-     * Test update
-     */
-    public function testUpdate()
-    {
-        $pdo        = $this->createMockPDO();
-        $connection = $this->createConnection($pdo);
-        $query      = $connection->update('users');
-
-        $this->assertInstanceOf('Phrodo\Database\Query', $query);
-        $this->assertSame('users', $query->getTable());
-
-        $pdo->expects($this->exactly(2))
-            ->method('quote')
-            ->willReturnMap([['pippin', null, "'pippin'"], [2, null, "'2'"]]);
-        $pdo->expects($this->once())
-            ->method('exec')
-            ->with($this->callback(function ($query) {
-                return preg_replace('/\s+/', ' ', $query) == "UPDATE users SET username='pippin' WHERE id='2'";
-            }))
-            ->willReturn(1);
-
-        $this->assertEquals(1, $connection->update('users', ['username' => 'pippin'], ['id' => 2]));
-    }
-
-    /**
-     * Test delete
-     */
-    public function testDelete()
-    {
-        $pdo        = $this->createMockPDO();
-        $connection = $this->createConnection($pdo);
-        $query      = $connection->delete('users');
-
-        $this->assertInstanceOf('Phrodo\Database\Query', $query);
-        $this->assertSame('users', $query->getTable());
-
-        $pdo->expects($this->once())
-            ->method('quote')
-            ->with(1)
-            ->willReturn("'1'");
-        $pdo->expects($this->once())
-            ->method('exec')
-            ->with($this->callback(function ($query) {
-                return preg_replace('/\s+/', ' ', $query) == "DELETE FROM users WHERE id='1'";
-            }))
-            ->willReturn(1);
-
-        $this->assertEquals(1, $connection->delete('users', ['id' => 1]));
     }
 
     /**
