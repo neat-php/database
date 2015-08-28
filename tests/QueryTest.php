@@ -33,58 +33,100 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($filter($expected), $filter($actual));
     }
 
+    public function testSelect()
+    {
+        $query = $this->create->query();
+        $this->assertEquals(
+            '*',
+            $query->select()->getSelect()
+        );
+        $this->assertEquals(
+            'id',
+            $query->select('id')->getSelect()
+        );
+        $this->assertEquals(
+            'id,username',
+            $query->select(['id', 'username'])->getSelect()
+        );
+        $this->assertEquals(
+            'COUNT(*) AS amount',
+            $query->select(['amount' => 'COUNT(*)'])->getSelect()
+        );
+        $this->assertEquals(
+            'id,MIN(price) AS min_price',
+            $query->select(['id', 'min_price' => 'MIN(price)'])->getSelect()
+        );
+    }
+
+    public function testFrom()
+    {
+        $this->assertEquals(
+            'users',
+            $this->create->query()->from('users')->getFrom()
+        );
+        $this->assertEquals(
+            'users u',
+            $this->create->query()->from('users', 'u')->getFrom()
+        );
+        $this->assertEquals(
+            'users,groups',
+            $this->create->query()->from(['users', 'groups'])->getFrom()
+        );
+        $this->assertEquals(
+            'users u,groups g',
+            $this->create->query()->from(['u' => 'users', 'g' => 'groups'])->getFrom()
+        );
+    }
+
     /**
      * Test select
      */
     public function testSelectBuilder()
     {
         $connection = $this->create->connection();
+        $select     = $connection->select();
 
-        $select = $connection->select();
-        $this->assertInstanceOf('Phrodo\Database\Query', $select);
+        $this->assertInstanceOf('Some\Database\Query\Select', $select);
     }
 
     /**
      * Test insert
      */
-    public function testInsert()
+    public function testInsertBuilder()
     {
         $connection = $this->create->mockedConnection(null, ['execute']);
-        $query      = $connection->insert('users');
+        $insert     = $connection->insert('users');
 
-        $this->assertInstanceOf('Phrodo\Database\Query', $query);
-        $this->assertSame('users', $query->getTable());
+        $this->assertInstanceOf('Some\Database\Query\Insert', $insert);
+        $this->assertSame('users', $insert->getTable());
 
         $connection
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($query) {
-                return preg_replace('/\s+/', ' ',
-                    $query) == "INSERT INTO users (username) VALUES ('bilbo')";
+                return preg_replace('/\s+/', ' ', $query) == "INSERT INTO users (username) VALUES ('bilbo')";
             }))
             ->willReturn(1);
 
-        $this->assertEquals(1,
-            $connection->insert('users', ['username' => 'bilbo']));
+        $this->assertEquals(1, $connection->insert('users', ['username' => 'bilbo']));
     }
 
     /**
      * Test update
      */
-    public function testUpdate()
+    public function testUpdateBuilder()
     {
         $connection = $this->create->mockedConnection(null, ['execute']);
         $query      = $connection->update('users');
 
-        $this->assertInstanceOf('Phrodo\Database\Query', $query);
+        $this->assertInstanceOf('Some\Database\Query\Update', $query);
         $this->assertSame('users', $query->getTable());
 
         $connection
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(function ($query) {
-                return preg_replace('/\s+/', ' ',
-                    $query) == "UPDATE users SET username='pippin' WHERE id='2'";
+                return preg_replace('/\s+/', ' ', $query) == "UPDATE users SET username='pippin' WHERE id='2'";
             }))
             ->willReturn(1);
 
@@ -96,12 +138,12 @@ class QueryTest extends \PHPUnit_Framework_TestCase
     /**
      * Test delete
      */
-    public function testDelete()
+    public function testDeleteBuilder()
     {
         $connection = $this->create->mockedConnection(null, ['execute']);
         $query      = $connection->delete('users');
 
-        $this->assertInstanceOf('Phrodo\Database\Query', $query);
+        $this->assertInstanceOf('Some\Database\Query\Delete', $query);
         $this->assertSame('users', $query->getTable());
 
         $connection

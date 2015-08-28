@@ -152,7 +152,9 @@ class Query implements Select, Insert, Update, Delete
         }
 
         $this->type        = self::TYPE_SELECT;
-        $this->expressions = $expression;
+        $this->expressions = array_map(function ($expression, $alias) {
+            return is_string($alias) ? "$expression AS $alias" : $expression;
+        }, $expression, array_keys($expression));
 
         return $this;
     }
@@ -160,15 +162,12 @@ class Query implements Select, Insert, Update, Delete
     /**
      * @inheritdoc
      */
-    public function insert($table = null, array $data = null)
+    public function insert($table = null)
     {
         $this->type = self::TYPE_INSERT;
         if ($table) {
             $this->table($table);
         }
-        if ($data) {
-            $this->set($data);
-        }
 
         return $this;
     }
@@ -176,18 +175,12 @@ class Query implements Select, Insert, Update, Delete
     /**
      * @inheritdoc
      */
-    public function update($table = null, array $data = null, $where = null)
+    public function update($table = null)
     {
         $this->type = self::TYPE_UPDATE;
         if ($table) {
             $this->table($table);
         }
-        if ($data) {
-            $this->set($data);
-        }
-        if ($where) {
-            $this->where($where);
-        }
 
         return $this;
     }
@@ -195,14 +188,11 @@ class Query implements Select, Insert, Update, Delete
     /**
      * @inheritdoc
      */
-    public function delete($table = null, $where = null)
+    public function delete($table = null)
     {
         $this->type = self::TYPE_DELETE;
         if ($table) {
             $this->table($table);
-        }
-        if ($where) {
-            $this->where($where);
         }
 
         return $this;
@@ -213,7 +203,20 @@ class Query implements Select, Insert, Update, Delete
      */
     public function table($table, $alias = null)
     {
-        $this->tables[$alias ?: $table] = $alias ? "$table $alias" : $table;
+        if ($alias) {
+            $table = [$alias => $table];
+        } elseif (!is_array($table)) {
+            $table = [$table];
+        }
+
+        $this->joins = [];
+        foreach ($table as $alias => $name) {
+            if (is_string($alias)) {
+                $this->tables[$alias] = "$name $alias";
+            } else {
+                $this->tables[$name] = $name;
+            }
+        }
 
         return $this;
     }
@@ -397,7 +400,7 @@ class Query implements Select, Insert, Update, Delete
      */
     public function getSelect()
     {
-        return $this->expressions;
+        return implode(',', $this->expressions);
     }
 
     /**

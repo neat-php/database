@@ -165,9 +165,9 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
      */
     public function insert($table, array $data = null)
     {
-        $insert = $this->build()->insert($table, $data);
-        if ($table && $data) {
-            return $insert->execute();
+        $insert = $this->build()->insert($table);
+        if ($data) {
+            return $insert->values($data)->execute();
         }
 
         return $insert;
@@ -178,8 +178,14 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
      */
     public function update($table, array $data = null, $where = null)
     {
-        $update = $this->build()->update($table, $data, $where);
-        if ($table && $data && $where) {
+        $update = $this->build()->update($table);
+        if ($data) {
+            $update->set($data);
+        }
+        if ($where) {
+            $update->where($where);
+        }
+        if ($data && $where) {
             return $update->execute();
         }
 
@@ -191,9 +197,9 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
      */
     public function delete($table, $where = null)
     {
-        $delete = $this->build()->delete($table, $where);
-        if ($table && $where) {
-            return $delete->execute();
+        $delete = $this->build()->delete($table);
+        if ($where) {
+            return $delete->where($where)->execute();
         }
 
         return $delete;
