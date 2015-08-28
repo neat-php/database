@@ -1,6 +1,7 @@
 {
     "name": "phrodo/database",
     "description": "Phrodo Database",
+    "keywords": ["Database", "PDO"],
     "license": "MIT",
     "authors": [
         {
