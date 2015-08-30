@@ -10,7 +10,6 @@ use Some\Database\Query\Delete;
  */
 class Query implements Select, Insert, Update, Delete
 {
-
     /**
      * Select type
      */
@@ -438,7 +437,7 @@ class Query implements Select, Insert, Update, Delete
      */
     public function getSet()
     {
-        return implode(',', array_map(function($value, $field) {
+        return implode(',', array_map(function ($value, $field) {
             return $field . '=' . $this->connection->quote($value);
         }, $this->data, array_keys($this->data)));
     }
@@ -601,5 +600,4 @@ class Query implements Select, Insert, Update, Delete
 
         return $rows;
     }
-
 }

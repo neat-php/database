@@ -10,7 +10,6 @@ use PDO;
  */
 class Connection implements ConnectionContract, QueryContract, TransactionContract
 {
-
     /**
      * PDO connection
      *
@@ -270,5 +269,4 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
 
         return $result;
     }
-
 }

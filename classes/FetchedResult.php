@@ -10,7 +10,6 @@ use Iterator;
  */
 class FetchedResult implements ResultContract, Countable, Iterator, SeekableIterator
 {
-
     /**
      * Rows
      *
@@ -155,5 +154,4 @@ class FetchedResult implements ResultContract, Countable, Iterator, SeekableIter
     {
         $this->cursor = $position;
     }
-
 }

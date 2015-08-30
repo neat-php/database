@@ -10,7 +10,6 @@ use PDO;
  */
 class Result implements ResultContract, IteratorAggregate
 {
-
     /**
      * PDO Statement to fetch results from
      *
@@ -78,5 +77,4 @@ class Result implements ResultContract, IteratorAggregate
             yield $item;
         }
     }
-
 }
