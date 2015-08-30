@@ -3,6 +3,14 @@ Phrodo Database
 Database by Phrodo provides a clean and expressive API for accessing your
 databases. At its core is the Connection which uses a PDO instance underneath.
 
+Getting started
+---------------
+To install this package, simply use [Composer](http://getcomposer.org):
+```
+composer require phrodo/database
+```
+
+Then create a new database connection
 ```php
 // Connecting is easy, just pass a PDO instance
 $pdo = new PDO('mysql:host=localhost;dbname=test', 'username', 'password');
@@ -219,7 +227,6 @@ $db->transaction(function () use ($db)
 });
 ```
 
-
 Todo
 ----
 * Result value(s) from named column
@@ -235,5 +242,5 @@ Unsupported
 -----------
 Following features are intentionally left unsupported:
 * Scrollable cursors
-* Prepared statements
+* Binding parameters by reference
 * Identifier escaping/quoting
