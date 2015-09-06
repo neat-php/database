@@ -289,7 +289,7 @@ class Query implements Select, Insert, Update, Delete
     public function where($conditions)
     {
         if (is_array($conditions)) {
-            $this->where = array_merge($this->where, array_map(function($value, $field) {
+            $this->where = array_merge($this->where, array_map(function ($value, $field) {
                 return $field . '=' . $this->connection->quote($value);
             }, $conditions, array_keys($conditions)));
         } else {
@@ -319,7 +319,7 @@ class Query implements Select, Insert, Update, Delete
     public function having($conditions)
     {
         if (is_array($conditions)) {
-            $this->having = array_merge($this->where, array_map(function($value, $field) {
+            $this->having = array_merge($this->where, array_map(function ($value, $field) {
                 return $field . '=' . $this->connection->quote($value);
             }, $conditions, array_keys($conditions)));
         } else {
