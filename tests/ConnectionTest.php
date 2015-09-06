@@ -182,10 +182,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             ]);
         $pdo->expects($this->once())
             ->method('quote')
-            ->willReturnMap([
-                [1, null, "'1'"],
-                ['bilbo', null, "'bilbo'"],
-            ]);
+            ->with(1)
+            ->willReturn("'1'");
 
         $this->assertEquals(3, $connection->execute('DELETE FROM users'));
         $this->assertEquals(1, $connection->execute('DELETE FROM users WHERE id = ?', 1));
