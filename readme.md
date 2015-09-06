@@ -146,7 +146,7 @@ $db->select('g.*, COUNT(1) as active_users')
    ->leftJoin('groups', 'g', 'g.id = ug.group_id')
    ->where('users.active = ?', 1)
    ->groupBy('g.id')
-   ->having('COUNT(u.id) > 1)')
+   ->having('COUNT(u.id) > 1')
    ->orderBy('g.name')
    ->limit(25)
    ->query()
@@ -232,7 +232,8 @@ Todo
 * Result value(s) from named column
 * Last insert id
 * Replace inserted id in data
-* Unit testing
+* Build group by from array
+* Build order by from array
 * Performance testing
 * Compatibility testing (MySQL, sqlite, pgSQL)
 * Database, table and column definition read, create, alter and drop operations
