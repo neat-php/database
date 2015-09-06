@@ -210,7 +210,6 @@ $db->transaction(function () use ($db)
 
 Todo
 ----
-* Last insert id
 * Replace inserted id in data
 * Build group by from array
 * Build order by from array

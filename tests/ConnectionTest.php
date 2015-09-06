@@ -189,6 +189,21 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test execute
+     */
+    public function testInsertedId()
+    {
+        $pdo        = $this->create->mockedPdo(['lastInsertId']);
+        $connection = $this->create->connection($pdo);
+
+        $pdo->expects($this->at(0))
+            ->method('lastInsertId')
+            ->willReturn('4');
+
+        $this->assertSame(4, $connection->insertedId());
+    }
+
+    /**
      * Test direct object invocation
      */
     function testInvoke()

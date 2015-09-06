@@ -142,6 +142,16 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
+     * Get last inserted id
+     *
+     * @return int
+     */
+    public function insertedId()
+    {
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    /**
      * Build a query
      *
      * @return Query
