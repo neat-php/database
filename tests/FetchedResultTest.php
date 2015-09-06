@@ -88,9 +88,12 @@ class FetchedResultTest extends \PHPUnit_Framework_TestCase
 
         $expected = $this->rows;
         $result = $this->fetch($this->rows);
-        $result->each(function ($id, $username) use (&$expected) {
+        $eachResult = $result->each(function ($id, $username) use (&$expected) {
             $this->assertEquals(array_shift($expected), ['id' => $id, 'username' => $username]);
+
+            return "$id:$username";
         });
+        $this->assertEquals(['3:bob', '2:jane', '1:john'], $eachResult);
     }
 
     /**

@@ -32,7 +32,12 @@ class Result implements ResultContract, IteratorAggregate
      */
     public function each(callable $closure)
     {
-        $this->statement->fetchAll(PDO::FETCH_FUNC, $closure);
+        $results = [];
+        while ($row = $this->statement->fetch(PDO::FETCH_NUM)) {
+            $results[] = call_user_func_array($closure, $row);
+        }
+
+        return $results;
     }
 
     /**

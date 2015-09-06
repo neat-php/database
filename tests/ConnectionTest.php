@@ -158,9 +158,12 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         }
 
         $expected = [['id' => '3', 'username' => 'bob'], ['id' => '2', 'username' => 'jane'], ['id' => '1', 'username' => 'john']];
-        $connection->query('SELECT * FROM users ORDER BY username')->each(function ($id, $username) use (&$expected) {
+        $result = $connection->query('SELECT * FROM users ORDER BY username')->each(function ($id, $username) use (&$expected) {
             $this->assertEquals(array_shift($expected), ['id' => $id, 'username' => $username]);
+
+            return "$id:$username";
         });
+        $this->assertEquals(['3:bob', '2:jane', '1:john'], $result);
     }
 
     /**
