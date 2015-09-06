@@ -53,7 +53,7 @@ class Result implements ResultContract, IteratorAggregate
      */
     public function row()
     {
-        return $this->statement->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_FIRST);
+        return $this->statement->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
