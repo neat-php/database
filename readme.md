@@ -179,25 +179,6 @@ $db->update('users')
    ->execute();
 ```
 
-When no rows are returned or affected by the query, you can even define some
-alternative behaviour:
-```php
-// Throw an exception when no row was found (notice the orFail)
-$db->select('*')
-   ->from('users')
-   ->where('username = ? AND password = ?', ['john', $hash])
-   ->orFail('Invalid username/password combo')
-   ->query()
-   ->row();
-
-// Update a row or insert a new one (notice the orInsert)
-$db->update('groups')
-   ->set(['name' => 'administrators', 'allow_all' => 1])
-   ->where('id = ?', 1)
-   ->orInsert()
-   ->execute();
-```
-
 One API to rule them all
 ------------------------
 And there it is...
