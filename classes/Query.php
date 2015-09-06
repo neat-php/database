@@ -115,13 +115,6 @@ class Query implements Select, Insert, Update, Delete
     protected $offset;
 
     /**
-     * Alternative action
-     *
-     * @var callable
-     */
-    protected $alternative;
-
-    /**
      * Constructor
      *
      * @param Connection $connection
@@ -293,7 +286,7 @@ class Query implements Select, Insert, Update, Delete
     /**
      * @inheritdoc
      */
-    public function where($conditions, $parameters = null)
+    public function where($conditions)
     {
         if (is_array($conditions)) {
             $this->where = array_merge($this->where, array_map(function($value, $field) {
@@ -323,9 +316,19 @@ class Query implements Select, Insert, Update, Delete
     /**
      * @inheritdoc
      */
-    public function having($condition)
+    public function having($conditions)
     {
-        $this->having[] = $condition;
+        if (is_array($conditions)) {
+            $this->having = array_merge($this->where, array_map(function($value, $field) {
+                return $field . '=' . $this->connection->quote($value);
+            }, $conditions, array_keys($conditions)));
+        } else {
+            if (func_num_args() > 1) {
+                $parameters = array_slice(func_get_args(), 1);
+                $conditions = $this->connection->merge($conditions, $parameters);
+            }
+            $this->having[] = $conditions;
+        }
 
         return $this;
     }
@@ -358,40 +361,6 @@ class Query implements Select, Insert, Update, Delete
         $this->offset = $offset;
 
         return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function orFail($message = "No rows found or affected")
-    {
-        $this->alternative = function () use ($message) {
-            throw new \RuntimeException($message);
-        };
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function orInsert()
-    {
-        $this->alternative = function () {
-            $this->insert();
-
-            return $this->execute();
-        };
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function is($type)
-    {
-        return strtoupper($type) == $this->type;
     }
 
     /**
@@ -437,9 +406,11 @@ class Query implements Select, Insert, Update, Delete
      */
     public function getSet()
     {
-        return implode(',', array_map(function ($value, $field) {
+        $format = function ($value, $field) {
             return $field . '=' . $this->connection->quote($value);
-        }, $this->data, array_keys($this->data)));
+        };
+
+        return implode(',', array_map($format, $this->data, array_keys($this->data)));
     }
 
     /**
@@ -487,7 +458,7 @@ class Query implements Select, Insert, Update, Delete
      */
     public function getLimit()
     {
-        if ($this->offset) {
+        if ($this->offset && $this->limit) {
             return $this->offset . ',' . $this->limit;
         }
 
@@ -593,11 +564,6 @@ class Query implements Select, Insert, Update, Delete
      */
     public function execute()
     {
-        $rows = $this->connection->execute($this->getQuery());
-        if (!$rows && $this->alternative) {
-            $this->{"alternative"}();
-        }
-
-        return $rows;
+        return $this->connection->execute($this->getQuery());
     }
 }
