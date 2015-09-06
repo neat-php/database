@@ -6,7 +6,7 @@ Phrodo Database
 [![License](https://poser.pugx.org/phrodo/database/license)](https://packagist.org/packages/phrodo/database)
 [![Total Downloads](https://poser.pugx.org/phrodo/database/downloads)](https://packagist.org/packages/phrodo/database)
 
-Database by Phrodo provides a clean and expressive API for accessing your
+Phrodo Database components provide a clean and expressive API for accessing your
 databases. At its core is the Connection which uses a PDO instance underneath.
 
 Getting started
