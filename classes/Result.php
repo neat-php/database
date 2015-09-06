@@ -56,7 +56,13 @@ class Result implements ResultContract, IteratorAggregate
      */
     public function values($column = 0)
     {
-        return $this->statement->fetchAll(PDO::FETCH_COLUMN, $column);
+        if (is_int($column)) {
+            return $this->statement->fetchAll(PDO::FETCH_COLUMN, $column);
+        }
+
+        return array_map(function ($row) use ($column) {
+            return $row[$column];
+        }, $this->rows());
     }
 
     /**
@@ -64,7 +70,11 @@ class Result implements ResultContract, IteratorAggregate
      */
     public function value($column = 0)
     {
-        return $this->statement->fetchColumn($column);
+        if (is_int($column)) {
+            return $this->statement->fetchColumn($column);
+        }
+
+        return $this->row()[$column];
     }
 
     /**

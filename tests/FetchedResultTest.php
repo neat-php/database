@@ -40,8 +40,12 @@ class FetchedResultTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['id' => '3', 'username' => 'bob'], $this->fetch()->row());
         $this->assertEquals([3, 2, 1], $this->fetch()->values());
         $this->assertEquals(['bob', 'jane', 'john'], $this->fetch()->values(1));
+        $this->assertEquals([3, 2, 1], $this->fetch()->values('id'));
+        $this->assertEquals(['bob', 'jane', 'john'], $this->fetch()->values('username'));
         $this->assertEquals(3, $this->fetch()->value());
         $this->assertEquals('bob', $this->fetch()->value(1));
+        $this->assertEquals(3, $this->fetch()->value('id'));
+        $this->assertEquals('bob', $this->fetch()->value('username'));
     }
 
     /**

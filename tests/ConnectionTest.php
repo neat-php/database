@@ -120,8 +120,12 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(['id' => '3', 'username' => 'bob'], $query()->row());
         $this->assertEquals([3, 2, 1], $query()->values());
         $this->assertEquals(['bob', 'jane', 'john'], $query()->values(1));
+        $this->assertEquals([3, 2, 1], $query()->values('id'));
+        $this->assertEquals(['bob', 'jane', 'john'], $query()->values('username'));
         $this->assertEquals(3, $query()->value());
         $this->assertEquals('bob', $query()->value(1));
+        $this->assertEquals(3, $query()->value('id'));
+        $this->assertEquals('bob', $query()->value('username'));
     }
 
     /**

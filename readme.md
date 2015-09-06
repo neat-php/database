@@ -229,7 +229,6 @@ $db->transaction(function () use ($db)
 
 Todo
 ----
-* Result value(s) from named column
 * Last insert id
 * Replace inserted id in data
 * Build group by from array
