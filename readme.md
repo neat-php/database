@@ -11,13 +11,16 @@ databases. At its core is the Connection which uses a PDO instance underneath.
 
 Getting started
 ---------------
-To install this package, simply use [Composer](http://getcomposer.org):
+To install this package, simply issue [composer](https://getcomposer.org) on the
+command line:
 ```
 composer require phrodo/database
 ```
 
 Then create a new database connection
 ```php
+<?php
+
 // Connecting is easy, just pass a PDO instance
 $pdo = new PDO('mysql:host=localhost;dbname=test', 'username', 'password');
 $db  = new Phrodo\Database\Connection($pdo);
