@@ -144,9 +144,9 @@ class Query implements Select, Insert, Update, Delete
         }
 
         $this->type        = self::TYPE_SELECT;
-        $this->expressions = array_map(function ($expression, $alias) {
+        $this->expressions = array_merge($this->expressions, array_map(function ($expression, $alias) {
             return is_string($alias) ? "$expression AS $alias" : $expression;
-        }, $expression, array_keys($expression));
+        }, $expression, array_keys($expression)));
 
         return $this;
     }
