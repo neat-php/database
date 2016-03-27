@@ -232,7 +232,7 @@ class Query implements Select, Insert, Update, Delete
     /**
      * @inheritdoc
      */
-    public function join($table, $alias = null, $on = null, $type = "INNER JOIN")
+    public function join($table, $alias = null, $on = null, $type = 'INNER JOIN')
     {
         $this->joins[$alias] = "$type $table $alias ON $on";
 
@@ -244,7 +244,7 @@ class Query implements Select, Insert, Update, Delete
      */
     public function leftJoin($table, $alias = null, $on = null)
     {
-        return $this->join($table, $alias, $on, "LEFT JOIN");
+        return $this->join($table, $alias, $on, 'LEFT JOIN');
     }
 
     /**
@@ -252,7 +252,7 @@ class Query implements Select, Insert, Update, Delete
      */
     public function rightJoin($table, $alias = null, $on = null)
     {
-        return $this->join($table, $alias, $on, "RIGHT JOIN");
+        return $this->join($table, $alias, $on, 'RIGHT JOIN');
     }
 
     /**
@@ -260,7 +260,7 @@ class Query implements Select, Insert, Update, Delete
      */
     public function innerJoin($table, $alias = null, $on = null)
     {
-        return $this->join($table, $alias, $on, "INNER JOIN");
+        return $this->join($table, $alias, $on, 'INNER JOIN');
     }
 
     /**
