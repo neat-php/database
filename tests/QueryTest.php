@@ -76,18 +76,22 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             '*',
             $query->select()->getSelect()
         );
+
+        $query = $this->create->query();
         $this->assertEquals(
             'id',
             $query->select('id')->getSelect()
         );
         $this->assertEquals(
             'id,username',
-            $query->select(['id', 'username'])->getSelect()
+            $query->select(['username'])->getSelect()
         );
         $this->assertEquals(
-            'COUNT(*) AS amount',
+            'id,username,COUNT(*) AS amount',
             $query->select(['amount' => 'COUNT(*)'])->getSelect()
         );
+
+        $query = $this->create->query();
         $this->assertEquals(
             'id,MIN(price) AS min_price',
             $query->select(['id', 'min_price' => 'MIN(price)'])->getSelect()
@@ -271,7 +275,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $connection = $this->create->mockedConnection(null, ['query']);
         $select     = $connection->select();
 
-        $this->assertInstanceOf('Some\Database\Query\Select', $select);
+        $this->assertInstanceOf('Phrodo\Database\Query', $select);
         $this->assertSQL(
             "SELECT 1 FROM dual",
             $connection->select(1)->from('dual')->getQuery()
@@ -320,7 +324,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $connection = $this->create->mockedConnection(null, ['execute']);
         $insert     = $connection->insert('users');
 
-        $this->assertInstanceOf('Some\Database\Query\Insert', $insert);
+        $this->assertInstanceOf('Phrodo\Database\Query', $insert);
         $this->assertSame('users', $insert->getTable());
 
         $connection
@@ -343,7 +347,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $connection = $this->create->mockedConnection(null, ['execute']);
         $update     = $connection->update('users');
 
-        $this->assertInstanceOf('Some\Database\Query\Update', $update);
+        $this->assertInstanceOf('Phrodo\Database\Query', $update);
         $this->assertSame('users', $update->getTable());
         $this->assertSQL(
             "UPDATE users
@@ -385,7 +389,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $connection = $this->create->mockedConnection(null, ['execute']);
         $delete     = $connection->delete('users');
 
-        $this->assertInstanceOf('Some\Database\Query\Delete', $delete);
+        $this->assertInstanceOf('Phrodo\Database\Query', $delete);
         $this->assertSame('users', $delete->getTable());
         $this->assertSQL(
             'DELETE FROM users',

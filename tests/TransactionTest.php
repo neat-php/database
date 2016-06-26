@@ -37,13 +37,13 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             ->method('rollBack')
             ->willReturn(true);
 
-        $transaction = $this->create->connection($pdo);
+        $connection = $this->create->connection($pdo);
 
-        $this->assertInstanceOf('Some\Database\Transaction', $transaction);
-        $transaction->start();
-        $transaction->commit();
-        $transaction->start();
-        $transaction->rollback();
+        $this->assertInstanceOf('Phrodo\Database\Connection', $connection);
+        $connection->start();
+        $connection->commit();
+        $connection->start();
+        $connection->rollback();
     }
 
     /**

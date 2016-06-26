@@ -1,14 +1,11 @@
 <?php namespace Phrodo\Database;
 
-use Some\Database\Transaction as TransactionContract;
-use Some\Database\Connection as ConnectionContract;
-use Some\Database\Query as QueryContract;
 use PDO;
 
 /**
  * Connection class
  */
-class Connection implements ConnectionContract, QueryContract, TransactionContract
+class Connection
 {
     /**
      * PDO connection
@@ -70,7 +67,10 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Quote a value (protecting against SQL injection)
+     *
+     * @param string|null $value
+     * @return string
      */
     public function quote($value)
     {
@@ -85,7 +85,11 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Merge data into an SQL query with placeholders
+     *
+     * @param string $query
+     * @param array  $data
+     * @return string
      */
     public function merge($query, array $data)
     {
@@ -102,7 +106,14 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Run a query and return the result
+     *
+     * The result can be interactively fetched, but only once due to the
+     * forward-only cursor being used to fetch the results.
+     *
+     * @param string $query
+     * @param mixed  ... $data
+     * @return Result
      */
     public function query($query)
     {
@@ -116,7 +127,15 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Run a query and eagerly fetch the result into memory
+     *
+     * Allows the result to be used more than once, for example when you
+     * want to count the result and then iterate over it. Normally the
+     * result would be entirely consumed after counting its rows.
+     *
+     * @param string $query
+     * @param mixed  ... $data
+     * @return Result
      */
     public function fetch($query)
     {
@@ -130,7 +149,11 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Execute a query and return the number of rows affected
+     *
+     * @param string $query
+     * @param mixed  ... $data
+     * @return int
      */
     public function execute($query)
     {
@@ -162,7 +185,10 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Select data from the database
+     *
+     * @param array|string $expression (optional, defaults to *)
+     * @return Query
      */
     public function select($expression = '*')
     {
@@ -170,7 +196,15 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Insert data into a table
+     *
+     * When all parameters are specified, the insert query is immediately
+     * executed and the number of rows affected will be returned. Otherwise
+     * the query builder is returned so you can extend the query further.
+     *
+     * @param string $table
+     * @param array  $data  (optional)
+     * @return Query|int
      */
     public function insert($table, array $data = null)
     {
@@ -183,7 +217,16 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Update data in a table
+     *
+     * When all parameters are specified, the update query is immediately
+     * executed and the number of rows affected will be returned. Otherwise
+     * the query builder is returned so you can extend the query further.
+     *
+     * @param string       $table
+     * @param array        $data  (optional)
+     * @param array|string $where (optional)
+     * @return Query|int
      */
     public function update($table, array $data = null, $where = null)
     {
@@ -202,7 +245,15 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Delete from a table
+     *
+     * When all parameters are specified, the delete query is immediately
+     * executed and the number of rows affected will be returned. Otherwise
+     * the query builder is returned so you can extend the query further.
+     *
+     * @param string       $table
+     * @param array|string $where (optional)
+     * @return Query|int
      */
     public function delete($table, $where = null)
     {
@@ -215,7 +266,7 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Start transaction
      */
     public function start()
     {
@@ -230,7 +281,7 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Commit transaction
      */
     public function commit()
     {
@@ -245,7 +296,7 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Rollback transaction
      */
     public function rollback()
     {
@@ -260,7 +311,14 @@ class Connection implements ConnectionContract, QueryContract, TransactionContra
     }
 
     /**
-     * @inheritdoc
+     * Run a closure inside a transaction
+     *
+     * Begins a transaction before running the closure and commits the
+     * transaction afterwards. When the closure emits an exception or
+     * throwable (PHP 7 fatal), the transaction will be rolled back.
+     *
+     * @param callable $closure Closure without required parameters
+     * @return mixed Closure return value
      * @codeCoverageIgnore Because one catch block is unreachable in PHP 5 or 7
      */
     public function transaction(callable $closure)

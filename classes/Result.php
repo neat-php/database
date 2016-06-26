@@ -1,6 +1,5 @@
 <?php namespace Phrodo\Database;
 
-use Some\Database\Result as ResultContract;
 use IteratorAggregate;
 use PDOStatement;
 use PDO;
@@ -8,7 +7,7 @@ use PDO;
 /**
  * Result class
  */
-class Result implements ResultContract, IteratorAggregate
+class Result implements IteratorAggregate
 {
     /**
      * PDO Statement to fetch results from
@@ -28,7 +27,10 @@ class Result implements ResultContract, IteratorAggregate
     }
 
     /**
-     * @inheritdoc
+     * Call a closure for each row
+     *
+     * @param callable $closure
+     * @return array
      */
     public function each(callable $closure)
     {
@@ -41,7 +43,11 @@ class Result implements ResultContract, IteratorAggregate
     }
 
     /**
-     * @inheritdoc
+     * Get all rows as arrays
+     *
+     * Moves the cursor to the end of the result
+     *
+     * @return array
      */
     public function rows()
     {
@@ -49,7 +55,11 @@ class Result implements ResultContract, IteratorAggregate
     }
 
     /**
-     * @inheritdoc
+     * Get a single row as array
+     *
+     * Moves the cursor to the next row
+     *
+     * @return array|false
      */
     public function row()
     {
@@ -57,7 +67,12 @@ class Result implements ResultContract, IteratorAggregate
     }
 
     /**
-     * @inheritdoc
+     * Get all values from one column
+     *
+     * Moves the cursor to the end of the result
+     *
+     * @param int|string $column
+     * @return array
      */
     public function values($column = 0)
     {
@@ -71,7 +86,12 @@ class Result implements ResultContract, IteratorAggregate
     }
 
     /**
-     * @inheritdoc
+     * Get a single value from one column
+     *
+     * Moves the cursor to the next row
+     *
+     * @param int|string $column
+     * @return mixed|false Value or false when not found
      */
     public function value($column = 0)
     {
@@ -83,13 +103,14 @@ class Result implements ResultContract, IteratorAggregate
     }
 
     /**
-     * @inheritdoc
+     * Get a generator (used for traversing trough the rows)
+     *
+     * @return \Generator|array[]
      */
     public function getIterator()
     {
-        $method = $this->statement->columnCount() > 1 ? 'row' : 'value';
-        while ($item = $this->$method()) {
-            yield $item;
+        while ($row = $this->row()) {
+            yield $row;
         }
     }
 }

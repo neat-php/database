@@ -1,14 +1,9 @@
 <?php namespace Phrodo\Database;
 
-use Some\Database\Query\Select;
-use Some\Database\Query\Insert;
-use Some\Database\Query\Update;
-use Some\Database\Query\Delete;
-
 /**
  * Query builder class
  */
-class Query implements Select, Insert, Update, Delete
+class Query
 {
     /**
      * Select type
@@ -135,7 +130,10 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Select query
+     *
+     * @param array|string $expression
+     * @return self
      */
     public function select($expression = '*')
     {
@@ -152,7 +150,10 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Insert query
+     *
+     * @param string $table (optional)
+     * @return self
      */
     public function insert($table = null)
     {
@@ -165,7 +166,10 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Update query
+     *
+     * @param string       $table (optional)
+     * @return self
      */
     public function update($table = null)
     {
@@ -178,7 +182,10 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Delete query
+     *
+     * @param string       $table (optional)
+     * @return self
      */
     public function delete($table = null)
     {
@@ -191,7 +198,11 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Table to insert, update or delete from/into
+     *
+     * @param string $table
+     * @param string $alias (optional)
+     * @return self
      */
     public function table($table, $alias = null)
     {
@@ -214,7 +225,11 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * From table
+     *
+     * @param string $table
+     * @param string $alias (optional)
+     * @return self
      */
     public function from($table, $alias = null)
     {
@@ -222,7 +237,11 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Into table
+     *
+     * @param string $table
+     * @param string $alias (optional)
+     * @return self
      */
     public function into($table, $alias = null)
     {
@@ -230,7 +249,13 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Join a table
+     *
+     * @param string $table
+     * @param string $alias
+     * @param string $on
+     * @param string $type
+     * @return self
      */
     public function join($table, $alias = null, $on = null, $type = 'INNER JOIN')
     {
@@ -240,7 +265,12 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * LEFT OUTER Join a table
+     *
+     * @param string $table
+     * @param string $alias
+     * @param string $on
+     * @return self
      */
     public function leftJoin($table, $alias = null, $on = null)
     {
@@ -248,7 +278,12 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * RIGHT OUTER Join a table
+     *
+     * @param string $table
+     * @param string $alias
+     * @param string $on
+     * @return self
      */
     public function rightJoin($table, $alias = null, $on = null)
     {
@@ -256,7 +291,12 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * INNER Join a table
+     *
+     * @param string $table
+     * @param string $alias
+     * @param string $on
+     * @return self
      */
     public function innerJoin($table, $alias = null, $on = null)
     {
@@ -264,7 +304,10 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Data to insert
+     *
+     * @param array $data
+     * @return self
      */
     public function values(array $data)
     {
@@ -274,7 +317,10 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Data to set
+     *
+     * @param array $data
+     * @return self
      */
     public function set(array $data)
     {
@@ -284,7 +330,11 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Where condition
+     *
+     * @param array|string $conditions
+     * @param mixed ...    $parameters (optional)
+     * @return self
      */
     public function where($conditions)
     {
@@ -304,7 +354,10 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Group by column
+     *
+     * @param string $groupBy
+     * @return self
      */
     public function groupBy($groupBy)
     {
@@ -313,8 +366,13 @@ class Query implements Select, Insert, Update, Delete
         return $this;
     }
 
+
     /**
-     * @inheritdoc
+     * Having condition
+     *
+     * @param array|string $conditions
+     * @param mixed ...    $parameters (optional)
+     * @return self
      */
     public function having($conditions)
     {
@@ -334,7 +392,10 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Order by column
+     *
+     * @param string $orderBy
+     * @return self
      */
     public function orderBy($orderBy)
     {
@@ -344,7 +405,10 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Limit number of results
+     *
+     * @param int $limit
+     * @return self
      */
     public function limit($limit)
     {
@@ -354,7 +418,10 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Return the number of results, starting at offset
+     *
+     * @param int $offset
+     * @return self
      */
     public function offset($offset)
     {
@@ -364,7 +431,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get select expression
+     *
+     * @return string
      */
     public function getSelect()
     {
@@ -372,7 +441,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get table
+     *
+     * @return string
      */
     public function getTable()
     {
@@ -414,7 +485,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get from query part
+     *
+     * @return string
      */
     public function getFrom()
     {
@@ -422,7 +495,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get where query part
+     *
+     * @return string
      */
     public function getWhere()
     {
@@ -430,7 +505,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get group by query part
+     *
+     * @return string
      */
     public function getGroupBy()
     {
@@ -438,7 +515,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get having query part
+     *
+     * @return string
      */
     public function getHaving()
     {
@@ -446,7 +525,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get order by query part
+     *
+     * @return string
      */
     public function getOrderBy()
     {
@@ -454,7 +535,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get limit query part
+     *
+     * @return string
      */
     public function getLimit()
     {
@@ -466,7 +549,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get SQL select query
+     *
+     * @return string
      */
     public function getSelectQuery()
     {
@@ -492,7 +577,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get SQL insert query
+     *
+     * @return string
      */
     public function getInsertQuery()
     {
@@ -504,7 +591,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get SQL update query
+     *
+     * @return string
      */
     public function getUpdateQuery()
     {
@@ -524,7 +613,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get SQL delete query
+     *
+     * @return string
      */
     public function getDeleteQuery()
     {
@@ -540,7 +631,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Get SQL Query
+     *
+     * @return string
      */
     public function getQuery()
     {
@@ -552,7 +645,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Run this query and return the results
+     *
+     * @return Result
      */
     public function query()
     {
@@ -560,7 +655,9 @@ class Query implements Select, Insert, Update, Delete
     }
 
     /**
-     * @inheritdoc
+     * Execute the query and return the number of rows affected
+     *
+     * @return int
      */
     public function execute()
     {

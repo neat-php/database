@@ -80,7 +80,7 @@ class FetchedResultTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals(array_shift($expected), $username);
         }
 
-        $expected = ['bob', 'jane', 'john'];
+        $expected = [['username' => 'bob'], ['username' => 'jane'], ['username' => 'john']];
         $result = $this->fetch([['username' => 'bob'], ['username' => 'jane'], ['username' => 'john']]);
         foreach ($result as $username) {
             $this->assertEquals(array_shift($expected), $username);

@@ -70,12 +70,6 @@ while ($row = $result->row()) {
 foreach ($db->query('SELECT * FROM users') as $row) {
     // Do stuff with $row
 }
-
-// Same thing, but this query returns only one column. This means you get the
-// value instead of the entire row.
-foreach ($db->query('SELECT username FROM users') as $username) {
-    // Do stuff with $username
-}
 ```
 
 Counting

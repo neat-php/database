@@ -19,12 +19,8 @@
             "Phrodo\\Database\\Test\\": "tests/"
         }
     },
-    "provide": {
-        "some/database-implementation": "*@dev"
-    },
     "require": {
-        "php": ">=5.5.0",
-        "some/database-contracts": "*@dev"
+        "php": ">=5.5.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8"

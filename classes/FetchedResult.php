@@ -1,6 +1,5 @@
 <?php namespace Phrodo\Database;
 
-use Some\Database\Result as ResultContract;
 use SeekableIterator;
 use Countable;
 use Iterator;
@@ -8,7 +7,7 @@ use Iterator;
 /**
  * Fetched result class
  */
-class FetchedResult implements ResultContract, Countable, Iterator, SeekableIterator
+class FetchedResult implements Countable, Iterator, SeekableIterator
 {
     /**
      * Rows
@@ -35,7 +34,10 @@ class FetchedResult implements ResultContract, Countable, Iterator, SeekableIter
     }
 
     /**
-     * @inheritdoc
+     * Call a closure for each row
+     *
+     * @param callable $closure
+     * @return array
      */
     public function each(callable $closure)
     {
@@ -48,7 +50,11 @@ class FetchedResult implements ResultContract, Countable, Iterator, SeekableIter
     }
 
     /**
-     * @inheritdoc
+     * Get all rows as arrays
+     *
+     * Moves the cursor to the end of the result
+     *
+     * @return array
      */
     public function rows()
     {
@@ -56,7 +62,11 @@ class FetchedResult implements ResultContract, Countable, Iterator, SeekableIter
     }
 
     /**
-     * @inheritdoc
+     * Get a single row as array
+     *
+     * Moves the cursor to the next row
+     *
+     * @return array|false
      */
     public function row()
     {
@@ -68,7 +78,12 @@ class FetchedResult implements ResultContract, Countable, Iterator, SeekableIter
     }
 
     /**
-     * @inheritdoc
+     * Get all values from one column
+     *
+     * Moves the cursor to the end of the result
+     *
+     * @param int|string $column
+     * @return array
      */
     public function values($column = 0)
     {
@@ -82,7 +97,12 @@ class FetchedResult implements ResultContract, Countable, Iterator, SeekableIter
     }
 
     /**
-     * @inheritdoc
+     * Get a single value from one column
+     *
+     * Moves the cursor to the next row
+     *
+     * @param int|string $column
+     * @return mixed|false
      */
     public function value($column = 0)
     {
@@ -95,7 +115,9 @@ class FetchedResult implements ResultContract, Countable, Iterator, SeekableIter
     }
 
     /**
-     * @inheritdoc
+     * Count the number of rows
+     *
+     * @return int
      */
     public function count()
     {
@@ -103,7 +125,7 @@ class FetchedResult implements ResultContract, Countable, Iterator, SeekableIter
     }
 
     /**
-     * @inheritdoc
+     * Rewind the cursor to the first row
      */
     public function rewind()
     {
@@ -111,20 +133,17 @@ class FetchedResult implements ResultContract, Countable, Iterator, SeekableIter
     }
 
     /**
-     * @inheritdoc
+     * Get the current row
+     *
+     * @return array
      */
     public function current()
     {
-        $row = $this->rows[$this->cursor];
-        if (count($row) > 1) {
-            return $row;
-        }
-
-        return array_values($row)[0];
+        return $this->rows[$this->cursor];
     }
 
     /**
-     * @inheritdoc
+     * Get the current cursor index
      */
     public function key()
     {
@@ -132,7 +151,7 @@ class FetchedResult implements ResultContract, Countable, Iterator, SeekableIter
     }
 
     /**
-     * @inheritdoc
+     * Move the cursor to the next row
      */
     public function next()
     {
@@ -140,7 +159,7 @@ class FetchedResult implements ResultContract, Countable, Iterator, SeekableIter
     }
 
     /**
-     * @inheritdoc
+     * Test if the cursor points to a valid row
      */
     public function valid()
     {
@@ -148,7 +167,9 @@ class FetchedResult implements ResultContract, Countable, Iterator, SeekableIter
     }
 
     /**
-     * @inheritdoc
+     * Move the cursor to a given row
+     *
+     * @param int $position
      */
     public function seek($position)
     {

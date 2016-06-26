@@ -152,7 +152,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals(array_shift($expected), $username);
         }
 
-        $expected = ['bob', 'jane', 'john'];
+        $expected = [['username' => 'bob'], ['username' => 'jane'], ['username' => 'john']];
         foreach ($connection->query('SELECT username FROM users ORDER BY username') as $username) {
             $this->assertEquals(array_shift($expected), $username);
         }
