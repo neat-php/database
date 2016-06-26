@@ -213,13 +213,12 @@ $db->transaction(function () use ($db)
 
 Todo
 ----
-* Replace inserted id in data
+* Return the inserted id from insert()
 * Build group by from array
 * Build order by from array
 * Performance testing
 * Compatibility testing (MySQL, sqlite, pgSQL)
 * Database, table and column definition read, create, alter and drop operations
-* Database migrations
 
 Unsupported
 -----------
