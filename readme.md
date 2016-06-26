@@ -59,7 +59,7 @@ foreach ($db->query('SELECT * FROM users')->rows() as $row) {
     // Do stuff with $row
 }
 
-// By calling the row() method repeatedly until you hit null, you store only
+// By calling the row() method repeatedly until you hit false, you store only
 // one row at a time in memory
 $result = $db->query('SELECT * FROM users');
 while ($row = $result->row()) {
