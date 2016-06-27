@@ -135,7 +135,7 @@ class Connection
      *
      * @param string $query
      * @param mixed  ... $data
-     * @return Result
+     * @return FetchedResult
      */
     public function fetch($query)
     {
