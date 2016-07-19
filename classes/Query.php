@@ -340,6 +340,11 @@ class Query
     {
         if (is_array($conditions)) {
             $this->where = array_merge($this->where, array_map(function ($value, $field) {
+                $field = $this->connection->quoteIdentifier($field);
+                if ($value === null) {
+                    return $field . ' IS NULL';
+                }
+
                 return $field . '=' . $this->connection->quote($value);
             }, $conditions, array_keys($conditions)));
         } else {
