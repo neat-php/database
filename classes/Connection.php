@@ -2,6 +2,8 @@
 
 use PDO;
 
+ini_set('pcre.jit', false);
+
 /**
  * Connection class
  */
@@ -85,6 +87,22 @@ class Connection
     }
 
     /**
+     * Quote an identifier for MySQL query usage
+     *
+     * @param string $identifier
+     * @return string
+     */
+    public function quoteIdentifier($identifier)
+    {
+        $parts = explode(".", $identifier);
+        if (count($parts) > 1) {
+            return $this->quoteIdentifier($parts[0]) . '.' . $this->quoteIdentifier($parts[1]);
+        }
+
+        return '`' . str_replace('`', '``', $identifier) . '`';
+    }
+
+    /**
      * Merge data into an SQL query with placeholders
      *
      * @param string $query
@@ -99,7 +117,7 @@ class Connection
                 return '?';
             }
 
-            return $this->quote(array_shift($data));
+            return $this->quote((string) array_shift($data));
         };
 
         return preg_replace_callback($expression, $callback, $query);

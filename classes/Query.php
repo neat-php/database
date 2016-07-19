@@ -457,7 +457,7 @@ class Query
      */
     public function getColumns()
     {
-        return '(' . implode(',', array_keys($this->data)) . ')';
+        return '(' . implode(',', array_map([$this->connection, 'quoteIdentifier'], array_keys($this->data))) . ')';
     }
 
     /**
@@ -478,7 +478,7 @@ class Query
     public function getSet()
     {
         $format = function ($value, $field) {
-            return $field . '=' . $this->connection->quote($value);
+            return $this->connection->quoteIdentifier($field) . '=' . $this->connection->quote($value);
         };
 
         return implode(',', array_map($format, $this->data, array_keys($this->data)));
