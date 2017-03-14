@@ -1,7 +1,7 @@
 <?php namespace Phrodo\Database\Test;
 
+use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject as Mock;
-use PHPUnit_Framework_TestCase as TestCase;
 use Phrodo\Database\Connection;
 use Phrodo\Database\Query;
 use PDO;
@@ -11,7 +11,6 @@ use PDO;
  */
 class Factory
 {
-
     /**
      * Test case
      *
@@ -58,7 +57,11 @@ class Factory
      */
     public function mockedPdo($methods = [])
     {
-        return $this->case->getMock(PDO::class, $methods, ['sqlite::memory:']);
+        return $this->case
+            ->getMockBuilder(PDO::class)
+            ->setMethods($methods)
+            ->setConstructorArgs(['sqlite::memory:'])
+            ->getMock();
     }
 
     /**
@@ -89,7 +92,11 @@ class Factory
             $pdo = $this->pdo();
         }
 
-        return $this->case->getMock(Connection::class, $methods, [$pdo]);
+        return $this->case
+            ->getMockBuilder(Connection::class)
+            ->setMethods($methods)
+            ->setConstructorArgs([$pdo])
+            ->getMock();
     }
 
     /**
@@ -106,5 +113,4 @@ class Factory
 
         return new Query($connection);
     }
-
 }

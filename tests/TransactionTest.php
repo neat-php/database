@@ -1,8 +1,9 @@
 <?php namespace Phrodo\Database\Test;
 
-class TransactionTest extends \PHPUnit_Framework_TestCase
-{
+use PHPUnit\Framework\TestCase;
 
+class TransactionTest extends TestCase
+{
     /**
      * Factory
      *
@@ -82,7 +83,8 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             ->method('rollback')
             ->willReturn(true);
 
-        $this->setExpectedException('RuntimeException', 'Whoops');
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessage('Whoops');
 
         $connection = $this->create->connection($pdo);
         $connection->transaction(function () use ($connection) {
@@ -100,7 +102,8 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             ->method('beginTransaction')
             ->willReturn(true);
 
-        $this->setExpectedExceptionRegExp('RuntimeException', '|cannot.+start|i');
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessageRegExp('|cannot.+start|i');
 
         $transaction = $this->create->connection($pdo);
         $transaction->start();
@@ -116,7 +119,8 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
         $pdo->expects($this->never())
             ->method($this->anything());
 
-        $this->setExpectedExceptionRegExp('RuntimeException', '|cannot.+commit|i');
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessageRegExp('|cannot.+commit|i');
 
         $transaction = $this->create->connection($pdo);
         $transaction->commit();
@@ -131,7 +135,8 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
         $pdo->expects($this->never())
             ->method($this->anything());
 
-        $this->setExpectedExceptionRegExp('RuntimeException', '|cannot.+rollback|i');
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessageRegExp('|cannot.+rollback|i');
 
         $transaction = $this->create->connection($pdo);
         $transaction->rollback();
@@ -147,7 +152,8 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             ->method('beginTransaction')
             ->willReturn(false);
 
-        $this->setExpectedExceptionRegExp('RuntimeException', '|fail.+start|i');
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessageRegExp('|fail.+start|i');
 
         $connection = $this->create->connection($pdo);
         $connection->transaction(function () {});
@@ -166,7 +172,8 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             ->method('commit')
             ->willReturn(false);
 
-        $this->setExpectedExceptionRegExp('RuntimeException', '|fail.+commit|i');
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessageRegExp('|fail.+commit|i');
 
         $connection = $this->create->connection($pdo);
         $connection->transaction(function () {});
@@ -185,12 +192,12 @@ class TransactionTest extends \PHPUnit_Framework_TestCase
             ->method('rollback')
             ->willReturn(false);
 
-        $this->setExpectedExceptionRegExp('RuntimeException', '|fail.+rollback|i');
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessageRegExp('|fail.+rollback|i');
 
         $connection = $this->create->connection($pdo);
         $connection->transaction(function () {
             throw new \RuntimeException('Whoops');
         });
     }
-
 }

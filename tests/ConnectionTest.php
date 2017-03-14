@@ -1,8 +1,9 @@
 <?php namespace Phrodo\Database\Test;
 
-class ConnectionTest extends \PHPUnit_Framework_TestCase
-{
+use PHPUnit\Framework\TestCase;
 
+class ConnectionTest extends TestCase
+{
     /**
      * Factory
      *
@@ -214,5 +215,4 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(1, $connection("DELETE FROM users WHERE id=?", 1));
         $this->assertInstanceOf('Phrodo\Database\Result', $connection("SELECT * FROM users"));
     }
-
 }

@@ -1,9 +1,10 @@
 <?php namespace Phrodo\Database\Test;
 
+use PHPUnit\Framework\TestCase;
 use Phrodo\Database\FetchedResult;
 use Phrodo\Database\Query;
 
-class QueryTest extends \PHPUnit_Framework_TestCase
+class QueryTest extends TestCase
 {
     /**
      * Factory
@@ -57,7 +58,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
      * SQL expectation constraint
      *
      * @param string $expected
-     * @return \PHPUnit_Framework_Constraint_Callback
+     * @return callable
      */
     protected function sql($expected)
     {
@@ -437,7 +438,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
                 ->from('dual')
         );
 
-        $this->setExpectedException('RuntimeException');
+        $this->expectException('RuntimeException');
         $query = new Query($connection);
         $query->getQuery();
     }

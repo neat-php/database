@@ -1,10 +1,10 @@
 <?php namespace Phrodo\Database\Test;
 
+use PHPUnit\Framework\TestCase;
 use Phrodo\Database\FetchedResult;
 
-class FetchedResultTest extends \PHPUnit_Framework_TestCase
+class FetchedResultTest extends TestCase
 {
-
     /**
      * Rows
      *
@@ -103,5 +103,4 @@ class FetchedResultTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(3, count($this->fetch()));
     }
-
 }

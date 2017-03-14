@@ -333,11 +333,10 @@ class Connection
      *
      * Begins a transaction before running the closure and commits the
      * transaction afterwards. When the closure emits an exception or
-     * throwable (PHP 7 fatal), the transaction will be rolled back.
+     * throwable error, the transaction will be rolled back.
      *
      * @param callable $closure Closure without required parameters
      * @return mixed Closure return value
-     * @codeCoverageIgnore Because one catch block is unreachable in PHP 5 or 7
      */
     public function transaction(callable $closure)
     {
@@ -345,9 +344,6 @@ class Connection
         try {
             $result = $closure();
         } catch (\Throwable $e) {
-            $this->rollback();
-            throw $e;
-        } catch (\Exception $e) {
             $this->rollback();
             throw $e;
         }
