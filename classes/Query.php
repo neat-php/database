@@ -49,7 +49,7 @@ class Query
     /**
      * Tables by alias
      *
-     * @var string
+     * @var array
      */
     protected $tables = [];
 
