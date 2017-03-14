@@ -179,7 +179,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
     public function testWhere()
     {
         $this->assertSQL(
-            "username='john'",
+            "`username`='john'",
             $this->create->query()
                 ->where(['username' => 'john'])
                 ->getWhere()
@@ -330,7 +330,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $connection
             ->expects($this->once())
             ->method('execute')
-            ->with($this->sql("INSERT INTO users (username) VALUES ('sam')"))
+            ->with($this->sql("INSERT INTO users (`username`) VALUES ('sam')"))
             ->willReturn(1);
 
         $this->assertEquals(
@@ -351,18 +351,18 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('users', $update->getTable());
         $this->assertSQL(
             "UPDATE users
-             SET active = '0'",
+             SET `active` = '0'",
             $update->set(['active' => 0])->getQuery()
         );
         $this->assertSQL(
             "UPDATE users
-             SET active = '0'
+             SET `active` = '0'
              WHERE email LIKE '%@example.com'",
             $update->where('email LIKE ?', '%@example.com')->getQuery()
         );
         $this->assertSQL(
             "UPDATE users
-             SET active = '0'
+             SET `active` = '0'
              WHERE email LIKE '%@example.com'
              ORDER BY id
              LIMIT 10",
@@ -372,7 +372,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $connection
             ->expects($this->once())
             ->method('execute')
-            ->with($this->sql("UPDATE users SET username='sam' WHERE id='2'"))
+            ->with($this->sql("UPDATE users SET `username`='sam' WHERE `id`='2'"))
             ->willReturn(1);
 
         $this->assertEquals(
@@ -407,7 +407,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
         $connection
             ->expects($this->once())
             ->method('execute')
-            ->with($this->sql("DELETE FROM users WHERE id='3'"))
+            ->with($this->sql("DELETE FROM users WHERE `id`='3'"))
             ->willReturn(1);
 
         $this->assertEquals(
