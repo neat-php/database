@@ -49,6 +49,17 @@ class ConnectionTest extends TestCase
     }
 
     /**
+     * Test quote parameter
+     */
+    public function testQuoteIdentifier()
+    {
+        $connection = $this->create->connection();
+
+        $this->assertSame('`id`', $connection->quoteIdentifier('id'));
+        $this->assertSame("`table`.`id`", $connection->quoteIdentifier('table.id'));
+    }
+
+    /**
      * Test merge parameters
      */
     public function testMergeParameters()
