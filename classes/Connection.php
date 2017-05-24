@@ -71,7 +71,7 @@ class Connection
     /**
      * Quote a value (protecting against SQL injection)
      *
-     * @param string|null $value
+     * @param string|null|\DateTimeInterface|array $value
      * @return string
      */
     public function quote($value)
@@ -81,6 +81,9 @@ class Connection
         }
         if ($value instanceof \DateTimeInterface) {
             return $this->pdo->quote($value->format('Y-m-d H:i:s'));
+        }
+        if (is_array($value)) {
+            return implode(", ", array_map([$this, 'quote'], $value));
         }
 
         return $this->pdo->quote($value);

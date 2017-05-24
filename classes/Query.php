@@ -133,7 +133,7 @@ class Query
      * Select query
      *
      * @param array|string $expression
-     * @return self
+     * @return static
      */
     public function select($expression = '*')
     {
@@ -153,7 +153,7 @@ class Query
      * Insert query
      *
      * @param string $table (optional)
-     * @return self
+     * @return static
      */
     public function insert($table = null)
     {
@@ -169,7 +169,7 @@ class Query
      * Update query
      *
      * @param string       $table (optional)
-     * @return self
+     * @return static
      */
     public function update($table = null)
     {
@@ -185,7 +185,7 @@ class Query
      * Delete query
      *
      * @param string       $table (optional)
-     * @return self
+     * @return static
      */
     public function delete($table = null)
     {
@@ -202,7 +202,7 @@ class Query
      *
      * @param string $table
      * @param string $alias (optional)
-     * @return self
+     * @return static
      */
     public function table($table, $alias = null)
     {
@@ -229,7 +229,7 @@ class Query
      *
      * @param string $table
      * @param string $alias (optional)
-     * @return self
+     * @return static
      */
     public function from($table, $alias = null)
     {
@@ -241,7 +241,7 @@ class Query
      *
      * @param string $table
      * @param string $alias (optional)
-     * @return self
+     * @return static
      */
     public function into($table, $alias = null)
     {
@@ -255,7 +255,7 @@ class Query
      * @param string $alias
      * @param string $on
      * @param string $type
-     * @return self
+     * @return static
      */
     public function join($table, $alias = null, $on = null, $type = 'INNER JOIN')
     {
@@ -270,7 +270,7 @@ class Query
      * @param string $table
      * @param string $alias
      * @param string $on
-     * @return self
+     * @return static
      */
     public function leftJoin($table, $alias = null, $on = null)
     {
@@ -283,7 +283,7 @@ class Query
      * @param string $table
      * @param string $alias
      * @param string $on
-     * @return self
+     * @return static
      */
     public function rightJoin($table, $alias = null, $on = null)
     {
@@ -296,7 +296,7 @@ class Query
      * @param string $table
      * @param string $alias
      * @param string $on
-     * @return self
+     * @return static
      */
     public function innerJoin($table, $alias = null, $on = null)
     {
@@ -307,7 +307,7 @@ class Query
      * Data to insert
      *
      * @param array $data
-     * @return self
+     * @return static
      */
     public function values(array $data)
     {
@@ -320,7 +320,7 @@ class Query
      * Data to set
      *
      * @param array $data
-     * @return self
+     * @return static
      */
     public function set(array $data)
     {
@@ -334,7 +334,7 @@ class Query
      *
      * @param array|string $conditions
      * @param mixed ...    $parameters (optional)
-     * @return self
+     * @return static
      */
     public function where($conditions)
     {
@@ -362,7 +362,7 @@ class Query
      * Group by column
      *
      * @param string $groupBy
-     * @return self
+     * @return static
      */
     public function groupBy($groupBy)
     {
@@ -377,7 +377,7 @@ class Query
      *
      * @param array|string $conditions
      * @param mixed ...    $parameters (optional)
-     * @return self
+     * @return static
      */
     public function having($conditions)
     {
@@ -400,7 +400,7 @@ class Query
      * Order by column
      *
      * @param string $orderBy
-     * @return self
+     * @return static
      */
     public function orderBy($orderBy)
     {
@@ -413,7 +413,7 @@ class Query
      * Limit number of results
      *
      * @param int $limit
-     * @return self
+     * @return static
      */
     public function limit($limit)
     {
@@ -426,7 +426,7 @@ class Query
      * Return the number of results, starting at offset
      *
      * @param int $offset
-     * @return self
+     * @return static
      */
     public function offset($offset)
     {
