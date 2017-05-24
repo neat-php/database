@@ -74,8 +74,12 @@ foreach ($db->query('SELECT * FROM users') as $row) {
 
 Counting
 --------
-To count the number of results found, pass the result to the count method.
+To count the number of results found, use the ```count``` method.
 ```php
+// Counting the returned result rows...
+$count = $db->query('SELECT * FROM users')->count();
+
+// Passing the result to the count function works just as well
 $count = count($db->query('SELECT * FROM users'));
 ```
 
