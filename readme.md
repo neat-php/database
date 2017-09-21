@@ -72,15 +72,17 @@ foreach ($db->query('SELECT * FROM users') as $row) {
 }
 ```
 
-Counting
---------
-To count the number of results found, use the ```count``` method.
+Fetched results
+---------------
+To use a result multiple times (for example to count its rows and then return
+all the rows), you'll need to ```fetch``` the result first. A live ```query```
+result wouldn't allow you to do this:
 ```php
-// Counting the returned result rows...
-$count = $db->query('SELECT * FROM users')->count();
+// Get the fetched result first
+$result = $db->fetch('SELECT * FROM users');
 
-// Passing the result to the count function works just as well
-$count = count($db->query('SELECT * FROM users'));
+$count = $result->count();
+$users = $result->rows();
 ```
 
 Manipulation
