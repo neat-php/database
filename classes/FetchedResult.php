@@ -2,12 +2,11 @@
 
 use SeekableIterator;
 use Countable;
-use Iterator;
 
 /**
  * Fetched result class
  */
-class FetchedResult implements Countable, Iterator, SeekableIterator
+class FetchedResult implements Countable, SeekableIterator
 {
     /**
      * Rows
