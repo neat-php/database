@@ -74,6 +74,10 @@ class FetchedResultTest extends TestCase
         $this->assertTrue($result->valid());
         $this->assertEquals(1, $result->key());
         $this->assertEquals('jane', $result->value());
+        $result->rewind();
+        $this->assertTrue($result->valid());
+        $this->assertEquals(0, $result->key());
+        $this->assertEquals('bob', $result->value());
 
         $expected = $this->rows;
         foreach ($this->fetch() as $username) {
