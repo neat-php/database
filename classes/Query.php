@@ -168,7 +168,7 @@ class Query
     /**
      * Update query
      *
-     * @param string       $table (optional)
+     * @param string $table (optional)
      * @return static
      */
     public function update($table = null)
@@ -184,7 +184,7 @@ class Query
     /**
      * Delete query
      *
-     * @param string       $table (optional)
+     * @param string $table (optional)
      * @return static
      */
     public function delete($table = null)
@@ -200,8 +200,8 @@ class Query
     /**
      * Table to insert, update or delete from/into
      *
-     * @param string $table
-     * @param string $alias (optional)
+     * @param array|string $table
+     * @param string       $alias (optional)
      * @return static
      */
     public function table($table, $alias = null)
@@ -227,8 +227,8 @@ class Query
     /**
      * From table
      *
-     * @param string $table
-     * @param string $alias (optional)
+     * @param array|string $table
+     * @param string       $alias (optional)
      * @return static
      */
     public function from($table, $alias = null)
@@ -348,8 +348,7 @@ class Query
                 return $field . '=' . $this->connection->quote($value);
             }, $conditions, array_keys($conditions)));
         } else {
-            if (func_num_args() > 1) {
-                $parameters = array_slice(func_get_args(), 1);
+            if ($parameters) {
                 $conditions = $this->connection->merge($conditions, $parameters);
             }
             $this->where[] = $conditions;
@@ -371,23 +370,21 @@ class Query
         return $this;
     }
 
-
     /**
      * Having condition
      *
      * @param array|string $conditions
-     * @param mixed ...    $parameters (optional)
+     * @param mixed        ...$parameters (optional)
      * @return static
      */
-    public function having($conditions)
+    public function having($conditions, ...$parameters)
     {
         if (is_array($conditions)) {
             $this->having = array_merge($this->where, array_map(function ($value, $field) {
                 return $field . '=' . $this->connection->quote($value);
             }, $conditions, array_keys($conditions)));
         } else {
-            if (func_num_args() > 1) {
-                $parameters = array_slice(func_get_args(), 1);
+            if ($parameters) {
                 $conditions = $this->connection->merge($conditions, $parameters);
             }
             $this->having[] = $conditions;
