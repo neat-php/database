@@ -333,10 +333,10 @@ class Query
      * Where condition
      *
      * @param array|string $conditions
-     * @param mixed ...    $parameters (optional)
+     * @param array        ...$parameters (optional)
      * @return static
      */
-    public function where($conditions)
+    public function where($conditions, ...$parameters)
     {
         if (is_array($conditions)) {
             $this->where = array_merge($this->where, array_map(function ($value, $field) {

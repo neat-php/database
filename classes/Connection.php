@@ -37,13 +37,13 @@ class Connection
      * Run a query and return the result or number of rows affected
      *
      * @param string $query
-     * @param mixed  ... $data
+     * @param mixed  ...$data
      * @return Result|int
      */
-    public function __invoke($query)
+    public function __invoke($query, ...$data)
     {
-        if (func_num_args() > 1) {
-            $query = $this->merge($query, array_slice(func_get_args(), 1));
+        if ($data) {
+            $query = $this->merge($query, $data);
         }
 
         if (preg_match('|^\s*SELECT\s+|i', $query)) {
@@ -133,13 +133,13 @@ class Connection
      * forward-only cursor being used to fetch the results.
      *
      * @param string $query
-     * @param mixed  ... $data
+     * @param mixed  ...$data
      * @return Result
      */
-    public function query($query)
+    public function query($query, ...$data)
     {
-        if (func_num_args() > 1) {
-            $query = $this->merge($query, array_slice(func_get_args(), 1));
+        if ($data) {
+            $query = $this->merge($query, $data);
         }
 
         $statement = $this->pdo->query($query);
@@ -155,13 +155,13 @@ class Connection
      * result would be entirely consumed after counting its rows.
      *
      * @param string $query
-     * @param mixed  ... $data
+     * @param mixed  ...$data
      * @return FetchedResult
      */
-    public function fetch($query)
+    public function fetch($query, ...$data)
     {
-        if (func_num_args() > 1) {
-            $query = $this->merge($query, array_slice(func_get_args(), 1));
+        if ($data) {
+            $query = $this->merge($query, $data);
         }
 
         $statement = $this->pdo->query($query);
@@ -173,13 +173,13 @@ class Connection
      * Execute a query and return the number of rows affected
      *
      * @param string $query
-     * @param mixed  ... $data
+     * @param mixed  ...$data
      * @return int
      */
-    public function execute($query)
+    public function execute($query, ...$data)
     {
-        if (func_num_args() > 1) {
-            $query = $this->merge($query, array_slice(func_get_args(), 1));
+        if ($data) {
+            $query = $this->merge($query, $data);
         }
 
         return $this->pdo->exec($query);

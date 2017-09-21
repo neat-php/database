@@ -36,7 +36,7 @@ class Result implements IteratorAggregate
     {
         $results = [];
         while ($row = $this->statement->fetch(PDO::FETCH_NUM)) {
-            $results[] = call_user_func_array($closure, $row);
+            $results[] = $closure(...$row);
         }
 
         return $results;

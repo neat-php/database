@@ -43,7 +43,7 @@ class FetchedResult implements Countable, Iterator, SeekableIterator
     {
         $results = [];
         foreach ($this->rows as $row) {
-            $results[] = call_user_func_array($closure, $row);
+            $results[] = $closure(...array_values($row));
         }
 
         return $results;
