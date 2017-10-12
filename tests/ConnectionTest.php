@@ -1,5 +1,6 @@
 <?php namespace Phrodo\Database\Test;
 
+use DateTime;
 use PHPUnit\Framework\TestCase;
 
 class ConnectionTest extends TestCase
@@ -45,8 +46,8 @@ class ConnectionTest extends TestCase
         $this->assertSame("'34'", $connection->quote(34));
         $this->assertSame("'bilbo'", $connection->quote("bilbo"));
         $this->assertSame("'''; --'", $connection->quote("'; --"));
-        $this->assertSame("'2020-02-15 01:23:45'", $connection->quote(new \DateTime('2020-02-15 01:23:45')));
-        $this->assertSame("'1', '2', '3'", $connection->quote([1, 2, 3]));
+        $this->assertSame("'2020-02-15 01:23:45'", $connection->quote(new DateTime('2020-02-15 01:23:45')));
+        $this->assertSame("'1','2','3'", $connection->quote([1, 2, 3]));
     }
 
     /**
@@ -72,16 +73,33 @@ class ConnectionTest extends TestCase
             $connection->merge('SELECT stuff', [])
         );
         $this->assertEquals(
-            "SELECT stuff WHERE foo='1' AND bar='3'",
-            $connection->merge('SELECT stuff WHERE foo=? AND bar=?', [1, 3])
+            "WHERE foo='1' AND bar='3'",
+            $connection->merge('WHERE foo=? AND bar=?', [1, 3])
         );
         $this->assertEquals(
-            "SELECT stuff WHERE foo='1' AND bar='3'",
-            $connection->merge('SELECT stuff WHERE foo=? AND bar=?', [1, 3, 5])
+            "WHERE foo='?' AND bar='1'",
+            $connection->merge("WHERE foo='?' AND bar=?", [1, 3])
         );
         $this->assertEquals(
-            "SELECT stuff WHERE foo='1' AND bar=?",
-            $connection->merge('SELECT stuff WHERE foo=? AND bar=?', [1])
+            "WHERE foo='1' AND bar='3'",
+            $connection->merge('WHERE foo=? AND bar=?', [1, 3, 5])
+        );
+        $this->assertEquals(
+            "WHERE foo='1' AND bar=?",
+            $connection->merge('WHERE foo=? AND bar=?', [1])
+        );
+        $stamp = '2017-07-10 17:18:19';
+        $this->assertEquals(
+            "WHERE stamp > '$stamp'",
+            $connection->merge('WHERE stamp > ?', [new DateTime($stamp)])
+        );
+        $this->assertEquals(
+            'VALUES (NULL)',
+            $connection->merge('VALUES (?)', [null])
+        );
+        $this->assertEquals(
+            "IN ('1','2','3')",
+            $connection->merge('IN (?)', [[1, 2, 3]])
         );
     }
 

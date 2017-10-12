@@ -83,7 +83,7 @@ class Connection
             return $this->pdo->quote($value->format('Y-m-d H:i:s'));
         }
         if (is_array($value)) {
-            return implode(", ", array_map([$this, 'quote'], $value));
+            return implode(',', array_map([$this, 'quote'], $value));
         }
 
         return $this->pdo->quote($value);
@@ -120,7 +120,7 @@ class Connection
                 return '?';
             }
 
-            return $this->quote((string) array_shift($data));
+            return $this->quote(array_shift($data));
         };
 
         return preg_replace_callback($expression, $callback, $query);
