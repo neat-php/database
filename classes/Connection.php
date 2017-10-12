@@ -340,6 +340,7 @@ class Connection
      *
      * @param callable $closure Closure without required parameters
      * @return mixed Closure return value
+     * @throws \Throwable Exceptions thrown by the closure
      */
     public function transaction(callable $closure)
     {
