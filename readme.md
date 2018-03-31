@@ -1,12 +1,6 @@
-Phrodo Database
-===============
-[![Latest Stable Version](https://poser.pugx.org/phrodo/database/version)](https://packagist.org/packages/phrodo/database)
-[![Latest Unstable Version](https://poser.pugx.org/phrodo/database/v/unstable)](https://packagist.org/packages/phrodo/database)
-[![Build Status](https://travis-ci.org/phrodo/database.svg?branch=master)](https://travis-ci.org/phrodo/database)
-[![License](https://poser.pugx.org/phrodo/database/license)](https://packagist.org/packages/phrodo/database)
-[![Total Downloads](https://poser.pugx.org/phrodo/database/downloads)](https://packagist.org/packages/phrodo/database)
-
-Phrodo Database components provide a clean and expressive API for accessing your
+Neat Database components
+========================
+Neat database components provide a clean and expressive API for accessing your
 databases. At its core is the Connection which uses a PDO instance underneath.
 
 Getting started
@@ -14,7 +8,7 @@ Getting started
 To install this package, simply issue [composer](https://getcomposer.org) on the
 command line:
 ```
-composer require phrodo/database
+composer require neat/database
 ```
 
 Then create a new database connection
@@ -23,7 +17,7 @@ Then create a new database connection
 
 // Connecting is easy, just pass a PDO instance
 $pdo = new PDO('mysql:host=localhost;dbname=test', 'username', 'password');
-$db  = new Phrodo\Database\Connection($pdo);
+$db  = new Neat\Database\Connection($pdo);
 ```
 
 Querying

@@ -1,9 +1,10 @@
-<?php namespace Phrodo\Database\Test;
+<?php
+namespace Neat\Database\Test;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject as Mock;
-use Phrodo\Database\Connection;
-use Phrodo\Database\Query;
+use Neat\Database\Connection;
+use Neat\Database\Query;
 use PDO;
 
 /**

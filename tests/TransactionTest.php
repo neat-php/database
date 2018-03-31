@@ -1,5 +1,7 @@
-<?php namespace Phrodo\Database\Test;
+<?php
+namespace Neat\Database\Test;
 
+use Neat\Database\Connection;
 use PHPUnit\Framework\TestCase;
 
 class TransactionTest extends TestCase
@@ -40,7 +42,7 @@ class TransactionTest extends TestCase
 
         $connection = $this->create->connection($pdo);
 
-        $this->assertInstanceOf('Phrodo\Database\Connection', $connection);
+        $this->assertInstanceOf(Connection::class, $connection);
         $connection->start();
         $connection->commit();
         $connection->start();

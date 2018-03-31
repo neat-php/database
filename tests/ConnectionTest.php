@@ -1,6 +1,9 @@
-<?php namespace Phrodo\Database\Test;
+<?php
+namespace Neat\Database\Test;
 
 use DateTime;
+use Neat\Database\FetchedResult;
+use Neat\Database\Result;
 use PHPUnit\Framework\TestCase;
 
 class ConnectionTest extends TestCase
@@ -111,11 +114,11 @@ class ConnectionTest extends TestCase
         $connection = $this->create->connection();
 
         $result = $connection->query('SELECT username FROM users WHERE id = 1');
-        $this->assertInstanceOf('Phrodo\Database\Result', $result);
+        $this->assertInstanceOf(Result::class, $result);
         $this->assertEquals([['username' => 'john']], $result->rows());
 
         $result = $connection->query('SELECT username FROM users WHERE id = ?', 1);
-        $this->assertInstanceOf('Phrodo\Database\Result', $result);
+        $this->assertInstanceOf(Result::class, $result);
         $this->assertEquals([['username' => 'john']], $result->rows());
     }
 
@@ -127,11 +130,11 @@ class ConnectionTest extends TestCase
         $connection = $this->create->connection();
 
         $result = $connection->fetch('SELECT username FROM users WHERE id = 1');
-        $this->assertInstanceOf('Phrodo\Database\FetchedResult', $result);
+        $this->assertInstanceOf(FetchedResult::class, $result);
         $this->assertEquals([['username' => 'john']], $result->rows());
 
         $result = $connection->fetch('SELECT username FROM users WHERE id = ?', 1);
-        $this->assertInstanceOf('Phrodo\Database\FetchedResult', $result);
+        $this->assertInstanceOf(FetchedResult::class, $result);
         $this->assertEquals([['username' => 'john']], $result->rows());
     }
 
@@ -146,7 +149,7 @@ class ConnectionTest extends TestCase
             return $connection->query('SELECT * FROM users ORDER BY username');
         };
 
-        $this->assertInstanceOf('Phrodo\Database\Result', $query());
+        $this->assertInstanceOf(Result::class, $query());
         $this->assertEquals([['id' => '3', 'username' => 'bob'], ['id' => '2', 'username' => 'jane'], ['id' => '1', 'username' => 'john']], $query()->rows());
         $this->assertEquals(['id' => '3', 'username' => 'bob'], $query()->row());
         $this->assertEquals([3, 2, 1], $query()->values());
@@ -243,6 +246,6 @@ class ConnectionTest extends TestCase
         $connection = $this->create->connection();
 
         $this->assertSame(1, $connection("DELETE FROM users WHERE id=?", 1));
-        $this->assertInstanceOf('Phrodo\Database\Result', $connection("SELECT * FROM users"));
+        $this->assertInstanceOf(Result::class, $connection("SELECT * FROM users"));
     }
 }

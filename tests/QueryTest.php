@@ -1,8 +1,9 @@
-<?php namespace Phrodo\Database\Test;
+<?php
+namespace Neat\Database\Test;
 
 use PHPUnit\Framework\TestCase;
-use Phrodo\Database\FetchedResult;
-use Phrodo\Database\Query;
+use Neat\Database\FetchedResult;
+use Neat\Database\Query;
 
 class QueryTest extends TestCase
 {
@@ -276,7 +277,7 @@ class QueryTest extends TestCase
         $connection = $this->create->mockedConnection(null, ['query']);
         $select     = $connection->select();
 
-        $this->assertInstanceOf('Phrodo\Database\Query', $select);
+        $this->assertInstanceOf(Query::class, $select);
         $this->assertSQL(
             "SELECT 1 FROM dual",
             $connection->select(1)->from('dual')->getQuery()
@@ -325,7 +326,7 @@ class QueryTest extends TestCase
         $connection = $this->create->mockedConnection(null, ['execute']);
         $insert     = $connection->insert('users');
 
-        $this->assertInstanceOf('Phrodo\Database\Query', $insert);
+        $this->assertInstanceOf(Query::class, $insert);
         $this->assertSame('users', $insert->getTable());
 
         $connection
@@ -348,7 +349,7 @@ class QueryTest extends TestCase
         $connection = $this->create->mockedConnection(null, ['execute']);
         $update     = $connection->update('users');
 
-        $this->assertInstanceOf('Phrodo\Database\Query', $update);
+        $this->assertInstanceOf(Query::class, $update);
         $this->assertSame('users', $update->getTable());
         $this->assertSQL(
             "UPDATE users
@@ -390,7 +391,7 @@ class QueryTest extends TestCase
         $connection = $this->create->mockedConnection(null, ['execute']);
         $delete     = $connection->delete('users');
 
-        $this->assertInstanceOf('Phrodo\Database\Query', $delete);
+        $this->assertInstanceOf(Query::class, $delete);
         $this->assertSame('users', $delete->getTable());
         $this->assertSQL(
             'DELETE FROM users',

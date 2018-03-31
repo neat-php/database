@@ -1,6 +1,6 @@
 {
-    "name": "phrodo/database",
-    "description": "Phrodo Database",
+    "name": "neat/database",
+    "description": "Neat Database",
     "keywords": ["Database", "PDO"],
     "license": "MIT",
     "authors": [
@@ -11,12 +11,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Phrodo\\Database\\": "classes/"
+            "Neat\\Database\\": "classes/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Phrodo\\Database\\Test\\": "tests/"
+            "Neat\\Database\\Test\\": "tests/"
         }
     },
     "require": {

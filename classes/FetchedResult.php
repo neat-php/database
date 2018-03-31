@@ -1,4 +1,5 @@
-<?php namespace Phrodo\Database;
+<?php
+namespace Neat\Database;
 
 use SeekableIterator;
 use Countable;

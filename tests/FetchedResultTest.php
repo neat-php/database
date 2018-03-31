@@ -1,7 +1,8 @@
-<?php namespace Phrodo\Database\Test;
+<?php
+namespace Neat\Database\Test;
 
 use PHPUnit\Framework\TestCase;
-use Phrodo\Database\FetchedResult;
+use Neat\Database\FetchedResult;
 
 class FetchedResultTest extends TestCase
 {
