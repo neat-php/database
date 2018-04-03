@@ -1,7 +1,7 @@
 {
     "name": "neat/database",
-    "description": "Neat Database",
-    "keywords": ["Database", "PDO"],
+    "description": "Neat Database components",
+    "keywords": ["Database", "PDO", "Query", "Result"],
     "license": "MIT",
     "authors": [
         {
