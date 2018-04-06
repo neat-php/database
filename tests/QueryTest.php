@@ -187,6 +187,12 @@ class QueryTest extends TestCase
                 ->getWhere()
         );
         $this->assertSQL(
+            "`deleted_at` IS NULL",
+            $this->create->query()
+                ->where(['deleted_at' => null])
+                ->getWhere()
+        );
+        $this->assertSQL(
             "username='john' AND email='john@example.com'",
             $this->create->query()
                 ->where('username=? AND email=?', 'john', 'john@example.com')
