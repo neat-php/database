@@ -1,5 +1,8 @@
 Neat Database components
 ========================
+[![Stable Version](https://poser.pugx.org/neat/database/version)](https://packagist.org/packages/neat/database)
+[![Build Status](https://travis-ci.org/neat-php/database.svg?branch=master)](https://travis-ci.org/neat-php/database)
+
 Neat database components provide a clean and expressive API for accessing your
 databases. At its core is the Connection which uses a PDO instance underneath.
 
