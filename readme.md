@@ -107,13 +107,15 @@ it makes sense to use a specialized api for this purpose too.
 
 Enter the ```insert```, ```update``` and ```delete``` methods. Each of these
 methods takes the table name as the first argument and the data to be inserted
-or updated as the next and the where clause as its last argument. While insert
-automatically returns the last inserted id, the other two methods return the
-number of rows affected.
+or updated as the next and the where clause as its last argument. Like the
+```execute``` method, these methods also return return the number of rows
+affected.
 
 ```php
 // Welcome John! We'll now turn you into a database record.
-$id = $db->insert('users', ['username' => 'john', 'password' => $hash]);
+if ($db->insert('users', ['username' => 'john', 'password' => $hash])) {
+    $id = $db->insertedId();
+}
 
 // Update John's last login
 $time = new DateTime('now');
@@ -122,6 +124,9 @@ $rows = $db->update('users', ['login_at' => $time], ['username' => 'john']);
 // Delete all users that haven't logged in for a year or more
 $rows = $db->delete('users', 'login_at < ?', new DateTime('-1 year'));
 ```
+
+Please note that the insert method does NOT return the last inserted id,
+instead you'll have to use the ```insertedId``` method.
 
 Query building
 --------------
@@ -212,7 +217,6 @@ $db->transaction(function () use ($db)
 
 Todo
 ----
-* Return the inserted id from insert()
 * Build group by from array
 * Build order by from array
 * Performance testing
