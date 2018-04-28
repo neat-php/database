@@ -186,6 +186,30 @@ $db->update('users')
    ->execute();
 ```
 
+Escaping and quoting
+--------------------
+When the built-in query builder and placeholder substitution simply don't cut
+it anymore, you'll most likely end up concatenating your own SQL queries. The
+```quote``` and ```quoteIdentifier``` methods allow you to safely embed literal
+values and identifiers into your own SQL statements.
+
+```php
+// First escape and quote the user input into an SQL safe string literal
+$quoted = $db->quote('%' . $_GET['search'] . '%');
+$sql = "SELECT * FROM users WHERE lastname LIKE $quoted OR firstname LIKE $quoted";
+
+// It also understands DateTime value objects
+$date = $db->quote(new DateTime('last monday'));
+$sql = "SELECT * FORM users WHERE login_at > $date";
+
+// And NULL values (be sure to use the appropriate SQL syntax, eg IS instead of =)
+$null = $db->quote(null); // store 'NULL' into $null
+
+// Identifiers can also be quoted
+$table = $db->quoteIdentifier('users'); // store '`users`' (note the backticks) into $table 
+$sql = "SELECT * FROM $users";  
+```
+
 One API to rule them all
 ------------------------
 And there it is...
@@ -228,4 +252,3 @@ Unsupported
 Following features are intentionally left unsupported:
 * Scrollable cursors
 * Binding parameters by reference
-* Identifier escaping/quoting
