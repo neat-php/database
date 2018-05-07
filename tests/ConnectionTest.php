@@ -51,6 +51,8 @@ class ConnectionTest extends TestCase
         $this->assertSame("'''; --'", $connection->quote("'; --"));
         $this->assertSame("'2020-02-15 01:23:45'", $connection->quote(new DateTime('2020-02-15 01:23:45')));
         $this->assertSame("'1','2','3'", $connection->quote([1, 2, 3]));
+        $this->assertSame("'0'", $connection->quote(false));
+        $this->assertSame("'1'", $connection->quote(true));
     }
 
     /**

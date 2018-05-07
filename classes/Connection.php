@@ -86,6 +86,9 @@ class Connection
         if (is_array($value)) {
             return implode(',', array_map([$this, 'quote'], $value));
         }
+        if (is_bool($value)) {
+            return $this->pdo->quote($value ? 1 : 0);
+        }
 
         return $this->pdo->quote($value);
     }
