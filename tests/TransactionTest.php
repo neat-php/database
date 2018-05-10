@@ -1,4 +1,5 @@
 <?php
+
 namespace Neat\Database\Test;
 
 use Neat\Database\Connection;

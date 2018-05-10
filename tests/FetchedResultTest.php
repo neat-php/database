@@ -1,8 +1,9 @@
 <?php
+
 namespace Neat\Database\Test;
 
-use PHPUnit\Framework\TestCase;
 use Neat\Database\FetchedResult;
+use PHPUnit\Framework\TestCase;
 
 class FetchedResultTest extends TestCase
 {
@@ -60,7 +61,11 @@ class FetchedResultTest extends TestCase
         $this->assertEquals(['id' => '1', 'username' => 'john'], $result->row());
         $this->assertFalse($result->row());
 
-        $result = $this->fetch([['username' => 'bob'], ['username' => 'jane'], ['username' => 'john']]);
+        $result = $this->fetch([
+            ['username' => 'bob'],
+            ['username' => 'jane'],
+            ['username' => 'john']
+        ]);
         $this->assertEquals(0, $result->key());
         $this->assertTrue($result->valid());
         $this->assertEquals('bob', $result->value());
@@ -85,14 +90,19 @@ class FetchedResultTest extends TestCase
             $this->assertEquals(array_shift($expected), $username);
         }
 
-        $expected = [['username' => 'bob'], ['username' => 'jane'], ['username' => 'john']];
-        $result = $this->fetch([['username' => 'bob'], ['username' => 'jane'], ['username' => 'john']]);
+        $expected = [
+            ['username' => 'bob'],
+            ['username' => 'jane'],
+            ['username' => 'john']
+        ];
+
+        $result = $this->fetch($expected);
         foreach ($result as $username) {
             $this->assertEquals(array_shift($expected), $username);
         }
 
-        $expected = $this->rows;
-        $result = $this->fetch($this->rows);
+        $expected   = $this->rows;
+        $result     = $this->fetch($this->rows);
         $eachResult = $result->each(function ($id, $username) use (&$expected) {
             $this->assertEquals(array_shift($expected), ['id' => $id, 'username' => $username]);
 

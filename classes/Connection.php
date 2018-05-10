@@ -1,4 +1,5 @@
 <?php
+
 namespace Neat\Database;
 
 use PDO;
@@ -228,7 +229,7 @@ class Connection
      * the query builder is returned so you can extend the query further.
      *
      * @param string $table
-     * @param array  $data  (optional)
+     * @param array  $data (optional)
      * @return Query|int
      */
     public function insert($table, array $data = null)

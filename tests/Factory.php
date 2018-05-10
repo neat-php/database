@@ -1,11 +1,12 @@
 <?php
+
 namespace Neat\Database\Test;
 
-use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject as Mock;
 use Neat\Database\Connection;
 use Neat\Database\Query;
 use PDO;
+use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_MockObject_MockObject as Mock;
 
 /**
  * Factory

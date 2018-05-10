@@ -1,9 +1,10 @@
 <?php
+
 namespace Neat\Database;
 
 use IteratorAggregate;
-use PDOStatement;
 use PDO;
+use PDOStatement;
 
 /**
  * Result class

@@ -1,9 +1,10 @@
 <?php
+
 namespace Neat\Database\Test;
 
-use PHPUnit\Framework\TestCase;
 use Neat\Database\FetchedResult;
 use Neat\Database\Query;
+use PHPUnit\Framework\TestCase;
 
 class QueryTest extends TestCase
 {
@@ -59,7 +60,7 @@ class QueryTest extends TestCase
      * SQL expectation constraint
      *
      * @param string $expected
-     * @return callable
+     * @return callable|\PHPUnit\Framework\Constraint\Callback
      */
     protected function sql($expected)
     {
@@ -288,6 +289,7 @@ class QueryTest extends TestCase
             "SELECT 1 FROM dual",
             $connection->select(1)->from('dual')->getQuery()
         );
+        /** @noinspection SqlResolve */
         $this->assertSQL(
             "SELECT g.*, COUNT(1) as active_users
              FROM users u
@@ -357,17 +359,20 @@ class QueryTest extends TestCase
 
         $this->assertInstanceOf(Query::class, $update);
         $this->assertSame('users', $update->getTable());
+        /** @noinspection SqlResolve */
         $this->assertSQL(
             "UPDATE users
              SET `active` = '0'",
             $update->set(['active' => 0])->getQuery()
         );
+        /** @noinspection SqlResolve */
         $this->assertSQL(
             "UPDATE users
              SET `active` = '0'
              WHERE email LIKE '%@example.com'",
             $update->where('email LIKE ?', '%@example.com')->getQuery()
         );
+        /** @noinspection SqlResolve */
         $this->assertSQL(
             "UPDATE users
              SET `active` = '0'

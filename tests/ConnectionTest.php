@@ -1,4 +1,5 @@
 <?php
+
 namespace Neat\Database\Test;
 
 use DateTime;
@@ -30,6 +31,7 @@ class ConnectionTest extends TestCase
     {
         $pdo1 = $this->create->pdo();
         $pdo2 = $this->create->pdo();
+
         $connection = $this->create->connection($pdo1);
 
         $this->assertInstanceOf('PDO', $connection->pdo());
@@ -183,22 +185,37 @@ class ConnectionTest extends TestCase
         $this->assertEquals('john', $result->value());
         $this->assertFalse($result->value());
 
-        $expected = [['id' => '3', 'username' => 'bob'], ['id' => '2', 'username' => 'jane'], ['id' => '1', 'username' => 'john']];
+        $expected = [
+            ['id' => '3', 'username' => 'bob'],
+            ['id' => '2', 'username' => 'jane'],
+            ['id' => '1', 'username' => 'john']
+        ];
         foreach ($connection->query('SELECT * FROM users ORDER BY username') as $username) {
             $this->assertEquals(array_shift($expected), $username);
         }
 
-        $expected = [['username' => 'bob'], ['username' => 'jane'], ['username' => 'john']];
+        $expected = [
+            ['username' => 'bob'],
+            ['username' => 'jane'],
+            ['username' => 'john']
+        ];
         foreach ($connection->query('SELECT username FROM users ORDER BY username') as $username) {
             $this->assertEquals(array_shift($expected), $username);
         }
 
-        $expected = [['id' => '3', 'username' => 'bob'], ['id' => '2', 'username' => 'jane'], ['id' => '1', 'username' => 'john']];
-        $result = $connection->query('SELECT * FROM users ORDER BY username')->each(function ($id, $username) use (&$expected) {
-            $this->assertEquals(array_shift($expected), ['id' => $id, 'username' => $username]);
+        $expected = [
+            ['id' => '3', 'username' => 'bob'],
+            ['id' => '2', 'username' => 'jane'],
+            ['id' => '1', 'username' => 'john']
+        ];
 
-            return "$id:$username";
-        });
+        $result = $connection
+            ->query('SELECT * FROM users ORDER BY username')
+            ->each(function ($id, $username) use (&$expected) {
+                $this->assertEquals(array_shift($expected), ['id' => $id, 'username' => $username]);
+
+                return "$id:$username";
+            });
         $this->assertEquals(['3:bob', '2:jane', '1:john'], $result);
     }
 

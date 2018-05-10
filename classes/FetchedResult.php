@@ -1,8 +1,9 @@
 <?php
+
 namespace Neat\Database;
 
-use SeekableIterator;
 use Countable;
+use SeekableIterator;
 
 /**
  * Fetched result class
