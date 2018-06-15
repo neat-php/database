@@ -312,17 +312,41 @@ class QueryTest extends TestCase
                 ->limit(25)
                 ->getQuery()
         );
+    }
 
-        $result = new FetchedResult([['id' => 1, 'username' => 'john']]);
+    /**
+     * Test select query
+     */
+    public function testSelectQuery()
+    {
+        $connection = $this->create->mockedConnection(null, ['query']);
         $connection
             ->expects($this->once())
             ->method('query')
             ->with($this->sql("SELECT * FROM users WHERE id = '1'"))
-            ->willReturn($result);
+            ->willReturn($result = new FetchedResult([['id' => 1, 'username' => 'john']]));
 
         $this->assertSame(
             $result,
             $connection->select()->from('users')->where('id = ?', 1)->query()
+        );
+    }
+
+    /**
+     * Test select query
+     */
+    public function testSelectFetch()
+    {
+        $connection = $this->create->mockedConnection(null, ['fetch']);
+        $connection
+            ->expects($this->once())
+            ->method('fetch')
+            ->with($this->sql("SELECT * FROM users WHERE id = '1'"))
+            ->willReturn($result = new FetchedResult([['id' => 1, 'username' => 'john']]));
+
+        $this->assertSame(
+            $result,
+            $connection->select()->from('users')->where('id = ?', 1)->fetch()
         );
     }
 

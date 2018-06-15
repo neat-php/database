@@ -659,6 +659,16 @@ class Query
     }
 
     /**
+     * Run this query and return the fetched results
+     *
+     * @return FetchedResult
+     */
+    public function fetch()
+    {
+        return $this->connection->fetch($this->getQuery());
+    }
+
+    /**
      * Execute the query and return the number of rows affected
      *
      * @return int
