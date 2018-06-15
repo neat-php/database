@@ -2,6 +2,7 @@
 
 namespace Neat\Database;
 
+use DateTimeInterface;
 use PDO;
 
 ini_set('pcre.jit', false);
@@ -73,7 +74,7 @@ class Connection
     /**
      * Quote a value (protecting against SQL injection)
      *
-     * @param string|null|\DateTimeInterface|array $value
+     * @param string|null|DateTimeInterface|array|bool $value
      * @return string
      */
     public function quote($value)
@@ -81,7 +82,7 @@ class Connection
         if ($value === null) {
             return 'NULL';
         }
-        if ($value instanceof \DateTimeInterface) {
+        if ($value instanceof DateTimeInterface) {
             return $this->pdo->quote($value->format('Y-m-d H:i:s'));
         }
         if (is_array($value)) {
