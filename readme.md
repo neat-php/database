@@ -108,8 +108,7 @@ it makes sense to use a specialized api for this purpose too.
 Enter the ```insert```, ```update``` and ```delete``` methods. Each of these
 methods takes the table name as the first argument and the data to be inserted
 or updated as the next and the where clause as its last argument. Like the
-```execute``` method, these methods also return return the number of rows
-affected.
+```execute``` method, these methods also return the number of rows affected.
 
 ```php
 // Welcome John! We'll now turn you into a database record.
