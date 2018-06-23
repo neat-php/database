@@ -14,8 +14,6 @@ use PHPUnit_Framework_MockObject_MockObject as Mock;
 class Factory
 {
     /**
-     * Test case
-     *
      * @var TestCase
      */
     protected $case;

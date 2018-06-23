@@ -13,15 +13,11 @@ ini_set('pcre.jit', false);
 class Connection
 {
     /**
-     * PDO connection
-     *
      * @var PDO
      */
     protected $pdo;
 
     /**
-     * Transaction started?
-     *
      * @var bool
      */
     protected $started = false;

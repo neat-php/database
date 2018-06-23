@@ -8,8 +8,6 @@ use PHPUnit\Framework\TestCase;
 class TransactionTest extends TestCase
 {
     /**
-     * Factory
-     *
      * @var Factory
      */
     protected $create;

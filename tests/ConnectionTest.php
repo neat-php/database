@@ -10,8 +10,6 @@ use PHPUnit\Framework\TestCase;
 class ConnectionTest extends TestCase
 {
     /**
-     * Factory
-     *
      * @var Factory
      */
     private $create;

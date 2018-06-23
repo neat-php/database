@@ -28,85 +28,61 @@ class Query
     const TYPE_DELETE = 'DELETE';
 
     /**
-     * Connection
-     *
      * @var Connection
      */
     protected $connection;
 
     /**
-     * Type
-     *
      * @var string
      */
     protected $type;
 
     /**
-     * Select expressions
-     *
      * @var array
      */
     protected $expressions = [];
 
     /**
-     * Tables by alias
-     *
      * @var array
      */
     protected $tables = [];
 
     /**
-     * Joins by alias
-     *
      * @var array
      */
     protected $joins = [];
 
     /**
-     * Data to insert or update
-     *
      * @var array
      */
     protected $data = [];
 
     /**
-     * Where conditions
-     *
      * @var array
      */
     protected $where = [];
 
     /**
-     * Group by clause
-     *
      * @var string
      */
     protected $groupBy;
 
     /**
-     * Having clause
-     *
      * @var array
      */
     protected $having = [];
 
     /**
-     * Order by clause
-     *
      * @var string
      */
     protected $orderBy;
 
     /**
-     * Limit
-     *
      * @var int
      */
     protected $limit;
 
     /**
-     * Offset
-     *
      * @var int
      */
     protected $offset;

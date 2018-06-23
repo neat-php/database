@@ -9,8 +9,6 @@ use PHPUnit\Framework\TestCase;
 class QueryTest extends TestCase
 {
     /**
-     * Factory
-     *
      * @var Factory
      */
     protected $create;

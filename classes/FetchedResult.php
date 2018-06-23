@@ -11,15 +11,11 @@ use SeekableIterator;
 class FetchedResult implements Countable, SeekableIterator
 {
     /**
-     * Rows
-     *
      * @var array
      */
     protected $rows;
 
     /**
-     * Row cursor
-     *
      * @var int
      */
     protected $cursor = 0;

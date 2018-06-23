@@ -8,8 +8,6 @@ use PHPUnit\Framework\TestCase;
 class FetchedResultTest extends TestCase
 {
     /**
-     * Rows
-     *
      * @var array
      */
     protected $rows = [

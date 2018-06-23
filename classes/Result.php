@@ -12,8 +12,6 @@ use PDOStatement;
 class Result implements IteratorAggregate
 {
     /**
-     * PDO Statement to fetch results from
-     *
      * @var PDOStatement
      */
     protected $statement;
