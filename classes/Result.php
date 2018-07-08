@@ -34,12 +34,7 @@ class Result implements IteratorAggregate
      */
     public function each(callable $closure)
     {
-        $results = [];
-        while ($row = $this->statement->fetch(PDO::FETCH_NUM)) {
-            $results[] = $closure(...$row);
-        }
-
-        return $results;
+        return $this->statement->fetchAll(PDO::FETCH_FUNC, $closure);
     }
 
     /**
