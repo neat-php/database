@@ -111,7 +111,7 @@ class Query
      * Select query
      *
      * @param array|string $expression
-     * @return static
+     * @return $this
      */
     public function select($expression = '*')
     {
@@ -131,7 +131,7 @@ class Query
      * Insert query
      *
      * @param string $table (optional)
-     * @return static
+     * @return $this
      */
     public function insert($table = null)
     {
@@ -147,7 +147,7 @@ class Query
      * Update query
      *
      * @param string $table (optional)
-     * @return static
+     * @return $this
      */
     public function update($table = null)
     {
@@ -163,7 +163,7 @@ class Query
      * Delete query
      *
      * @param string $table (optional)
-     * @return static
+     * @return $this
      */
     public function delete($table = null)
     {
@@ -180,7 +180,7 @@ class Query
      *
      * @param array|string $table
      * @param string       $alias (optional)
-     * @return static
+     * @return $this
      */
     public function table($table, $alias = null)
     {
@@ -207,7 +207,7 @@ class Query
      *
      * @param array|string $table
      * @param string       $alias (optional)
-     * @return static
+     * @return $this
      */
     public function from($table, $alias = null)
     {
@@ -219,7 +219,7 @@ class Query
      *
      * @param string $table
      * @param string $alias (optional)
-     * @return static
+     * @return $this
      */
     public function into($table, $alias = null)
     {
@@ -233,7 +233,7 @@ class Query
      * @param string $alias
      * @param string $on
      * @param string $type
-     * @return static
+     * @return $this
      */
     public function join($table, $alias = null, $on = null, $type = 'INNER JOIN')
     {
@@ -248,7 +248,7 @@ class Query
      * @param string $table
      * @param string $alias
      * @param string $on
-     * @return static
+     * @return $this
      */
     public function leftJoin($table, $alias = null, $on = null)
     {
@@ -261,7 +261,7 @@ class Query
      * @param string $table
      * @param string $alias
      * @param string $on
-     * @return static
+     * @return $this
      */
     public function rightJoin($table, $alias = null, $on = null)
     {
@@ -274,7 +274,7 @@ class Query
      * @param string $table
      * @param string $alias
      * @param string $on
-     * @return static
+     * @return $this
      */
     public function innerJoin($table, $alias = null, $on = null)
     {
@@ -285,7 +285,7 @@ class Query
      * Data to insert
      *
      * @param array $data
-     * @return static
+     * @return $this
      */
     public function values(array $data)
     {
@@ -298,7 +298,7 @@ class Query
      * Data to set
      *
      * @param array $data
-     * @return static
+     * @return $this
      */
     public function set(array $data)
     {
@@ -312,7 +312,7 @@ class Query
      *
      * @param array|string $conditions
      * @param array        ...$parameters (optional)
-     * @return static
+     * @return $this
      */
     public function where($conditions, ...$parameters)
     {
@@ -339,7 +339,7 @@ class Query
      * Group by column
      *
      * @param string $groupBy
-     * @return static
+     * @return $this
      */
     public function groupBy($groupBy)
     {
@@ -353,7 +353,7 @@ class Query
      *
      * @param array|string $conditions
      * @param mixed        ...$parameters (optional)
-     * @return static
+     * @return $this
      */
     public function having($conditions, ...$parameters)
     {
@@ -375,7 +375,7 @@ class Query
      * Order by column
      *
      * @param string $orderBy
-     * @return static
+     * @return $this
      */
     public function orderBy($orderBy)
     {
@@ -388,7 +388,7 @@ class Query
      * Limit number of results
      *
      * @param int $limit
-     * @return static
+     * @return $this
      */
     public function limit($limit)
     {
@@ -401,7 +401,7 @@ class Query
      * Return the number of results, starting at offset
      *
      * @param int $offset
-     * @return static
+     * @return $this
      */
     public function offset($offset)
     {
