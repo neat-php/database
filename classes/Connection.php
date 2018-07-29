@@ -4,6 +4,7 @@ namespace Neat\Database;
 
 use DateTimeInterface;
 use PDO;
+use PDOException;
 
 ini_set('pcre.jit', false);
 
@@ -39,6 +40,7 @@ class Connection
      * @param string $query
      * @param mixed  ...$data
      * @return Result|int
+     * @throws QueryException
      */
     public function __invoke($query, ...$data)
     {
@@ -138,6 +140,7 @@ class Connection
      * @param string $query
      * @param mixed  ...$data
      * @return Result
+     * @throws QueryException
      */
     public function query($query, ...$data)
     {
@@ -145,9 +148,13 @@ class Connection
             $query = $this->merge($query, $data);
         }
 
-        $statement = $this->pdo->query($query);
+        try {
+            $statement = $this->pdo->query($query);
 
-        return new Result($statement);
+            return new Result($statement);
+        } catch (PDOException $exception) {
+            throw new QueryException($exception, $query);
+        }
     }
 
     /**
@@ -160,6 +167,7 @@ class Connection
      * @param string $query
      * @param mixed  ...$data
      * @return FetchedResult
+     * @throws QueryException
      */
     public function fetch($query, ...$data)
     {
@@ -167,9 +175,13 @@ class Connection
             $query = $this->merge($query, $data);
         }
 
-        $statement = $this->pdo->query($query);
+        try {
+            $statement = $this->pdo->query($query);
 
-        return new FetchedResult($statement->fetchAll(PDO::FETCH_ASSOC));
+            return new FetchedResult($statement->fetchAll(PDO::FETCH_ASSOC));
+        } catch (PDOException $exception) {
+            throw new QueryException($exception, $query);
+        }
     }
 
     /**
@@ -178,6 +190,7 @@ class Connection
      * @param string $query
      * @param mixed  ...$data
      * @return int
+     * @throws QueryException
      */
     public function execute($query, ...$data)
     {
@@ -185,7 +198,11 @@ class Connection
             $query = $this->merge($query, $data);
         }
 
-        return $this->pdo->exec($query);
+        try {
+            return $this->pdo->exec($query);
+        } catch (PDOException $exception) {
+            throw new QueryException($exception, $query);
+        }
     }
 
     /**
@@ -229,6 +246,7 @@ class Connection
      * @param string $table
      * @param array  $data (optional)
      * @return Query|int
+     * @throws QueryException
      */
     public function insert($table, array $data = null)
     {
@@ -251,6 +269,7 @@ class Connection
      * @param array        $data  (optional)
      * @param array|string $where (optional)
      * @return Query|int
+     * @throws QueryException
      */
     public function update($table, array $data = null, $where = null)
     {
@@ -278,6 +297,7 @@ class Connection
      * @param string       $table
      * @param array|string $where (optional)
      * @return Query|int
+     * @throws QueryException
      */
     public function delete($table, $where = null)
     {

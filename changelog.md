@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Query builder fetch method.
+- Connection will throw a QueryException on query errors.
+
+### Fixed
+- PDO instance without exceptions enabled results in internal errors.
 
 ## [1.0.1] - 2018-06-06
 ### Added

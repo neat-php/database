@@ -628,6 +628,7 @@ class Query
      * Run this query and return the results
      *
      * @return Result
+     * @throws QueryException
      */
     public function query()
     {
@@ -638,6 +639,7 @@ class Query
      * Run this query and return the fetched results
      *
      * @return FetchedResult
+     * @throws QueryException
      */
     public function fetch()
     {
@@ -648,6 +650,7 @@ class Query
      * Execute the query and return the number of rows affected
      *
      * @return int
+     * @throws QueryException
      */
     public function execute()
     {
