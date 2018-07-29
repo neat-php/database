@@ -25,7 +25,7 @@ class TransactionTest extends TestCase
      */
     public function testTransaction()
     {
-        $pdo = $this->create->mockedPdo();
+        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->at(0))
             ->method('beginTransaction')
             ->willReturn(true);
@@ -53,7 +53,7 @@ class TransactionTest extends TestCase
      */
     public function testCommit()
     {
-        $pdo = $this->create->mockedPdo();
+        $pdo = $this->create->mockedPdo(['beginTransaction', 'exec', 'commit', 'rollback']);
         $pdo->expects($this->at(0))
             ->method('beginTransaction')
             ->willReturn(true);
@@ -76,7 +76,7 @@ class TransactionTest extends TestCase
      */
     public function testRollback()
     {
-        $pdo = $this->create->mockedPdo();
+        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->at(0))
             ->method('beginTransaction')
             ->willReturn(true);
@@ -98,7 +98,7 @@ class TransactionTest extends TestCase
      */
     public function testNestingTransactions()
     {
-        $pdo = $this->create->mockedPdo();
+        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->once())
             ->method('beginTransaction')
             ->willReturn(true);
@@ -116,7 +116,7 @@ class TransactionTest extends TestCase
      */
     public function testCommitWithoutStart()
     {
-        $pdo = $this->create->mockedPdo();
+        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->never())
             ->method($this->anything());
 
@@ -132,7 +132,7 @@ class TransactionTest extends TestCase
      */
     public function testRollbackWithoutStart()
     {
-        $pdo = $this->create->mockedPdo();
+        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->never())
             ->method($this->anything());
 
@@ -148,7 +148,7 @@ class TransactionTest extends TestCase
      */
     public function testStartFailure()
     {
-        $pdo = $this->create->mockedPdo();
+        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->at(0))
             ->method('beginTransaction')
             ->willReturn(false);
@@ -165,7 +165,7 @@ class TransactionTest extends TestCase
      */
     public function testCommitFailure()
     {
-        $pdo = $this->create->mockedPdo();
+        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->at(0))
             ->method('beginTransaction')
             ->willReturn(true);
@@ -185,7 +185,7 @@ class TransactionTest extends TestCase
      */
     public function testRollbackFailure()
     {
-        $pdo = $this->create->mockedPdo();
+        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->at(0))
             ->method('beginTransaction')
             ->willReturn(true);
