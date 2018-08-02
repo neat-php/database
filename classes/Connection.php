@@ -310,6 +310,28 @@ class Connection
     }
 
     /**
+     * Get schema
+     *
+     * @param string $name
+     * @return Schema
+     */
+    public function schema($name)
+    {
+        return new Schema($this, $name);
+    }
+
+    /**
+     * Get table
+     *
+     * @param string $name
+     * @return Table
+     */
+    public function table($name)
+    {
+        return new Table($this, $name);
+    }
+
+    /**
      * Start transaction
      */
     public function start()
