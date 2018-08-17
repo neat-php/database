@@ -1,9 +1,19 @@
 {
     "name": "neat/database",
     "description": "Neat Database components",
-    "keywords": ["Database", "PDO", "Query", "Result"],
+    "type": "library",
+    "keywords": [
+        "Database",
+        "PDO",
+        "Query",
+        "Result"
+    ],
     "license": "MIT",
     "authors": [
+        {
+            "name": "Bauke van der Woude",
+            "email": "baukevanderwoude@hotmail.nl"
+        },
         {
             "name": "Guido van Biemen",
             "email": "guidovanbiemen@gmail.com"
@@ -20,7 +30,8 @@
         }
     },
     "require": {
-        "php": ">=7.0"
+        "php": ">=7.0",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.0",
