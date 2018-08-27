@@ -193,9 +193,9 @@ class Query
         $this->joins = [];
         foreach ($table as $alias => $name) {
             if (is_string($alias)) {
-                $this->tables[$alias] = "$name $alias";
+                $this->tables[$alias] = $this->connection->quoteIdentifier($name) . ' ' . $alias;
             } else {
-                $this->tables[$name] = $name;
+                $this->tables[$name] = $this->connection->quoteIdentifier($name);
             }
         }
 
@@ -237,6 +237,8 @@ class Query
      */
     public function join($table, $alias = null, $on = null, $type = 'INNER JOIN')
     {
+        $table = $this->connection->quoteIdentifier($table);
+
         $this->joins[$alias] = "$type $table $alias ON $on";
 
         return $this;
