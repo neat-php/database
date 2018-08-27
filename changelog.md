@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Table identifier quoting in queries built using the Query builder.
 
-## [1.1.0]
+## [1.1.0] - 2018-08-27
 ### Added
 - Query builder fetch method.
 - Connection will throw a QueryException on query errors.
