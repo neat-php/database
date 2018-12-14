@@ -5,8 +5,10 @@ namespace Neat\Database;
 /**
  * Query builder class
  */
-class Query
+class Query implements QueryInterface
 {
+    use QueryTrait;
+
     /**
      * Select type
      */
@@ -95,16 +97,6 @@ class Query
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
-    }
-
-    /**
-     * Get SQL select query as string
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->getQuery();
     }
 
     /**
@@ -527,7 +519,7 @@ class Query
             return $this->offset . ',' . $this->limit;
         }
 
-        return (string) $this->limit;
+        return (string)$this->limit;
     }
 
     /**
@@ -627,35 +619,10 @@ class Query
     }
 
     /**
-     * Run this query and return the results
-     *
-     * @return Result
-     * @throws QueryException
+     * @return Connection
      */
-    public function query()
+    protected function connection(): Connection
     {
-        return $this->connection->query($this->getQuery());
-    }
-
-    /**
-     * Run this query and return the fetched results
-     *
-     * @return FetchedResult
-     * @throws QueryException
-     */
-    public function fetch()
-    {
-        return $this->connection->fetch($this->getQuery());
-    }
-
-    /**
-     * Execute the query and return the number of rows affected
-     *
-     * @return int
-     * @throws QueryException
-     */
-    public function execute()
-    {
-        return $this->connection->execute($this->getQuery());
+        return $this->connection;
     }
 }
