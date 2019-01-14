@@ -5,6 +5,13 @@ namespace Neat\Database;
 interface QueryInterface
 {
     /**
+     * Get query string
+     *
+     * @return string
+     */
+    public function getQuery(): string;
+
+    /**
      * Run this query and return the results
      *
      * @return Result

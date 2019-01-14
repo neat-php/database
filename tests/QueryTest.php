@@ -4,6 +4,7 @@ namespace Neat\Database\Test;
 
 use Neat\Database\FetchedResult;
 use Neat\Database\Query;
+use Neat\Database\SQLQuery;
 use PHPUnit\Framework\TestCase;
 
 class QueryTest extends TestCase
@@ -82,6 +83,13 @@ class QueryTest extends TestCase
             '`users` u,`groups` g',
             $this->create->query()
                 ->from(['u' => 'users', 'g' => 'groups'])
+                ->getFrom()
+        );
+
+        $this->assertEquals(
+            '(SELECT * FROM dual) d',
+            $this->create->query()
+                ->from(new SQLQuery($this->create->connection(), 'SELECT * FROM dual'), 'd')
                 ->getFrom()
         );
     }

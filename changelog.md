@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.2.0] - 2018-01-03
+## [1.3.0] - 2019-01-14
+### Added
+- Query builder subquery support using any QueryInterface implementation.
+
+## [1.2.0] - 2019-01-03
 ### Added
 - Query interface.
 - SQLQuery implementation of the query interface.

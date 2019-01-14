@@ -184,10 +184,15 @@ class Query implements QueryInterface
 
         $this->joins = [];
         foreach ($table as $alias => $name) {
-            if (is_string($alias)) {
-                $this->tables[$alias] = $this->connection->quoteIdentifier($name) . ' ' . $alias;
+            if ($name instanceof QueryInterface) {
+                $expression = '(' . $name->getQuery() . ')';
             } else {
-                $this->tables[$name] = $this->connection->quoteIdentifier($name);
+                $expression = $this->connection->quoteIdentifier($name);
+            }
+            if (is_string($alias)) {
+                $this->tables[$alias] = $expression . ' ' . $alias;
+            } else {
+                $this->tables[$name] = $expression;
             }
         }
 
@@ -609,7 +614,7 @@ class Query implements QueryInterface
      *
      * @return string
      */
-    public function getQuery()
+    public function getQuery(): string
     {
         if (!$this->type) {
             throw new \RuntimeException('No query type set');
