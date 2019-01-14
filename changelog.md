@@ -5,13 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Fixed
-- Table identifier quoting in queries built using the Query builder.
+
+## [1.2.0] - 2018-01-03
+### Added
+- Query interface.
+- SQLQuery implementation of the query interface.
 
 ## [1.1.0] - 2018-08-27
 ### Added
 - Query builder fetch method.
 - Connection will throw a QueryException on query errors.
+- Table identifier quoting in queries built using the Query builder.
 
 ### Fixed
 - PDO instance without exceptions enabled results in internal errors.
