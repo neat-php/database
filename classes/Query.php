@@ -2,6 +2,8 @@
 
 namespace Neat\Database;
 
+use RuntimeException;
+
 /**
  * Query builder class
  */
@@ -23,6 +25,11 @@ class Query implements QueryInterface
      * Update type
      */
     const TYPE_UPDATE = 'UPDATE';
+
+    /**
+     * Atomic insert/update type
+     */
+    const TYPE_UPSERT = 'UPSERT';
 
     /**
      * Delete type
@@ -57,7 +64,12 @@ class Query implements QueryInterface
     /**
      * @var array
      */
-    protected $data = [];
+    protected $values = [];
+
+    /**
+     * @var array
+     */
+    protected $set = [];
 
     /**
      * @var array
@@ -144,6 +156,22 @@ class Query implements QueryInterface
     public function update($table = null)
     {
         $this->type = self::TYPE_UPDATE;
+        if ($table) {
+            $this->table($table);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Atomic insert/update query
+     *
+     * @param string $table (optional)
+     * @return $this
+     */
+    public function upsert($table = null)
+    {
+        $this->type = self::TYPE_UPSERT;
         if ($table) {
             $this->table($table);
         }
@@ -288,7 +316,7 @@ class Query implements QueryInterface
      */
     public function values(array $data)
     {
-        $this->data = $data;
+        $this->values = $data;
 
         return $this;
     }
@@ -301,7 +329,7 @@ class Query implements QueryInterface
      */
     public function set(array $data)
     {
-        $this->data = $data;
+        $this->set = $data;
 
         return $this;
     }
@@ -436,7 +464,7 @@ class Query implements QueryInterface
      */
     public function getColumns()
     {
-        return '(' . implode(',', array_map([$this->connection, 'quoteIdentifier'], array_keys($this->data))) . ')';
+        return '(' . implode(',', array_map([$this->connection, 'quoteIdentifier'], array_keys($this->values))) . ')';
     }
 
     /**
@@ -446,7 +474,7 @@ class Query implements QueryInterface
      */
     public function getValues()
     {
-        return '(' . implode(',', array_map([$this->connection, 'quote'], $this->data)) . ')';
+        return '(' . implode(',', array_map([$this->connection, 'quote'], $this->values)) . ')';
     }
 
     /**
@@ -460,7 +488,7 @@ class Query implements QueryInterface
             return $this->connection->quoteIdentifier($field) . '=' . $this->connection->quote($value);
         };
 
-        return implode(',', array_map($format, $this->data, array_keys($this->data)));
+        return implode(',', array_map($format, $this->set, array_keys($this->set)));
     }
 
     /**
@@ -592,6 +620,22 @@ class Query implements QueryInterface
     }
 
     /**
+     * Get SQL upsert query
+     *
+     * @return string
+     */
+    public function getUpsertQuery()
+    {
+        $sql = 'INSERT INTO ' . $this->getTable();
+        $sql .= "\n" . $this->getColumns();
+        $sql .= "\nVALUES " . $this->getValues();
+        $sql .= "\nON DUPLICATE KEY UPDATE";
+        $sql .= "\n" . $this->getSet();
+
+        return $sql;
+    }
+
+    /**
      * Get SQL delete query
      *
      * @return string
@@ -616,11 +660,20 @@ class Query implements QueryInterface
      */
     public function getQuery(): string
     {
-        if (!$this->type) {
-            throw new \RuntimeException('No query type set');
+        switch ($this->type) {
+            case self::TYPE_SELECT:
+                return $this->getSelectQuery();
+            case self::TYPE_INSERT:
+                return $this->getInsertQuery();
+            case self::TYPE_UPDATE:
+                return $this->getUpdateQuery();
+            case self::TYPE_UPSERT:
+                return $this->getUpsertQuery();
+            case self::TYPE_DELETE:
+                return $this->getDeleteQuery();
+            default:
+                throw new RuntimeException('No query type set');
         }
-
-        return $this->{'get' . $this->type . 'Query'}();
     }
 
     /**

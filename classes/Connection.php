@@ -5,6 +5,8 @@ namespace Neat\Database;
 use DateTimeInterface;
 use PDO;
 use PDOException;
+use RuntimeException;
+use Throwable;
 
 ini_set('pcre.jit', false);
 
@@ -288,6 +290,39 @@ class Connection
     }
 
     /**
+     * Atomically insert or update data in a table
+     *
+     * When all parameters are specified, the upsert query is immediately
+     * executed and the number of rows affected will be returned. Otherwise
+     * the query builder is returned so you can extend the query further.
+     *
+     * @param string       $table
+     * @param array        $data  (optional)
+     * @param array|string $key   (optional)
+     * @return Query|int
+     * @throws QueryException
+     */
+    public function upsert($table, array $data = null, $key = null)
+    {
+        $upsert = $this->build()->upsert($table);
+        if ($data) {
+            $upsert->values($data);
+        }
+        if ($key) {
+            $key   = array_flip(is_array($key) ? $key : (array) $key);
+            $set   = array_diff_key($data, $key);
+            $where = array_intersect_key($data, $key);
+
+            $upsert->set($set)->where($where);
+        }
+        if ($data && $key) {
+            return $upsert->execute();
+        }
+
+        return $upsert;
+    }
+
+    /**
      * Delete from a table
      *
      * When all parameters are specified, the delete query is immediately
@@ -315,10 +350,10 @@ class Connection
     public function start()
     {
         if ($this->started) {
-            throw new \RuntimeException('Cannot start nested transaction');
+            throw new RuntimeException('Cannot start nested transaction');
         }
         if (!$this->pdo->beginTransaction()) {
-            throw new \RuntimeException('Failed to start transaction');
+            throw new RuntimeException('Failed to start transaction');
         }
 
         $this->started = true;
@@ -330,10 +365,10 @@ class Connection
     public function commit()
     {
         if (!$this->started) {
-            throw new \RuntimeException('Cannot commit transaction before start');
+            throw new RuntimeException('Cannot commit transaction before start');
         }
         if (!$this->pdo->commit()) {
-            throw new \RuntimeException('Failed to commit transaction');
+            throw new RuntimeException('Failed to commit transaction');
         }
 
         $this->started = false;
@@ -345,10 +380,10 @@ class Connection
     public function rollback()
     {
         if (!$this->started) {
-            throw new \RuntimeException('Cannot rollback transaction before start');
+            throw new RuntimeException('Cannot rollback transaction before start');
         }
         if (!$this->pdo->rollBack()) {
-            throw new \RuntimeException('Failed to rollback transaction');
+            throw new RuntimeException('Failed to rollback transaction');
         }
 
         $this->started = false;
@@ -370,7 +405,7 @@ class Connection
         $this->start();
         try {
             $result = $closure();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->rollback();
             throw $e;
         }

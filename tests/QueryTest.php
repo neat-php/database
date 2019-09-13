@@ -381,6 +381,39 @@ class QueryTest extends TestCase
     }
 
     /**
+     * Test upsert
+     */
+    public function testUpsertBuilder()
+    {
+        $connection = $this->create->mockedConnection(null, ['execute']);
+        $upsert     = $connection->upsert('users');
+
+        $this->assertInstanceOf(Query::class, $upsert);
+        $this->assertSame('`users`', $upsert->getTable());
+
+        /** @noinspection SqlResolve */
+        $this->assertSQL(
+            "INSERT INTO `users` (`id`, `username`)
+             VALUES ('1', 'john')
+             ON DUPLICATE KEY UPDATE
+             `username` = 'john'",
+            $upsert->values(['id' => 1, 'username' => 'john'])->set(['username' => 'john'])->getQuery()
+        );
+
+
+        $connection
+            ->expects($this->once())
+            ->method('execute')
+            ->with($this->sql("INSERT INTO `users` (`id`, `username`) VALUES ('1', 'john') ON DUPLICATE KEY UPDATE `username` = 'john'"))
+            ->willReturn(1);
+
+        $this->assertEquals(
+            1,
+            $connection->upsert('users', ['id' => 1, 'username' => 'john'], ['id'])
+        );
+    }
+
+    /**
      * Test delete
      */
     public function testDeleteBuilder()
