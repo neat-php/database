@@ -3,6 +3,7 @@
 namespace Neat\Database;
 
 use RuntimeException;
+use Neat\Database\Query\ConditionInterface;
 
 /**
  * Query builder class
@@ -346,6 +347,10 @@ class Query implements QueryInterface
         if (is_array($conditions)) {
             $this->where = array_merge($this->where, array_map(function ($value, $field) {
                 $field = $this->connection->quoteIdentifier($field);
+                if ($value instanceof ConditionInterface) {
+                    return $field . $value->getCondition($this->connection);
+                }
+
                 if ($value === null) {
                     return $field . ' IS NULL';
                 }
