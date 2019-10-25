@@ -9,28 +9,17 @@ use PHPUnit\Framework\TestCase;
 
 class ConnectionTest extends TestCase
 {
-    /**
-     * @var Factory
-     */
-    private $create;
-
-    /**
-     * Setup factory
-     */
-    public function setup()
-    {
-        $this->create = new Factory($this);
-    }
+    use Factory;
 
     /**
      * Test getting/setting the PDO instance
      */
     public function testGetOrSetPDO()
     {
-        $pdo1 = $this->create->pdo();
-        $pdo2 = $this->create->pdo();
+        $pdo1 = $this->pdo();
+        $pdo2 = $this->pdo();
 
-        $connection = $this->create->connection($pdo1);
+        $connection = $this->connection($pdo1);
 
         $this->assertInstanceOf('PDO', $connection->pdo());
         $this->assertSame($pdo1, $connection->pdo());
@@ -43,7 +32,7 @@ class ConnectionTest extends TestCase
      */
     public function testQuoteParameter()
     {
-        $connection = $this->create->connection();
+        $connection = $this->connection();
 
         $this->assertSame('NULL', $connection->quote(null));
         $this->assertSame("'34'", $connection->quote(34));
@@ -60,7 +49,7 @@ class ConnectionTest extends TestCase
      */
     public function testQuoteIdentifier()
     {
-        $connection = $this->create->connection();
+        $connection = $this->connection();
 
         $this->assertSame('`id`', $connection->quoteIdentifier('id'));
         $this->assertSame("`table`.`id`", $connection->quoteIdentifier('table.id'));
@@ -71,7 +60,7 @@ class ConnectionTest extends TestCase
      */
     public function testMergeParameters()
     {
-        $connection = $this->create->connection();
+        $connection = $this->connection();
 
         $this->assertEquals(
             'SELECT stuff',
@@ -113,7 +102,7 @@ class ConnectionTest extends TestCase
      */
     public function testQuery()
     {
-        $connection = $this->create->connection();
+        $connection = $this->connection();
 
         $result = $connection->query('SELECT username FROM users WHERE id = 1');
         $this->assertInstanceOf(Result::class, $result);
@@ -129,7 +118,7 @@ class ConnectionTest extends TestCase
      */
     public function testFetch()
     {
-        $connection = $this->create->connection();
+        $connection = $this->connection();
 
         $result = $connection->fetch('SELECT username FROM users WHERE id = 1');
         $this->assertInstanceOf(FetchedResult::class, $result);
@@ -145,7 +134,7 @@ class ConnectionTest extends TestCase
      */
     public function testQueryResult()
     {
-        $connection = $this->create->connection();
+        $connection = $this->connection();
 
         $query = function () use ($connection) {
             return $connection->query('SELECT * FROM users ORDER BY username');
@@ -169,7 +158,7 @@ class ConnectionTest extends TestCase
      */
     public function testTraverse()
     {
-        $connection = $this->create->connection();
+        $connection = $this->connection();
 
         $result = $connection->query('SELECT * FROM users ORDER BY username');
         $this->assertEquals(['id' => '3', 'username' => 'bob'], $result->row());
@@ -222,9 +211,10 @@ class ConnectionTest extends TestCase
      */
     public function testExecute()
     {
-        $pdo        = $this->create->mockedPdo();
-        $connection = $this->create->connection($pdo);
+        $pdo        = $this->mockedPdo();
+        $connection = $this->connection($pdo);
 
+        /** @noinspection SqlWithoutWhere */
         $pdo->expects($this->exactly(2))
             ->method('exec')
             ->willReturnMap([
@@ -236,6 +226,7 @@ class ConnectionTest extends TestCase
             ->with(1)
             ->willReturn("'1'");
 
+        /** @noinspection SqlWithoutWhere */
         $this->assertEquals(3, $connection->execute('DELETE FROM users'));
         $this->assertEquals(1, $connection->execute('DELETE FROM users WHERE id = ?', 1));
     }
@@ -245,8 +236,8 @@ class ConnectionTest extends TestCase
      */
     public function testInsertedId()
     {
-        $pdo        = $this->create->mockedPdo(['lastInsertId']);
-        $connection = $this->create->connection($pdo);
+        $pdo        = $this->mockedPdo(['lastInsertId']);
+        $connection = $this->connection($pdo);
 
         $pdo->expects($this->at(0))
             ->method('lastInsertId')
@@ -260,7 +251,7 @@ class ConnectionTest extends TestCase
      */
     function testInvoke()
     {
-        $connection = $this->create->connection();
+        $connection = $this->connection();
 
         $this->assertSame(1, $connection("DELETE FROM users WHERE id=?", 1));
         $this->assertInstanceOf(Result::class, $connection("SELECT * FROM users"));

@@ -9,33 +9,21 @@ use PHPUnit\Framework\TestCase;
 
 class QueryTest extends TestCase
 {
+    use Factory;
     use SQLHelper;
-
-    /**
-     * @var Factory
-     */
-    protected $create;
-
-    /**
-     * Setup factory
-     */
-    protected function setup()
-    {
-        $this->create = new Factory($this);
-    }
 
     /**
      * Test select expressions
      */
     public function testSelectExpressions()
     {
-        $query = $this->create->query();
+        $query = $this->query();
         $this->assertEquals(
             '*',
             $query->select()->getSelect()
         );
 
-        $query = $this->create->query();
+        $query = $this->query();
         $this->assertEquals(
             'id',
             $query->select('id')->getSelect()
@@ -49,7 +37,7 @@ class QueryTest extends TestCase
             $query->select(['amount' => 'COUNT(*)'])->getSelect()
         );
 
-        $query = $this->create->query();
+        $query = $this->query();
         $this->assertEquals(
             'id,MIN(price) AS min_price',
             $query->select(['id', 'min_price' => 'MIN(price)'])->getSelect()
@@ -63,33 +51,33 @@ class QueryTest extends TestCase
     {
         $this->assertEquals(
             '`users`',
-            $this->create->query()
+            $this->query()
                 ->from('users')
                 ->getFrom()
         );
         $this->assertEquals(
             '`users` u',
-            $this->create->query()
+            $this->query()
                 ->from('users', 'u')
                 ->getFrom()
         );
         $this->assertEquals(
             '`users`,`groups`',
-            $this->create->query()
+            $this->query()
                 ->from(['users', 'groups'])
                 ->getFrom()
         );
         $this->assertEquals(
             '`users` u,`groups` g',
-            $this->create->query()
+            $this->query()
                 ->from(['u' => 'users', 'g' => 'groups'])
                 ->getFrom()
         );
 
         $this->assertEquals(
             '(SELECT * FROM dual) d',
-            $this->create->query()
-                ->from(new SQLQuery($this->create->connection(), 'SELECT * FROM dual'), 'd')
+            $this->query()
+                ->from(new SQLQuery($this->connection(), 'SELECT * FROM dual'), 'd')
                 ->getFrom()
         );
     }
@@ -101,7 +89,7 @@ class QueryTest extends TestCase
     {
         $this->assertEquals(
             '`users`',
-            $this->create->query()
+            $this->query()
                 ->into('users')
                 ->getTable()
         );
@@ -114,14 +102,14 @@ class QueryTest extends TestCase
     {
         $this->assertSQL(
             '`users` u INNER JOIN `teams` t ON u.team_id = t.id',
-            $this->create->query()
+            $this->query()
                 ->from('users', 'u')
                 ->innerJoin('teams', 't', 'u.team_id = t.id')
                 ->getFrom()
         );
         $this->assertSQL(
             '`users` u RIGHT JOIN `teams` t ON u.team_id = t.id',
-            $this->create->query()
+            $this->query()
                 ->from('users', 'u')
                 ->rightJoin('teams', 't', 'u.team_id = t.id')
                 ->getFrom()
@@ -130,7 +118,7 @@ class QueryTest extends TestCase
             '`users` u
              LEFT JOIN `users_groups` ug ON u.id = ug.user_id
              LEFT JOIN `groups` g ON g.id = ug.group_id',
-            $this->create->query()
+            $this->query()
                 ->from('users', 'u')
                 ->leftJoin('users_groups', 'ug', 'u.id = ug.user_id')
                 ->leftJoin('groups', 'g', 'g.id = ug.group_id')
@@ -145,19 +133,19 @@ class QueryTest extends TestCase
     {
         $this->assertSQL(
             "`username`='john'",
-            $this->create->query()
+            $this->query()
                 ->where(['username' => 'john'])
                 ->getWhere()
         );
         $this->assertSQL(
             "`deleted_at` IS NULL",
-            $this->create->query()
+            $this->query()
                 ->where(['deleted_at' => null])
                 ->getWhere()
         );
         $this->assertSQL(
             "username='john' AND email='john@example.com'",
-            $this->create->query()
+            $this->query()
                 ->where('username=? AND email=?', 'john', 'john@example.com')
                 ->getWhere()
         );
@@ -170,11 +158,11 @@ class QueryTest extends TestCase
     {
         $this->assertSQL(
             '',
-            $this->create->query()->getGroupBy()
+            $this->query()->getGroupBy()
         );
         $this->assertSQL(
             'id',
-            $this->create->query()->groupBy('id')->getGroupBy()
+            $this->query()->groupBy('id')->getGroupBy()
         );
     }
 
@@ -185,11 +173,11 @@ class QueryTest extends TestCase
     {
         $this->assertSQL(
             "COUNT(*) = '3'",
-            $this->create->query()->having(['COUNT(*)' => 3])->getHaving()
+            $this->query()->having(['COUNT(*)' => 3])->getHaving()
         );
         $this->assertSQL(
             "COUNT(*) > '1'",
-            $this->create->query()->having('COUNT(*) > ?', 1)->getHaving()
+            $this->query()->having('COUNT(*) > ?', 1)->getHaving()
         );
     }
 
@@ -200,11 +188,11 @@ class QueryTest extends TestCase
     {
         $this->assertSQL(
             '',
-            $this->create->query()->getOrderBy()
+            $this->query()->getOrderBy()
         );
         $this->assertSQL(
             'date ASC',
-            $this->create->query()->orderBy('date ASC')->getOrderBy()
+            $this->query()->orderBy('date ASC')->getOrderBy()
         );
     }
 
@@ -215,11 +203,11 @@ class QueryTest extends TestCase
     {
         $this->assertSame(
             '',
-            $this->create->query()->getLimit()
+            $this->query()->getLimit()
         );
         $this->assertSame(
             '10',
-            $this->create->query()->limit(10)->getLimit()
+            $this->query()->limit(10)->getLimit()
         );
     }
 
@@ -230,11 +218,11 @@ class QueryTest extends TestCase
     {
         $this->assertSame(
             '',
-            $this->create->query()->offset(20)->getLimit()
+            $this->query()->offset(20)->getLimit()
         );
         $this->assertSame(
             '20,10',
-            $this->create->query()->limit(10)->offset(20)->getLimit()
+            $this->query()->limit(10)->offset(20)->getLimit()
         );
     }
 
@@ -243,7 +231,7 @@ class QueryTest extends TestCase
      */
     public function testSelectBuilder()
     {
-        $connection = $this->create->mockedConnection(null, ['query']);
+        $connection = $this->mockedConnection(null, ['query']);
         $select     = $connection->select();
 
         $this->assertInstanceOf(Query::class, $select);
@@ -281,7 +269,7 @@ class QueryTest extends TestCase
      */
     public function testSelectQuery()
     {
-        $connection = $this->create->mockedConnection(null, ['query']);
+        $connection = $this->mockedConnection(null, ['query']);
         $connection
             ->expects($this->once())
             ->method('query')
@@ -299,7 +287,7 @@ class QueryTest extends TestCase
      */
     public function testSelectFetch()
     {
-        $connection = $this->create->mockedConnection(null, ['fetch']);
+        $connection = $this->mockedConnection(null, ['fetch']);
         $connection
             ->expects($this->once())
             ->method('fetch')
@@ -317,7 +305,7 @@ class QueryTest extends TestCase
      */
     public function testInsertBuilder()
     {
-        $connection = $this->create->mockedConnection(null, ['execute']);
+        $connection = $this->mockedConnection(null, ['execute']);
         $insert     = $connection->insert('users');
 
         $this->assertInstanceOf(Query::class, $insert);
@@ -340,7 +328,7 @@ class QueryTest extends TestCase
      */
     public function testUpdateBuilder()
     {
-        $connection = $this->create->mockedConnection(null, ['execute']);
+        $connection = $this->mockedConnection(null, ['execute']);
         $update     = $connection->update('users');
 
         $this->assertInstanceOf(Query::class, $update);
@@ -385,7 +373,7 @@ class QueryTest extends TestCase
      */
     public function testUpsertBuilder()
     {
-        $connection = $this->create->mockedConnection(null, ['execute']);
+        $connection = $this->mockedConnection(null, ['execute']);
         $upsert     = $connection->upsert('users');
 
         $this->assertInstanceOf(Query::class, $upsert);
@@ -418,11 +406,12 @@ class QueryTest extends TestCase
      */
     public function testDeleteBuilder()
     {
-        $connection = $this->create->mockedConnection(null, ['execute']);
+        $connection = $this->mockedConnection(null, ['execute']);
         $delete     = $connection->delete('users');
 
         $this->assertInstanceOf(Query::class, $delete);
         $this->assertSame('`users`', $delete->getTable());
+        /** @noinspection SqlWithoutWhere */
         $this->assertSQL(
             'DELETE FROM `users`',
             $delete->getQuery()
@@ -453,7 +442,7 @@ class QueryTest extends TestCase
      */
     public function testGetQuery()
     {
-        $connection = $this->create->connection();
+        $connection = $this->connection();
 
         $this->assertSQL(
             "SELECT 1 FROM `dual`",

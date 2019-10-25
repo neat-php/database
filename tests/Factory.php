@@ -5,29 +5,16 @@ namespace Neat\Database\Test;
 use Neat\Database\Connection;
 use Neat\Database\Query;
 use PDO;
-use PHPUnit\Framework\TestCase;
-use PHPUnit_Framework_MockObject_MockObject as Mock;
+use PHPUnit\Framework\MockObject\MockBuilder;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Factory
+ *
+ * @method MockBuilder getMockBuilder($className)
  */
-class Factory
+trait Factory
 {
-    /**
-     * @var TestCase
-     */
-    protected $case;
-
-    /**
-     * Constructor
-     *
-     * @param TestCase $case
-     */
-    public function __construct(TestCase $case)
-    {
-        $this->case = $case;
-    }
-
     /**
      * Create PDO
      *
@@ -53,11 +40,11 @@ class Factory
      * Create PDO mock
      *
      * @param array $methods (optional)
-     * @return PDO|Mock
+     * @return PDO|MockObject
      */
     public function mockedPdo($methods = [])
     {
-        return $this->case
+        return $this
             ->getMockBuilder(PDO::class)
             ->setMethods($methods)
             ->setConstructorArgs(['sqlite::memory:'])
@@ -84,7 +71,7 @@ class Factory
      *
      * @param PDO   $pdo
      * @param array $methods
-     * @return Connection|Mock
+     * @return Connection|MockObject
      */
     public function mockedConnection($pdo = null, $methods = [])
     {
@@ -92,7 +79,7 @@ class Factory
             $pdo = $this->pdo();
         }
 
-        return $this->case
+        return $this
             ->getMockBuilder(Connection::class)
             ->setMethods($methods)
             ->setConstructorArgs([$pdo])

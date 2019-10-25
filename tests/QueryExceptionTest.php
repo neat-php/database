@@ -8,18 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class QueryExceptionTest extends TestCase
 {
-    /**
-     * @var Factory
-     */
-    private $create;
-
-    /**
-     * Setup factory
-     */
-    public function setup()
-    {
-        $this->create = new Factory($this);
-    }
+    use Factory;
 
     /**
      * Test new
@@ -66,7 +55,7 @@ class QueryExceptionTest extends TestCase
      */
     public function testTrigger($method)
     {
-        $connection = $this->create->connection();
+        $connection = $this->connection();
 
         try {
             $connection->$method('INVALID SQL');
@@ -75,6 +64,7 @@ class QueryExceptionTest extends TestCase
         catch (QueryException $e) {
             $this->assertEquals('INVALID SQL', $e->query());
             $this->assertEquals(0, $e->getCode());
+            // TODO replace with assertStringContainsString when we drop PHP 7.0 version compatibility
             $this->assertContains('syntax error', $e->getMessage());
 
             return;

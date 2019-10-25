@@ -4,28 +4,18 @@ namespace Neat\Database\Test;
 
 use Neat\Database\Connection;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class TransactionTest extends TestCase
 {
-    /**
-     * @var Factory
-     */
-    protected $create;
-
-    /**
-     * Setup factory
-     */
-    protected function setup()
-    {
-        $this->create = new Factory($this);
-    }
+    use Factory;
 
     /**
      * Test transaction
      */
     public function testTransaction()
     {
-        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
+        $pdo = $this->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->at(0))
             ->method('beginTransaction')
             ->willReturn(true);
@@ -39,7 +29,7 @@ class TransactionTest extends TestCase
             ->method('rollBack')
             ->willReturn(true);
 
-        $connection = $this->create->connection($pdo);
+        $connection = $this->connection($pdo);
 
         $this->assertInstanceOf(Connection::class, $connection);
         $connection->start();
@@ -53,7 +43,7 @@ class TransactionTest extends TestCase
      */
     public function testCommit()
     {
-        $pdo = $this->create->mockedPdo(['beginTransaction', 'exec', 'commit', 'rollback']);
+        $pdo = $this->mockedPdo(['beginTransaction', 'exec', 'commit', 'rollback']);
         $pdo->expects($this->at(0))
             ->method('beginTransaction')
             ->willReturn(true);
@@ -65,7 +55,7 @@ class TransactionTest extends TestCase
             ->method('commit')
             ->willReturn(true);
 
-        $connection = $this->create->connection($pdo);
+        $connection = $this->connection($pdo);
         $connection->transaction(function () use ($connection) {
             $connection->execute('DELETE FROM users WHERE id = 1');
         });
@@ -76,7 +66,7 @@ class TransactionTest extends TestCase
      */
     public function testRollback()
     {
-        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
+        $pdo = $this->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->at(0))
             ->method('beginTransaction')
             ->willReturn(true);
@@ -87,9 +77,9 @@ class TransactionTest extends TestCase
         $this->expectException('RuntimeException');
         $this->expectExceptionMessage('Whoops');
 
-        $connection = $this->create->connection($pdo);
+        $connection = $this->connection($pdo);
         $connection->transaction(function () use ($connection) {
-            throw new \RuntimeException('Whoops');
+            throw new RuntimeException('Whoops');
         });
     }
 
@@ -98,7 +88,7 @@ class TransactionTest extends TestCase
      */
     public function testNestingTransactions()
     {
-        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
+        $pdo = $this->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->once())
             ->method('beginTransaction')
             ->willReturn(true);
@@ -106,7 +96,7 @@ class TransactionTest extends TestCase
         $this->expectException('RuntimeException');
         $this->expectExceptionMessageRegExp('|cannot.+start|i');
 
-        $transaction = $this->create->connection($pdo);
+        $transaction = $this->connection($pdo);
         $transaction->start();
         $transaction->start();
     }
@@ -116,14 +106,14 @@ class TransactionTest extends TestCase
      */
     public function testCommitWithoutStart()
     {
-        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
+        $pdo = $this->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->never())
             ->method($this->anything());
 
         $this->expectException('RuntimeException');
         $this->expectExceptionMessageRegExp('|cannot.+commit|i');
 
-        $transaction = $this->create->connection($pdo);
+        $transaction = $this->connection($pdo);
         $transaction->commit();
     }
 
@@ -132,14 +122,14 @@ class TransactionTest extends TestCase
      */
     public function testRollbackWithoutStart()
     {
-        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
+        $pdo = $this->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->never())
             ->method($this->anything());
 
         $this->expectException('RuntimeException');
         $this->expectExceptionMessageRegExp('|cannot.+rollback|i');
 
-        $transaction = $this->create->connection($pdo);
+        $transaction = $this->connection($pdo);
         $transaction->rollback();
     }
 
@@ -148,7 +138,7 @@ class TransactionTest extends TestCase
      */
     public function testStartFailure()
     {
-        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
+        $pdo = $this->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->at(0))
             ->method('beginTransaction')
             ->willReturn(false);
@@ -156,7 +146,7 @@ class TransactionTest extends TestCase
         $this->expectException('RuntimeException');
         $this->expectExceptionMessageRegExp('|fail.+start|i');
 
-        $connection = $this->create->connection($pdo);
+        $connection = $this->connection($pdo);
         $connection->transaction(function () {});
     }
 
@@ -165,7 +155,7 @@ class TransactionTest extends TestCase
      */
     public function testCommitFailure()
     {
-        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
+        $pdo = $this->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->at(0))
             ->method('beginTransaction')
             ->willReturn(true);
@@ -176,7 +166,7 @@ class TransactionTest extends TestCase
         $this->expectException('RuntimeException');
         $this->expectExceptionMessageRegExp('|fail.+commit|i');
 
-        $connection = $this->create->connection($pdo);
+        $connection = $this->connection($pdo);
         $connection->transaction(function () {});
     }
 
@@ -185,7 +175,7 @@ class TransactionTest extends TestCase
      */
     public function testRollbackFailure()
     {
-        $pdo = $this->create->mockedPdo(['beginTransaction', 'commit', 'rollback']);
+        $pdo = $this->mockedPdo(['beginTransaction', 'commit', 'rollback']);
         $pdo->expects($this->at(0))
             ->method('beginTransaction')
             ->willReturn(true);
@@ -196,9 +186,9 @@ class TransactionTest extends TestCase
         $this->expectException('RuntimeException');
         $this->expectExceptionMessageRegExp('|fail.+rollback|i');
 
-        $connection = $this->create->connection($pdo);
+        $connection = $this->connection($pdo);
         $connection->transaction(function () {
-            throw new \RuntimeException('Whoops');
+            throw new RuntimeException('Whoops');
         });
     }
 }

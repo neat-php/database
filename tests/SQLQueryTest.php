@@ -7,18 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class SQLQueryTest extends TestCase
 {
-    /**
-     * @var Factory
-     */
-    protected $create;
-
-    /**
-     * Setup factory
-     */
-    protected function setup()
-    {
-        $this->create = new Factory($this);
-    }
+    use Factory;
 
     /**
      * Test getQuery
@@ -26,7 +15,7 @@ class SQLQueryTest extends TestCase
     public function testGetQuery()
     {
         $sql   = "Test that getQuery() returns this.";
-        $query = new SQLQuery($this->create->connection(), $sql);
+        $query = new SQLQuery($this->connection(), $sql);
         $this->assertSame($sql, $query->getQuery());
     }
 }
