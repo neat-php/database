@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Atomic upsert query support (MySQL syntax only for now).
+- PSR-3 compliant query logging.
 
 ## [1.3.0] - 2019-01-14
 ### Added

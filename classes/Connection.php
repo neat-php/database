@@ -5,6 +5,10 @@ namespace Neat\Database;
 use DateTimeInterface;
 use PDO;
 use PDOException;
+use PDOStatement;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use RuntimeException;
 use Throwable;
 
@@ -13,12 +17,17 @@ ini_set('pcre.jit', false);
 /**
  * Connection class
  */
-class Connection
+class Connection implements LoggerAwareInterface
 {
     /**
      * @var PDO
      */
     protected $pdo;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $log;
 
     /**
      * @var bool
@@ -28,12 +37,15 @@ class Connection
     /**
      * Constructor
      *
-     * @param PDO $pdo
+     * @param PDO             $pdo
+     * @param LoggerInterface $log
      */
-    public function __construct(PDO $pdo)
+    public function __construct(PDO $pdo, LoggerInterface $log = null)
     {
         $this->pdo = $pdo;
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $this->log = $log ?? new NullLogger();
     }
 
     /**
@@ -70,6 +82,16 @@ class Connection
         }
 
         return $this->pdo;
+    }
+
+    /**
+     * Set logger
+     *
+     * @param LoggerInterface $log
+     */
+    public function setLogger(LoggerInterface $log)
+    {
+        $this->log = $log;
     }
 
     /**
@@ -134,6 +156,33 @@ class Connection
     }
 
     /**
+     * Execute or run a query internally
+     *
+     * @param string $method
+     * @param string $query
+     * @param array  $data
+     * @return PDOStatement|int
+     * @throws QueryException
+     */
+    private function do(string $method, string $query, array $data)
+    {
+        if ($data) {
+            $query = $this->merge($query, $data);
+        }
+
+        try {
+            $start  = microtime(true);
+            $result = $this->pdo->$method($query);
+
+            $this->log->debug($query, ['Duration' => microtime(true) - $start]);
+
+            return $result;
+        } catch (PDOException $exception) {
+            throw new QueryException($exception, $query);
+        }
+    }
+
+    /**
      * Run a query and return the result
      *
      * The result can be interactively fetched, but only once due to the
@@ -146,17 +195,7 @@ class Connection
      */
     public function query($query, ...$data)
     {
-        if ($data) {
-            $query = $this->merge($query, $data);
-        }
-
-        try {
-            $statement = $this->pdo->query($query);
-
-            return new Result($statement);
-        } catch (PDOException $exception) {
-            throw new QueryException($exception, $query);
-        }
+        return new Result($this->do('query', $query, $data));
     }
 
     /**
@@ -173,17 +212,7 @@ class Connection
      */
     public function fetch($query, ...$data)
     {
-        if ($data) {
-            $query = $this->merge($query, $data);
-        }
-
-        try {
-            $statement = $this->pdo->query($query);
-
-            return new FetchedResult($statement->fetchAll(PDO::FETCH_ASSOC));
-        } catch (PDOException $exception) {
-            throw new QueryException($exception, $query);
-        }
+        return new FetchedResult($this->do('query', $query, $data)->fetchAll(PDO::FETCH_ASSOC));
     }
 
     /**
@@ -196,15 +225,7 @@ class Connection
      */
     public function execute($query, ...$data)
     {
-        if ($data) {
-            $query = $this->merge($query, $data);
-        }
-
-        try {
-            return $this->pdo->exec($query);
-        } catch (PDOException $exception) {
-            throw new QueryException($exception, $query);
-        }
+        return $this->do('exec', $query, $data);
     }
 
     /**
