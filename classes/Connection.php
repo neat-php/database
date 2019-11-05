@@ -6,7 +6,6 @@ use DateTimeInterface;
 use PDO;
 use PDOException;
 use PDOStatement;
-use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
@@ -17,7 +16,7 @@ ini_set('pcre.jit', false);
 /**
  * Connection class
  */
-class Connection implements LoggerAwareInterface
+class Connection
 {
     /**
      * @var PDO
@@ -82,16 +81,6 @@ class Connection implements LoggerAwareInterface
         }
 
         return $this->pdo;
-    }
-
-    /**
-     * Set logger
-     *
-     * @param LoggerInterface $log
-     */
-    public function setLogger(LoggerInterface $log)
-    {
-        $this->log = $log;
     }
 
     /**
