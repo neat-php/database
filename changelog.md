@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2019-11-21
+### Changed
+- Make the Connection do method protected.
+
 ## [1.4.0] - 2019-11-21
 ### Added
 - Atomic upsert query support (MySQL syntax only for now).

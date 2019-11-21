@@ -147,7 +147,7 @@ class Connection
      * @return PDOStatement|int
      * @throws QueryException
      */
-    private function do(string $method, string $query, array $data)
+    protected function do(string $method, string $query, array $data)
     {
         if ($data) {
             $query = $this->merge($query, $data);
