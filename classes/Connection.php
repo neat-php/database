@@ -163,7 +163,7 @@ class Connection
             $start  = microtime(true);
             $result = $this->pdo->$method($query);
 
-            $this->log->debug($query, ['Duration' => microtime(true) - $start]);
+            $this->log->debug($query, ['duration' => microtime(true) - $start]);
 
             return $result;
         } catch (PDOException $exception) {
