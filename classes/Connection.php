@@ -154,13 +154,19 @@ class Connection
         }
 
         try {
-            $start  = microtime(true);
-            $result = $this->pdo->$method($query);
+            $start    = microtime(true);
+            $result   = $this->pdo->$method($query);
+            $duration = microtime(true) - $start;
 
-            $this->log->debug($query, ['duration' => microtime(true) - $start]);
+            $this->log->debug($query, ['duration' => $duration]);
 
             return $result;
         } catch (PDOException $exception) {
+            $this->log->error($exception->getMessage(), [
+                'exception' => $exception,
+                'query'     => $query,
+            ]);
+
             throw new QueryException($exception, $query);
         }
     }
