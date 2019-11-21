@@ -10,14 +10,10 @@ use SeekableIterator;
  */
 class FetchedResult implements Countable, SeekableIterator
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $rows;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $cursor = 0;
 
     /**

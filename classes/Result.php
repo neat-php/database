@@ -11,9 +11,7 @@ use PDOStatement;
  */
 class Result implements IteratorAggregate
 {
-    /**
-     * @var PDOStatement
-     */
+    /** @var PDOStatement */
     protected $statement;
 
     /**

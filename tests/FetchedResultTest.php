@@ -7,9 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class FetchedResultTest extends TestCase
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $rows = [
         ['id' => '3', 'username' => 'bob'],
         ['id' => '2', 'username' => 'jane'],
@@ -62,7 +60,7 @@ class FetchedResultTest extends TestCase
         $result = $this->fetch([
             ['username' => 'bob'],
             ['username' => 'jane'],
-            ['username' => 'john']
+            ['username' => 'john'],
         ]);
         $this->assertEquals(0, $result->key());
         $this->assertTrue($result->valid());
@@ -91,7 +89,7 @@ class FetchedResultTest extends TestCase
         $expected = [
             ['username' => 'bob'],
             ['username' => 'jane'],
-            ['username' => 'john']
+            ['username' => 'john'],
         ];
 
         $result = $this->fetch($expected);

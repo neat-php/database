@@ -9,18 +9,15 @@ class SQLQuery implements QueryInterface
 {
     use QueryTrait;
 
-    /**
-     * @var Connection
-     */
+    /** @var Connection */
     protected $connection;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $query;
 
     /**
-     * SQLQuery constructor.
+     * SQLQuery constructor
+     *
      * @param Connection $connection
      * @param string     $sql
      */

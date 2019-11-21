@@ -18,19 +18,13 @@ ini_set('pcre.jit', false);
  */
 class Connection
 {
-    /**
-     * @var PDO
-     */
+    /** @var PDO */
     protected $pdo;
 
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     protected $log;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $started = false;
 
     /**

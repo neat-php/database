@@ -7,24 +7,16 @@ use PDOException;
 
 class QueryException extends Exception
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $query;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $state;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $driverCode;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $driverMessage;
 
     /**

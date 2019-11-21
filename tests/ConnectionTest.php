@@ -141,7 +141,11 @@ class ConnectionTest extends TestCase
         };
 
         $this->assertInstanceOf(Result::class, $query());
-        $this->assertEquals([['id' => '3', 'username' => 'bob'], ['id' => '2', 'username' => 'jane'], ['id' => '1', 'username' => 'john']], $query()->rows());
+        $this->assertEquals([
+            ['id' => '3', 'username' => 'bob'],
+            ['id' => '2', 'username' => 'jane'],
+            ['id' => '1', 'username' => 'john'],
+        ], $query()->rows());
         $this->assertEquals(['id' => '3', 'username' => 'bob'], $query()->row());
         $this->assertEquals([3, 2, 1], $query()->values());
         $this->assertEquals(['bob', 'jane', 'john'], $query()->values(1));
@@ -175,7 +179,7 @@ class ConnectionTest extends TestCase
         $expected = [
             ['id' => '3', 'username' => 'bob'],
             ['id' => '2', 'username' => 'jane'],
-            ['id' => '1', 'username' => 'john']
+            ['id' => '1', 'username' => 'john'],
         ];
         foreach ($connection->query('SELECT * FROM users ORDER BY username') as $username) {
             $this->assertEquals(array_shift($expected), $username);
@@ -184,7 +188,7 @@ class ConnectionTest extends TestCase
         $expected = [
             ['username' => 'bob'],
             ['username' => 'jane'],
-            ['username' => 'john']
+            ['username' => 'john'],
         ];
         foreach ($connection->query('SELECT username FROM users ORDER BY username') as $username) {
             $this->assertEquals(array_shift($expected), $username);
@@ -193,7 +197,7 @@ class ConnectionTest extends TestCase
         $expected = [
             ['id' => '3', 'username' => 'bob'],
             ['id' => '2', 'username' => 'jane'],
-            ['id' => '1', 'username' => 'john']
+            ['id' => '1', 'username' => 'john'],
         ];
 
         $result = $connection

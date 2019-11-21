@@ -11,94 +11,58 @@ class Query implements QueryInterface
 {
     use QueryTrait;
 
-    /**
-     * Select type
-     */
+    /** Select type */
     const TYPE_SELECT = 'SELECT';
 
-    /**
-     * Insert type
-     */
+    /** Insert type */
     const TYPE_INSERT = 'INSERT';
 
-    /**
-     * Update type
-     */
+    /** Update type */
     const TYPE_UPDATE = 'UPDATE';
 
-    /**
-     * Atomic insert/update type
-     */
+    /** Atomic insert/update type */
     const TYPE_UPSERT = 'UPSERT';
 
-    /**
-     * Delete type
-     */
+    /** Delete type */
     const TYPE_DELETE = 'DELETE';
 
-    /**
-     * @var Connection
-     */
+    /** @var Connection */
     protected $connection;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $type;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $expressions = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $tables = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $joins = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $values = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $set = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $where = [];
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $groupBy;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $having = [];
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $orderBy;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $limit;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $offset;
 
     /**
@@ -552,7 +516,7 @@ class Query implements QueryInterface
             return $this->offset . ',' . $this->limit;
         }
 
-        return (string)$this->limit;
+        return (string) $this->limit;
     }
 
     /**

@@ -147,7 +147,8 @@ class TransactionTest extends TestCase
         $this->expectExceptionMessageRegExp('|fail.+start|i');
 
         $connection = $this->connection($pdo);
-        $connection->transaction(function () {});
+        $connection->transaction(function () {
+        });
     }
 
     /**
@@ -167,7 +168,8 @@ class TransactionTest extends TestCase
         $this->expectExceptionMessageRegExp('|fail.+commit|i');
 
         $connection = $this->connection($pdo);
-        $connection->transaction(function () {});
+        $connection->transaction(function () {
+        });
     }
 
     /**
