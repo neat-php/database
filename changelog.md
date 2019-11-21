@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Atomic upsert query support (MySQL syntax only for now).
 - PSR-3 compliant query logging.
 
+### Removed
+- Accidentally added Table row gateway.
+
 ## [1.3.0] - 2019-01-14
 ### Added
 - Query builder subquery support using any QueryInterface implementation.
