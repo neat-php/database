@@ -218,7 +218,7 @@ class Query implements QueryInterface
     /**
      * Join a table
      *
-     * @param string $table
+     * @param string|Query $table
      * @param string $alias
      * @param string $on
      * @param string $type
@@ -226,7 +226,11 @@ class Query implements QueryInterface
      */
     public function join($table, $alias = null, $on = null, $type = 'INNER JOIN')
     {
-        $table = $this->connection->quoteIdentifier($table);
+        if ($table instanceof Query) {  // Subquery?
+            $table = '('.$table->getQuery().')';
+        } else {
+            $table = $this->connection->quoteIdentifier($table);
+        }
 
         $this->joins[$alias] = "$type $table $alias ON $on";
 
