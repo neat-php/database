@@ -151,6 +151,12 @@ class QueryTest extends TestCase
                 ->getWhere()
         );
         $this->assertSQL(
+            "`id` IN ('1','2','3')",
+            $this->query()
+                ->where(['id' => [1,2,3]])
+                ->getWhere()
+        );
+        $this->assertSQL(
             "username='john' AND email='john@example.com'",
             $this->query()
                 ->where('username=? AND email=?', 'john', 'john@example.com')

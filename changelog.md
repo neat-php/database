@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Query->where() argument type-hints.
+### Added
+- Query->where() now supports `IN` statements (i.e. `$query->where(['id'=>[1,2,3]])`).
 
 ## [1.4.3] - 2020-03-30
 ### Changed

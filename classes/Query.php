@@ -317,6 +317,9 @@ class Query implements QueryInterface
                 if ($value === null) {
                     return $field . ' IS NULL';
                 }
+                if (is_array($value)) {
+                    return $field . ' IN (' . $this->connection->quote($value) . ')';
+                }
 
                 return $field . '=' . $this->connection->quote($value);
             }, $conditions, array_keys($conditions)));
