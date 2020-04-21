@@ -101,6 +101,13 @@ class QueryTest extends TestCase
     public function testJoin()
     {
         $this->assertSQL(
+            '`users` u INNER JOIN (SELECT id FROM `teams`) ON u.team_id',
+            $this->query()
+                ->from('users', 'u')
+                ->join($this->query()->select('id')->from('teams'), null, 'u.team_id')
+                ->getFrom()
+        );
+        $this->assertSQL(
             '`users` u INNER JOIN `teams` t ON u.team_id = t.id',
             $this->query()
                 ->from('users', 'u')

@@ -227,7 +227,7 @@ class Query implements QueryInterface
     public function join($table, $alias = null, $on = null, $type = 'INNER JOIN')
     {
         if ($table instanceof Query) {  // Subquery?
-            $table = '('.$table->getQuery().')';
+            $table = '(' . $table->getQuery() . ')';
         } else {
             $table = $this->connection->quoteIdentifier($table);
         }
