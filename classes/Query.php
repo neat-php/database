@@ -305,8 +305,8 @@ class Query implements QueryInterface
     /**
      * Where condition
      *
-     * @param array|string $conditions
-     * @param array        ...$parameters (optional)
+     * @param array|string               $conditions
+     * @param array|string|int|bool|null ...$parameters (optional)
      * @return $this
      */
     public function where($conditions, ...$parameters)
