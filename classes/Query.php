@@ -2,6 +2,7 @@
 
 namespace Neat\Database;
 
+use DateTimeInterface;
 use RuntimeException;
 
 /**
@@ -305,8 +306,8 @@ class Query implements QueryInterface
     /**
      * Where condition
      *
-     * @param array|string               $conditions
-     * @param array|string|int|bool|null ...$parameters (optional)
+     * @param array|string                                 $conditions
+     * @param array|bool|DateTimeInterface|int|null|string ...$parameters (optional)
      * @return $this
      */
     public function where($conditions, ...$parameters)

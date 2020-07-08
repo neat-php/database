@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.5] - 2020-07-08
+### Fixed
+- Connection->quote() and Query->where() argument type-hints.
+
 ## [1.4.4] - 2020-04-21
 ### Fixed
 - Query->where() argument type-hints.

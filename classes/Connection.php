@@ -80,7 +80,7 @@ class Connection
     /**
      * Quote a value (protecting against SQL injection)
      *
-     * @param string|null|DateTimeInterface|array|bool $value
+     * @param array|bool|DateTimeInterface|int|null|string $value
      * @return string
      */
     public function quote($value)
