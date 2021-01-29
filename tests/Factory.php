@@ -1,12 +1,17 @@
 <?php
 
+/** @noinspection SqlResolve */
+
 namespace Neat\Database\Test;
 
 use Neat\Database\Connection;
-use Neat\Database\Query;
+use Neat\Database\ImmutableQueryBuilder;
+use Neat\Database\MutableQueryBuilder;
+use Neat\Database\QueryBuilder;
 use PDO;
 use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
+use TypeError;
 
 /**
  * Factory
@@ -86,18 +91,15 @@ trait Factory
             ->getMock();
     }
 
-    /**
-     * Create query
-     *
-     * @param Connection $connection
-     * @return Query
-     */
-    public function query($connection = null)
+    public function query(string $type, Connection $connection = null): QueryBuilder
     {
-        if (!$connection) {
-            $connection = $this->connection();
+        $connection = $connection ?? $this->connection();
+        if ($type === 'immutable') {
+            return new ImmutableQueryBuilder($connection);
+        } elseif ($type === 'mutable') {
+            return new MutableQueryBuilder($connection);
+        } else {
+            throw new TypeError("Unknown query type: '$type'");
         }
-
-        return new Query($connection);
     }
 }
