@@ -48,6 +48,7 @@ class Connection
      * @param mixed  ...$data
      * @return Result|int
      * @throws QueryException
+     * @deprecated Use query() or execute() instead.
      */
     public function __invoke($query, ...$data)
     {
