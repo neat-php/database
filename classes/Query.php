@@ -2,6 +2,9 @@
 
 namespace Neat\Database;
 
+/**
+ * @deprecated Use the ImmutableQueryBuilder or MutableQueryBuilder instead
+ */
 class Query extends BaseQueryBuilder
 {
     use QueryTrait;
