@@ -4,6 +4,7 @@ namespace Neat\Database\Test;
 
 use Neat\Database\Connection;
 use Neat\Database\FetchedResult;
+use Neat\Database\ImmutableQueryBuilder;
 use Neat\Database\Query;
 use Neat\Database\QueryInterface;
 use Neat\Database\SQLQuery;
@@ -33,6 +34,7 @@ class QueryTraitTest extends TestCase
         return array_merge(...array_map(function (string $method) {
             return [
                 [(new Query($connection = $this->connection()))->select('*')->from('users'), $connection, $method],
+                [(new ImmutableQueryBuilder($connection = $this->connection()))->select('*')->from('users'), $connection, $method],
                 [new SQLQuery($connection = $this->connection(), "SELECT * FROM `users`"), $connection, $method],
             ];
         }, ['query', 'fetch', 'execute']));

@@ -1,5 +1,4 @@
 # Neat Database components
-
 [![Stable Version](https://poser.pugx.org/neat/database/version)](https://packagist.org/packages/neat/database)
 [![Build Status](https://travis-ci.org/neat-php/database.svg?branch=master)](https://travis-ci.org/neat-php/database)
 
@@ -223,8 +222,8 @@ $table = $db->quoteIdentifier('users'); // store '`users`' (note the backticks) 
 $sql = "SELECT * FROM $table";
 ```
 
-## Transactions and locking
-
+Transactions and locking
+------------------------
 If you want to run a set of database operations within a transaction, you
 can use the transaction method and pass your operations as a closure. When
 the closure returns, the transaction will be automatically committed. But

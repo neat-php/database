@@ -1,4 +1,5 @@
 <?php
+/** @noinspection SqlResolve */
 
 namespace Neat\Database\Test;
 
@@ -7,37 +8,62 @@ use Neat\Database\Query;
 use Neat\Database\SQLQuery;
 use PHPUnit\Framework\TestCase;
 
-class QueryTest extends TestCase
+class QueryBuilderTest extends TestCase
 {
     use Factory;
     use SQLHelper;
 
     /**
-     * Test select expressions
+     * @return array
      */
-    public function testSelectExpressions()
+    public function provideQuery(): array
     {
-        $query = $this->query();
+        return [
+            'immutable' => [$this->query('immutable', null)],
+            'mutable' => [$this->query('mutable', null)],
+        ];
+    }
+
+    public function provideType()
+    {
+        return [
+            'immutable' => ['immutable'],
+            'mutable' => ['mutable'],
+        ];
+    }
+
+    /**
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
+     */
+    public function testSelectExpressions(string $type)
+    {
+        $query = $this->query($type, null);
         $this->assertEquals(
             '*',
             $query->select()->getSelect()
         );
 
-        $query = $this->query();
+        $query = $this->query($type, null);
         $this->assertEquals(
             'id',
             $query->select('id')->getSelect()
         );
+
+        $query = $this->query($type, null);
         $this->assertEquals(
             'id,username',
-            $query->select(['username'])->getSelect()
-        );
-        $this->assertEquals(
-            'id,username,COUNT(*) AS amount',
-            $query->select(['amount' => 'COUNT(*)'])->getSelect()
+            $query->select('id')->select(['username'])->getSelect()
         );
 
-        $query = $this->query();
+        $query = $this->query($type, null);
+        $this->assertEquals(
+            'id,username,COUNT(*) AS amount',
+            $query->select('id')->select(['username'])->select(['amount' => 'COUNT(*)'])->getSelect()
+        );
+
+        $query = $this->query($type, null);
         $this->assertEquals(
             'id,MIN(price) AS min_price',
             $query->select(['id', 'min_price' => 'MIN(price)'])->getSelect()
@@ -45,78 +71,84 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test from
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testFrom()
+    public function testFrom(string $type)
     {
         $this->assertEquals(
             '`users`',
-            $this->query()
+            $this->query($type, null)
                 ->from('users')
                 ->getFrom()
         );
         $this->assertEquals(
             '`users` u',
-            $this->query()
+            $this->query($type, null)
                 ->from('users', 'u')
                 ->getFrom()
         );
         $this->assertEquals(
             '`users`,`groups`',
-            $this->query()
+            $this->query($type, null)
                 ->from(['users', 'groups'])
                 ->getFrom()
         );
         $this->assertEquals(
             '`users` u,`groups` g',
-            $this->query()
+            $this->query($type, null)
                 ->from(['u' => 'users', 'g' => 'groups'])
                 ->getFrom()
         );
 
         $this->assertEquals(
             '(SELECT * FROM dual) d',
-            $this->query()
+            $this->query($type, null)
                 ->from(new SQLQuery($this->connection(), 'SELECT * FROM dual'), 'd')
                 ->getFrom()
         );
     }
 
     /**
-     * Test into
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testInto()
+    public function testInto(string $type)
     {
         $this->assertEquals(
             '`users`',
-            $this->query()
+            $this->query($type, null)
                 ->into('users')
                 ->getTable()
         );
     }
 
     /**
-     * Test join
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testJoin()
+    public function testJoin(string $type)
     {
         $this->assertSQL(
             '`users` u INNER JOIN (SELECT id FROM `teams`) ON u.team_id',
-            $this->query()
+            $this->query($type, null)
                 ->from('users', 'u')
-                ->join($this->query()->select('id')->from('teams'), null, 'u.team_id')
+                ->join($this->query($type, null)->select('id')->from('teams'), null, 'u.team_id')
                 ->getFrom()
         );
         $this->assertSQL(
             '`users` u INNER JOIN `teams` t ON u.team_id = t.id',
-            $this->query()
+            $this->query($type, null)
                 ->from('users', 'u')
                 ->innerJoin('teams', 't', 'u.team_id = t.id')
                 ->getFrom()
         );
         $this->assertSQL(
             '`users` u RIGHT JOIN `teams` t ON u.team_id = t.id',
-            $this->query()
+            $this->query($type, null)
                 ->from('users', 'u')
                 ->rightJoin('teams', 't', 'u.team_id = t.id')
                 ->getFrom()
@@ -125,7 +157,7 @@ class QueryTest extends TestCase
             '`users` u
              LEFT JOIN `users_groups` ug ON u.id = ug.user_id
              LEFT JOIN `groups` g ON g.id = ug.group_id',
-            $this->query()
+            $this->query($type, null)
                 ->from('users', 'u')
                 ->leftJoin('users_groups', 'ug', 'u.id = ug.user_id')
                 ->leftJoin('groups', 'g', 'g.id = ug.group_id')
@@ -134,127 +166,136 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test where
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testWhere()
+    public function testWhere(string $type)
     {
         $this->assertSQL(
             "`username`='john'",
-            $this->query()
+            $this->query($type, null)
                 ->where(['username' => 'john'])
                 ->getWhere()
         );
         $this->assertSQL(
             "`deleted_at` IS NULL",
-            $this->query()
+            $this->query($type, null)
                 ->where(['deleted_at' => null])
                 ->getWhere()
         );
         $this->assertSQL(
             "`id` IN ('1','2','3')",
-            $this->query()
-                ->where(['id' => [1,2,3]])
+            $this->query($type, null)
+                ->where(['id' => [1, 2, 3]])
                 ->getWhere()
         );
         $this->assertSQL(
             "username='john' AND email='john@example.com'",
-            $this->query()
+            $this->query($type, null)
                 ->where('username=? AND email=?', 'john', 'john@example.com')
                 ->getWhere()
         );
     }
 
     /**
-     * Test group by
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testGroupBy()
+    public function testGroupBy(string $type)
     {
         $this->assertSQL(
             '',
-            $this->query()->getGroupBy()
+            $this->query($type, null)->getGroupBy()
         );
         $this->assertSQL(
             'id',
-            $this->query()->groupBy('id')->getGroupBy()
+            $this->query($type, null)->groupBy('id')->getGroupBy()
         );
     }
 
     /**
-     * Test having
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testHaving()
+    public function testHaving(string $type)
     {
         $this->assertSQL(
             "COUNT(*) = '3'",
-            $this->query()->having(['COUNT(*)' => 3])->getHaving()
+            $this->query($type, null)->having(['COUNT(*)' => 3])->getHaving()
         );
         $this->assertSQL(
             "COUNT(*) > '1'",
-            $this->query()->having('COUNT(*) > ?', 1)->getHaving()
+            $this->query($type, null)->having('COUNT(*) > ?', 1)->getHaving()
         );
     }
 
     /**
-     * Test order by
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testOrderBy()
+    public function testOrderBy(string $type)
     {
         $this->assertSQL(
             '',
-            $this->query()->getOrderBy()
+            $this->query($type, null)->getOrderBy()
         );
         $this->assertSQL(
             'date ASC',
-            $this->query()->orderBy('date ASC')->getOrderBy()
+            $this->query($type, null)->orderBy('date ASC')->getOrderBy()
         );
     }
 
     /**
-     * Test limit
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testLimit()
+    public function testLimit(string $type)
     {
         $this->assertSame(
             '',
-            $this->query()->getLimit()
+            $this->query($type, null)->getLimit()
         );
         $this->assertSame(
             '10',
-            $this->query()->limit(10)->getLimit()
+            $this->query($type, null)->limit(10)->getLimit()
         );
     }
 
     /**
-     * Test offset
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testOffset()
+    public function testOffset(string $type)
     {
         $this->assertSame(
             '',
-            $this->query()->offset(20)->getLimit()
+            $this->query($type, null)->offset(20)->getLimit()
         );
         $this->assertSame(
             '20,10',
-            $this->query()->limit(10)->offset(20)->getLimit()
+            $this->query($type, null)->limit(10)->offset(20)->getLimit()
         );
     }
 
     /**
-     * Test select
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testSelectBuilder()
+    public function testSelectBuilder(string $type)
     {
-        $connection = $this->mockedConnection(null, ['query']);
-        $select     = $connection->select();
-
-        $this->assertInstanceOf(Query::class, $select);
         $this->assertSQL(
             "SELECT 1 FROM `dual`",
-            $connection->select(1)->from('dual')->getQuery()
+            $this->query($type, null)->select(1)->from('dual')->getQuery()
         );
-        /** @noinspection SqlResolve */
         $this->assertSQL(
-            "SELECT g.*, COUNT(1) as active_users
+            "SELECT g.*, COUNT(1) AS active_users
              FROM `users` u
              LEFT JOIN `users_groups` ug ON u.id = ug.user_id
              LEFT JOIN `groups` g ON g.id = ug.group_id
@@ -263,8 +304,8 @@ class QueryTest extends TestCase
              HAVING COUNT(u.id) > 1
              ORDER BY g.name
              LIMIT 25",
-            $connection
-                ->select('g.*, COUNT(1) as active_users')
+            $this->query($type, null)
+                ->select('g.*, COUNT(1) AS active_users')
                 ->from('users', 'u')
                 ->leftJoin('users_groups', 'ug', 'u.id = ug.user_id')
                 ->leftJoin('groups', 'g', 'g.id = ug.group_id')
@@ -278,9 +319,11 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Test select query
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testSelectQuery()
+    public function testSelectQuery(string $type)
     {
         $connection = $this->mockedConnection(null, ['query']);
         $connection
@@ -291,14 +334,16 @@ class QueryTest extends TestCase
 
         $this->assertSame(
             $result,
-            $connection->select()->from('users')->where('id = ?', 1)->query()
+            $this->query($type, $connection)->select()->from('users')->where('id = ?', 1)->query()
         );
     }
 
     /**
-     * Test select query
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testSelectFetch()
+    public function testSelectFetch(string $type)
     {
         $connection = $this->mockedConnection(null, ['fetch']);
         $connection
@@ -309,19 +354,20 @@ class QueryTest extends TestCase
 
         $this->assertSame(
             $result,
-            $connection->select()->from('users')->where('id = ?', 1)->fetch()
+            $this->query($type, $connection)->select()->from('users')->where('id = ?', 1)->fetch()
         );
     }
 
     /**
-     * Test insert
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testInsertBuilder()
+    public function testInsertBuilder(string $type)
     {
         $connection = $this->mockedConnection(null, ['execute']);
-        $insert     = $connection->insert('users');
+        $insert = $this->query($type, $connection)->insert('users');
 
-        $this->assertInstanceOf(Query::class, $insert);
         $this->assertSame('`users`', $insert->getTable());
 
         $connection
@@ -332,34 +378,33 @@ class QueryTest extends TestCase
 
         $this->assertEquals(
             1,
-            $connection->insert('users', ['username' => 'sam'])
+            $this->query($type, $connection)->insert('users')->values(['username' => 'sam'])->execute()
         );
     }
 
     /**
-     * Test update
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testUpdateBuilder()
+    public function testUpdateBuilder(string $type)
     {
         $connection = $this->mockedConnection(null, ['execute']);
-        $update     = $connection->update('users');
+        $update = $connection->update('users');
 
         $this->assertInstanceOf(Query::class, $update);
         $this->assertSame('`users`', $update->getTable());
-        /** @noinspection SqlResolve */
         $this->assertSQL(
             "UPDATE `users`
              SET `active` = '0'",
             $update->set(['active' => 0])->getQuery()
         );
-        /** @noinspection SqlResolve */
         $this->assertSQL(
             "UPDATE `users`
              SET `active` = '0'
              WHERE email LIKE '%@example.com'",
             $update->where('email LIKE ?', '%@example.com')->getQuery()
         );
-        /** @noinspection SqlResolve */
         $this->assertSQL(
             "UPDATE `users`
              SET `active` = '0'
@@ -377,22 +422,22 @@ class QueryTest extends TestCase
 
         $this->assertEquals(
             1,
-            $connection->update('users', ['username' => 'sam'], ['id' => 2])
+            $this->query($type, $connection)->update('users')->set(['username' => 'sam'])->where(['id' => 2])->execute()
         );
     }
 
     /**
-     * Test upsert
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testUpsertBuilder()
+    public function testUpsertBuilder(string $type)
     {
         $connection = $this->mockedConnection(null, ['execute']);
-        $upsert     = $connection->upsert('users');
+        $upsert = $this->query($type, $connection)->upsert('users');
 
-        $this->assertInstanceOf(Query::class, $upsert);
         $this->assertSame('`users`', $upsert->getTable());
 
-        /** @noinspection SqlResolve */
         $this->assertSQL(
             "INSERT INTO `users` (`id`, `username`)
              VALUES ('1', 'john')
@@ -405,33 +450,44 @@ class QueryTest extends TestCase
         $connection
             ->expects($this->once())
             ->method('execute')
-            ->with($this->sql("INSERT INTO `users` (`id`, `username`) VALUES ('1', 'john') ON DUPLICATE KEY UPDATE `username` = 'john'"))
+            ->with(
+                $this->sql(
+                    "INSERT INTO `users` (`id`, `username`) VALUES ('1', 'john') ON DUPLICATE KEY UPDATE `username` = 'john'"
+                )
+            )
             ->willReturn(1);
 
         $this->assertEquals(
             1,
-            $connection->upsert('users', ['id' => 1, 'username' => 'john'], ['id'])
+            $this->query($type, $connection)
+                ->upsert('users')
+                ->values(['id' => 1, 'username' => 'john'])
+                ->set(['username' => 'john'])
+                ->where(['id' => 1])
+                ->execute()
         );
     }
 
     /**
-     * Test delete
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testDeleteBuilder()
+    public function testDeleteBuilder(string $type)
     {
         $connection = $this->mockedConnection(null, ['execute']);
-        $delete     = $connection->delete('users');
+        $delete = $this->query($type, $connection)->delete('users');
 
-        $this->assertInstanceOf(Query::class, $delete);
         $this->assertSame('`users`', $delete->getTable());
         /** @noinspection SqlWithoutWhere */
         $this->assertSQL(
             'DELETE FROM `users`',
             $delete->getQuery()
         );
+        $delete = $delete->where('id = ?', 3);
         $this->assertSQL(
             "DELETE FROM `users` WHERE id='3'",
-            $delete->where('id = ?', 3)->getQuery()
+            $delete->getQuery()
         );
         $this->assertSQL(
             "DELETE FROM `users` WHERE id='3' LIMIT 1",
@@ -446,33 +502,33 @@ class QueryTest extends TestCase
 
         $this->assertEquals(
             1,
-            $connection->delete('users', ['id' => 3])
+            $this->query($type, $connection)->delete('users')->where(['id' => 3])->execute()
         );
     }
 
     /**
-     * Test get query
+     * @dataProvider provideType
+     * @param string $type
+     * @return void
      */
-    public function testGetQuery()
+    public function testGetQuery(string $type)
     {
-        $connection = $this->connection();
-
         $this->assertSQL(
             "SELECT 1 FROM `dual`",
-            $connection
+            $this->query($type)
                 ->select(1)
                 ->from('dual')
                 ->getQuery()
         );
         $this->assertSQL(
             "SELECT 1 FROM `dual`",
-            (string) $connection
+            (string)$this->query($type)
                 ->select(1)
                 ->from('dual')
         );
 
         $this->expectException('RuntimeException');
-        $query = new Query($connection);
+        $query = $this->query($type);
         $query->getQuery();
     }
 }
