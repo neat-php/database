@@ -11,13 +11,17 @@ use PHPUnit\Framework\Constraint\Callback;
 trait SQLHelper
 {
     /**
-     * Minify SQL query by removing unused whitespace
+     * Minify SQL queries by removing unused whitespace
      *
-     * @param string $query
+     * @param string|null $query
      * @return string
      */
-    protected function minifySQL($query)
+    protected function minifySQL(?string $query): string
     {
+        if (!$query) {
+            return '';
+        }
+
         $replace = [
             '|\s+|m'     => ' ',
             '|\s*,\s*|m' => ',',
@@ -32,10 +36,10 @@ trait SQLHelper
      *
      * Normalizes whitespace to make the tests less fragile
      *
-     * @param string $expected
-     * @param string $actual
+     * @param string|null $expected
+     * @param string|null $actual
      */
-    protected function assertSQL($expected, $actual)
+    protected function assertSQL(?string $expected, ?string $actual)
     {
         $this->assertEquals(
             $this->minifySQL($expected),
@@ -49,7 +53,7 @@ trait SQLHelper
      * @param string $expected
      * @return callable|Callback
      */
-    protected function sql($expected)
+    protected function sql(string $expected)
     {
         return $this->callback(function ($query) use ($expected) {
             return $this->minifySQL($query) == $this->minifySQL($expected);
