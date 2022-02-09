@@ -59,13 +59,10 @@ class QueryExceptionTest extends TestCase
 
         try {
             $connection->$method('INVALID SQL');
-        }
-        /** @noinspection PhpRedundantCatchClauseInspection */
-        catch (QueryException $e) {
+        } catch (QueryException $e) {
             $this->assertEquals('INVALID SQL', $e->query());
             $this->assertEquals(0, $e->getCode());
-            // TODO replace with assertStringContainsString when we drop PHP 7.0 version compatibility
-            $this->assertContains('syntax error', $e->getMessage());
+            $this->assertStringContainsString('syntax error', $e->getMessage());
 
             return;
         }

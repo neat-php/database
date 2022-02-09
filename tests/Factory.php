@@ -42,11 +42,11 @@ trait Factory
      * @param array $methods (optional)
      * @return PDO|MockObject
      */
-    public function mockedPdo($methods = [])
+    public function mockedPdo(array $methods = [])
     {
         return $this
             ->getMockBuilder(PDO::class)
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->setConstructorArgs(['sqlite::memory:'])
             ->getMock();
     }

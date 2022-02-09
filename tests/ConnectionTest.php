@@ -215,7 +215,7 @@ class ConnectionTest extends TestCase
      */
     public function testExecute()
     {
-        $pdo        = $this->mockedPdo();
+        $pdo        = $this->mockedPdo(['exec', 'quote']);
         $connection = $this->connection($pdo);
 
         /** @noinspection SqlWithoutWhere */
@@ -243,7 +243,7 @@ class ConnectionTest extends TestCase
         $pdo        = $this->mockedPdo(['lastInsertId']);
         $connection = $this->connection($pdo);
 
-        $pdo->expects($this->at(0))
+        $pdo->expects($this->exactly(1))
             ->method('lastInsertId')
             ->willReturn('4');
 

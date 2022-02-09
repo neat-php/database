@@ -5,6 +5,7 @@ namespace Neat\Database;
 use IteratorAggregate;
 use PDO;
 use PDOStatement;
+use Traversable;
 
 /**
  * Result class
@@ -96,11 +97,11 @@ class Result implements IteratorAggregate
     }
 
     /**
-     * Get a generator (used for traversing trough the rows)
+     * Get a generator (used for traversing through the rows)
      *
-     * @return \Generator|array[]
+     * @return Traversable<array<string, mixed>>
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         while ($row = $this->row()) {
             yield $row;

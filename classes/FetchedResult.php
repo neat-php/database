@@ -112,7 +112,7 @@ class FetchedResult implements Countable, SeekableIterator
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->rows);
     }
@@ -120,7 +120,7 @@ class FetchedResult implements Countable, SeekableIterator
     /**
      * Rewind the cursor to the first row
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->cursor = 0;
     }
@@ -130,6 +130,7 @@ class FetchedResult implements Countable, SeekableIterator
      *
      * @return array
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->rows[$this->cursor];
@@ -137,8 +138,9 @@ class FetchedResult implements Countable, SeekableIterator
 
     /**
      * Get the current cursor index
+     * @return int
      */
-    public function key()
+    public function key(): int
     {
         return $this->cursor;
     }
@@ -146,7 +148,7 @@ class FetchedResult implements Countable, SeekableIterator
     /**
      * Move the cursor to the next row
      */
-    public function next()
+    public function next(): void
     {
         $this->cursor++;
     }
@@ -154,7 +156,7 @@ class FetchedResult implements Countable, SeekableIterator
     /**
      * Test if the cursor points to a valid row
      */
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->rows[$this->cursor]);
     }
@@ -162,10 +164,10 @@ class FetchedResult implements Countable, SeekableIterator
     /**
      * Move the cursor to a given row
      *
-     * @param int $position
+     * @param int $offset
      */
-    public function seek($position)
+    public function seek($offset): void
     {
-        $this->cursor = $position;
+        $this->cursor = $offset;
     }
 }
