@@ -1,15 +1,20 @@
 <?php
 
+/** @noinspection SqlResolve */
+
 namespace Neat\Database\Test;
 
 use DateTime;
+use DateTimeImmutable;
 use Neat\Database\FetchedResult;
+use Neat\Database\Query;
 use Neat\Database\Result;
 use PHPUnit\Framework\TestCase;
 
 class ConnectionTest extends TestCase
 {
     use Factory;
+    use SQLHelper;
 
     /**
      * Test getting/setting the PDO instance
@@ -39,6 +44,7 @@ class ConnectionTest extends TestCase
         $this->assertSame("'bilbo'", $connection->quote("bilbo"));
         $this->assertSame("'''; --'", $connection->quote("'; --"));
         $this->assertSame("'2020-02-15 01:23:45'", $connection->quote(new DateTime('2020-02-15 01:23:45')));
+        $this->assertSame("'2020-02-15 01:23:45'", $connection->quote(new DateTimeImmutable('2020-02-15 01:23:45')));
         $this->assertSame("'1','2','3'", $connection->quote([1, 2, 3]));
         $this->assertSame("'0'", $connection->quote(false));
         $this->assertSame("'1'", $connection->quote(true));
@@ -253,11 +259,147 @@ class ConnectionTest extends TestCase
     /**
      * Test direct object invocation
      */
-    function testInvoke()
+    public function testInvoke()
     {
         $connection = $this->connection();
 
         $this->assertSame(1, $connection("DELETE FROM users WHERE id=?", 1));
         $this->assertInstanceOf(Result::class, $connection("SELECT * FROM users"));
+    }
+
+    public function testSelect()
+    {
+        $connection = $this->connection();
+        $select = $connection->select();
+
+        $this->assertInstanceOf(Query::class, $select);
+        $this->assertSame('*', $select->getSelect());
+
+        $select = $connection->select('id');
+
+        $this->assertInstanceOf(Query::class, $select);
+        $this->assertSame('id', $select->getSelect());
+    }
+
+    public function testInsert()
+    {
+        $connection = $this->mockedConnection(null, ['execute']);
+        $insert = $connection->insert('users');
+
+        $this->assertInstanceOf(Query::class, $insert);
+        $this->assertSame('`users`', $insert->getTable());
+
+        $connection
+            ->expects($this->once())
+            ->method('execute')
+            ->with($this->sql("INSERT INTO `users` (`username`) VALUES ('sam')"))
+            ->willReturn(1);
+
+        $this->assertEquals(
+            1,
+            $connection->insert('users', ['username' => 'sam'])
+        );
+    }
+
+    public function testUpdate()
+    {
+        $connection = $this->mockedConnection(null, ['execute']);
+        $update = $connection->update('users');
+
+        $this->assertInstanceOf(Query::class, $update);
+        $this->assertSame('`users`', $update->getTable());
+        $this->assertSQL(
+            "UPDATE `users`
+             SET `active` = '0'",
+            $update->set(['active' => 0])->getQuery()
+        );
+        $this->assertSQL(
+            "UPDATE `users`
+             SET `active` = '0'
+             WHERE email LIKE '%@example.com'",
+            $update->where('email LIKE ?', '%@example.com')->getQuery()
+        );
+        $this->assertSQL(
+            "UPDATE `users`
+             SET `active` = '0'
+             WHERE email LIKE '%@example.com'
+             ORDER BY id
+             LIMIT 10",
+            $update->orderBy('id')->limit(10)->getQuery()
+        );
+
+        $connection
+            ->expects($this->once())
+            ->method('execute')
+            ->with($this->sql("UPDATE `users` SET `username`='sam' WHERE `id`='2'"))
+            ->willReturn(1);
+
+        $this->assertEquals(
+            1,
+            $connection->update('users', ['username' => 'sam'], ['id' => 2])
+        );
+    }
+
+    public function testUpsert()
+    {
+        $connection = $this->mockedConnection(null, ['execute']);
+        $upsert     = $connection->upsert('users');
+
+        $this->assertInstanceOf(Query::class, $upsert);
+        $this->assertSame('`users`', $upsert->getTable());
+
+        /** @noinspection SqlResolve */
+        $this->assertSQL(
+            "INSERT INTO `users` (`id`, `username`)
+             VALUES ('1', 'john')
+             ON DUPLICATE KEY UPDATE
+             `username` = 'john'",
+            $upsert->values(['id' => 1, 'username' => 'john'])->set(['username' => 'john'])->getQuery()
+        );
+
+
+        $connection
+            ->expects($this->once())
+            ->method('execute')
+            ->with($this->sql("INSERT INTO `users` (`id`, `username`) VALUES ('1', 'john') ON DUPLICATE KEY UPDATE `username` = 'john'"))
+            ->willReturn(1);
+
+        $this->assertEquals(
+            1,
+            $connection->upsert('users', ['id' => 1, 'username' => 'john'], ['id'])
+        );
+    }
+
+    public function testDelete()
+    {
+        $connection = $this->mockedConnection(null, ['execute']);
+        $delete     = $connection->delete('users');
+
+        $this->assertInstanceOf(Query::class, $delete);
+        $this->assertSame('`users`', $delete->getTable());
+        /** @noinspection SqlWithoutWhere */
+        $this->assertSQL(
+            'DELETE FROM `users`',
+            $delete->getQuery()
+        );
+        $this->assertSQL(
+            "DELETE FROM `users` WHERE id='3'",
+            $delete->where('id = ?', 3)->getQuery()
+        );
+        $this->assertSQL(
+            "DELETE FROM `users` WHERE id='3' LIMIT 1",
+            $delete->limit(1)->getQuery()
+        );
+
+        $connection
+            ->expects($this->once())
+            ->method('execute')
+            ->with($this->sql("DELETE FROM `users` WHERE `id`='3'"))
+            ->willReturn(1);
+
+        $this->assertEquals(
+            1,
+            $connection->delete('users', ['id' => 3])
+        );
     }
 }

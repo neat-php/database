@@ -281,7 +281,7 @@ class Connection
      * @param string       $table
      * @param array        $data  (optional)
      * @param array|string $where (optional)
-     * @return Query|int
+     * @return QueryBuilder|int
      * @throws QueryException
      */
     public function update($table, array $data = null, $where = null)
