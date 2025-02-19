@@ -30,10 +30,10 @@ class Connection
     /**
      * Constructor
      *
-     * @param PDO             $pdo
-     * @param LoggerInterface $log
+     * @param PDO $pdo
+     * @param LoggerInterface|null $log
      */
-    public function __construct(PDO $pdo, LoggerInterface $log = null)
+    public function __construct(PDO $pdo, ?LoggerInterface $log = null)
     {
         $this->pdo = $pdo;
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -45,7 +45,7 @@ class Connection
      * Run a query and return the result or number of rows affected
      *
      * @param string $query
-     * @param mixed  ...$data
+     * @param mixed ...$data
      * @return Result|int
      * @throws QueryException
      * @deprecated Use query() or execute() instead.
@@ -66,10 +66,10 @@ class Connection
     /**
      * Get or set PDO instance
      *
-     * @param PDO $pdo (optional)
+     * @param PDO|null $pdo
      * @return PDO
      */
-    public function pdo(PDO $pdo = null)
+    public function pdo(?PDO $pdo = null)
     {
         if ($pdo) {
             $this->pdo = $pdo;
@@ -122,13 +122,13 @@ class Connection
      * Merge data into an SQL query with placeholders
      *
      * @param string $query
-     * @param array  $data
+     * @param array $data
      * @return string
      */
     public function merge($query, array $data)
     {
         $expression = "/(\\?)(?=(?:[^']|'[^']*')*$)/";
-        $callback   = function () use (&$data) {
+        $callback = function () use (&$data) {
             if (!$data) {
                 return '?';
             }
@@ -144,7 +144,7 @@ class Connection
      *
      * @param string $method
      * @param string $query
-     * @param array  $data
+     * @param array $data
      * @return PDOStatement|int
      * @throws QueryException
      */
@@ -155,8 +155,8 @@ class Connection
         }
 
         try {
-            $start    = microtime(true);
-            $result   = $this->pdo->$method($query);
+            $start = microtime(true);
+            $result = $this->pdo->$method($query);
             $duration = microtime(true) - $start;
 
             $this->log->debug($query, ['duration' => $duration]);
@@ -165,7 +165,7 @@ class Connection
         } catch (PDOException $exception) {
             $this->log->error($exception->getMessage(), [
                 'exception' => $exception,
-                'query'     => $query,
+                'query' => $query,
             ]);
 
             throw new QueryException($exception, $query);
@@ -179,7 +179,7 @@ class Connection
      * forward-only cursor being used to fetch the results.
      *
      * @param string $query
-     * @param mixed  ...$data
+     * @param mixed ...$data
      * @return Result
      * @throws QueryException
      */
@@ -196,7 +196,7 @@ class Connection
      * result would be entirely consumed after counting its rows.
      *
      * @param string $query
-     * @param mixed  ...$data
+     * @param mixed ...$data
      * @return FetchedResult
      * @throws QueryException
      */
@@ -209,7 +209,7 @@ class Connection
      * Execute a query and return the number of rows affected
      *
      * @param string $query
-     * @param mixed  ...$data
+     * @param mixed ...$data
      * @return int
      * @throws QueryException
      */
@@ -225,7 +225,7 @@ class Connection
      */
     public function insertedId()
     {
-        return (int) $this->pdo->lastInsertId();
+        return (int)$this->pdo->lastInsertId();
     }
 
     /**
@@ -257,11 +257,11 @@ class Connection
      * the query builder is returned so you can extend the query further.
      *
      * @param string $table
-     * @param array  $data (optional)
+     * @param array|null $data
      * @return Query|int
      * @throws QueryException
      */
-    public function insert($table, array $data = null)
+    public function insert($table, ?array $data = null)
     {
         $insert = $this->build()->insert($table);
         if ($data) {
@@ -278,13 +278,13 @@ class Connection
      * executed and the number of rows affected will be returned. Otherwise
      * the query builder is returned so you can extend the query further.
      *
-     * @param string       $table
-     * @param array        $data  (optional)
-     * @param array|string $where (optional)
+     * @param string $table
+     * @param array|null $data
+     * @param array|null|string $where
      * @return Query|int
      * @throws QueryException
      */
-    public function update($table, array $data = null, $where = null)
+    public function update($table, ?array $data = null, $where = null)
     {
         $update = $this->build()->update($table);
         if ($data) {
@@ -307,21 +307,21 @@ class Connection
      * executed and the number of rows affected will be returned. Otherwise
      * the query builder is returned so you can extend the query further.
      *
-     * @param string       $table
-     * @param array        $data  (optional)
-     * @param array|string $key   (optional)
+     * @param string $table
+     * @param array|null $data
+     * @param array|null|string $key
      * @return Query|int
      * @throws QueryException
      */
-    public function upsert($table, array $data = null, $key = null)
+    public function upsert($table, ?array $data = null, $key = null)
     {
         $upsert = $this->build()->upsert($table);
         if ($data) {
             $upsert->values($data);
         }
         if ($key) {
-            $key   = array_flip(is_array($key) ? $key : (array) $key);
-            $set   = array_diff_key($data, $key);
+            $key = array_flip(is_array($key) ? $key : (array)$key);
+            $set = array_diff_key($data, $key);
             $where = array_intersect_key($data, $key);
 
             $upsert->set($set)->where($where);
@@ -340,8 +340,8 @@ class Connection
      * executed and the number of rows affected will be returned. Otherwise
      * the query builder is returned so you can extend the query further.
      *
-     * @param string       $table
-     * @param array|string $where (optional)
+     * @param string $table
+     * @param array|null|string $where
      * @return Query|int
      * @throws QueryException
      */
@@ -409,7 +409,7 @@ class Connection
      *
      * @param callable $closure Closure without required parameters
      * @return mixed Closure return value
-     * @throws \Throwable Exceptions thrown by the closure
+     * @throws Throwable Exceptions thrown by the closure
      */
     public function transaction(callable $closure)
     {
