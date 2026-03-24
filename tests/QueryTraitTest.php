@@ -6,6 +6,7 @@ use Neat\Database\Connection;
 use Neat\Database\FetchedResult;
 use Neat\Database\Query;
 use Neat\Database\QueryInterface;
+use Neat\Database\Result;
 use Neat\Database\SQLQuery;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -46,10 +47,19 @@ class QueryTraitTest extends TestCase
      */
     public function testQuery(QueryInterface $query, $connection, string $method)
     {
-        $connection->expects($this->once())
+        if ($method === 'query') {
+            $result = $this->getMockBuilder(Result::class)->disableOriginalConstructor()->getMock();
+        } elseif ($method === 'fetch') {
+            $result = new FetchedResult([['id' => 1, 'username' => 'john']]);
+        } else {
+            $result = 1;
+        }
+
+        $connection
+            ->expects($this->once())
             ->method($method)
             ->with($this->sql("SELECT * FROM `users`"))
-            ->willReturn($result = new FetchedResult([['id' => 1, 'username' => 'john']]));
+            ->willReturn($result);
 
         $this->assertSame($result, $query->{$method}());
     }

@@ -4,6 +4,7 @@ namespace Neat\Database\Test;
 
 use Neat\Database\FetchedResult;
 use Neat\Database\Query;
+use Neat\Database\Result;
 use Neat\Database\SQLQuery;
 use PHPUnit\Framework\TestCase;
 
@@ -282,12 +283,14 @@ class QueryTest extends TestCase
      */
     public function testSelectQuery()
     {
+        $result = $this->getMockBuilder(Result::class)->disableOriginalConstructor()->getMock();
+
         $connection = $this->mockedConnection(null, ['query']);
         $connection
             ->expects($this->once())
             ->method('query')
             ->with($this->sql("SELECT * FROM `users` WHERE id = '1'"))
-            ->willReturn($result = new FetchedResult([['id' => 1, 'username' => 'john']]));
+            ->willReturn($result);
 
         $this->assertSame(
             $result,
