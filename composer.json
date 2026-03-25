@@ -1,6 +1,7 @@
 {
     "name": "neat/database",
     "description": "Neat Database components",
+    "license": "MIT",
     "type": "library",
     "keywords": [
         "Database",
@@ -8,7 +9,6 @@
         "Query",
         "Result"
     ],
-    "license": "MIT",
     "authors": [
         {
             "name": "Bauke van der Woude",
@@ -19,6 +19,15 @@
             "email": "annavanbiemen@gmail.com"
         }
     ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "ext-pdo": "*",
+        "psr/log": "^1.0"
+    },
+    "require-dev": {
+        "ext-sqlite3": "*",
+        "phpunit/phpunit": "^8.5 || ^9.5"
+    },
     "autoload": {
         "psr-4": {
             "Neat\\Database\\": "classes/"
@@ -29,12 +38,9 @@
             "Neat\\Database\\Test\\": "tests/"
         }
     },
-    "require": {
-        "php": "^7.2 || ^8.0",
-        "psr/log": "^1.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^8.5 || ^9.5",
-        "ext-sqlite3": "*"
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.5.x-dev"
+        }
     }
 }
