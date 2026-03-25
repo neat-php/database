@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.2] - 2026-03-25
+### Fixed
+- Query property & parameter type-hints.
+
 ## [1.5.1] - 2025-02-19
 ### Fixed
 - PHP 8.1 deprecations.
