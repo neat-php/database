@@ -239,7 +239,7 @@ class Connection
      * Insert data into a table
      *
      * When all parameters are specified, the insert query is immediately
-     * executed and the number of rows affected will be returned. Otherwise
+     * executed and the number of rows affected will be returned. Otherwise,
      * the query builder is returned so you can extend the query further.
      *
      * @param string $table
@@ -260,7 +260,7 @@ class Connection
      * Update data in a table
      *
      * When all parameters are specified, the update query is immediately
-     * executed and the number of rows affected will be returned. Otherwise
+     * executed and the number of rows affected will be returned. Otherwise,
      * the query builder is returned so you can extend the query further.
      *
      * @param string $table
@@ -288,7 +288,7 @@ class Connection
      * Atomically insert or update data in a table
      *
      * When all parameters are specified, the upsert query is immediately
-     * executed and the number of rows affected will be returned. Otherwise
+     * executed and the number of rows affected will be returned. Otherwise,
      * the query builder is returned so you can extend the query further.
      *
      * @param string $table
@@ -320,7 +320,7 @@ class Connection
      * Delete from a table
      *
      * When all parameters are specified, the delete query is immediately
-     * executed and the number of rows affected will be returned. Otherwise
+     * executed and the number of rows affected will be returned. Otherwise,
      * the query builder is returned so you can extend the query further.
      *
      * @param string $table
@@ -387,7 +387,7 @@ class Connection
      * Run a closure inside a transaction
      *
      * Begins a transaction before running the closure and commits the
-     * transaction afterwards. When the closure emits an exception or
+     * transaction afterward. When the closure emits an exception or
      * throwable error, the transaction will be rolled back.
      *
      * @param callable $closure Closure without required parameters
