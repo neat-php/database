@@ -51,20 +51,20 @@ class Query implements QueryInterface
     /** @var array */
     protected $where = [];
 
-    /** @var string */
-    protected $groupBy;
+    /** @var string|null */
+    protected $groupBy = null;
 
     /** @var array */
     protected $having = [];
 
-    /** @var string */
-    protected $orderBy;
+    /** @var string|null */
+    protected $orderBy = null;
 
-    /** @var int */
-    protected $limit;
+    /** @var int|null */
+    protected $limit = null;
 
-    /** @var int */
-    protected $offset;
+    /** @var int|null */
+    protected $offset = null;
 
     /**
      * Constructor
@@ -99,7 +99,7 @@ class Query implements QueryInterface
     /**
      * Insert query
      *
-     * @param string $table (optional)
+     * @param string|null $table
      * @return $this
      */
     public function insert($table = null)
@@ -115,7 +115,7 @@ class Query implements QueryInterface
     /**
      * Update query
      *
-     * @param string $table (optional)
+     * @param string|null $table
      * @return $this
      */
     public function update($table = null)
@@ -131,7 +131,7 @@ class Query implements QueryInterface
     /**
      * Atomic insert/update query
      *
-     * @param string $table (optional)
+     * @param string|null $table
      * @return $this
      */
     public function upsert($table = null)
@@ -147,7 +147,7 @@ class Query implements QueryInterface
     /**
      * Delete query
      *
-     * @param string $table (optional)
+     * @param string|null $table
      * @return $this
      */
     public function delete($table = null)
@@ -164,7 +164,7 @@ class Query implements QueryInterface
      * Table to insert, update or delete from/into
      *
      * @param array|string $table
-     * @param string       $alias (optional)
+     * @param string|null $alias
      * @return $this
      */
     public function table($table, $alias = null)
@@ -196,7 +196,7 @@ class Query implements QueryInterface
      * From table
      *
      * @param array|string $table
-     * @param string       $alias (optional)
+     * @param string|null $alias
      * @return $this
      */
     public function from($table, $alias = null)
@@ -208,7 +208,7 @@ class Query implements QueryInterface
      * Into table
      *
      * @param string $table
-     * @param string $alias (optional)
+     * @param string|null $alias
      * @return $this
      */
     public function into($table, $alias = null)
@@ -219,9 +219,9 @@ class Query implements QueryInterface
     /**
      * Join a table
      *
-     * @param string|Query $table
-     * @param string $alias
-     * @param string $on
+     * @param Query|string $table
+     * @param string|null $alias
+     * @param string|null $on
      * @param string $type
      * @return $this
      */
@@ -241,7 +241,7 @@ class Query implements QueryInterface
     /**
      * LEFT OUTER Join a table
      *
-     * @param string $table
+     * @param Query|string $table
      * @param string $alias
      * @param string $on
      * @return $this
@@ -254,9 +254,9 @@ class Query implements QueryInterface
     /**
      * RIGHT OUTER Join a table
      *
-     * @param string $table
-     * @param string $alias
-     * @param string $on
+     * @param Query|string $table
+     * @param string|null $alias
+     * @param string|null $on
      * @return $this
      */
     public function rightJoin($table, $alias = null, $on = null)
@@ -267,9 +267,9 @@ class Query implements QueryInterface
     /**
      * INNER Join a table
      *
-     * @param string $table
-     * @param string $alias
-     * @param string $on
+     * @param Query|string $table
+     * @param string|null $alias
+     * @param string|null $on
      * @return $this
      */
     public function innerJoin($table, $alias = null, $on = null)
