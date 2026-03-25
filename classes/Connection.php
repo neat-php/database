@@ -211,7 +211,7 @@ class Connection
      */
     public function insertedId()
     {
-        return (int)$this->pdo->lastInsertId();
+        return (int) $this->pdo->lastInsertId();
     }
 
     /**
@@ -303,7 +303,7 @@ class Connection
             $upsert->values($data);
         }
         if ($key) {
-            $key = array_flip(is_array($key) ? $key : (array)$key);
+            $key = array_flip(is_array($key) ? $key : (array) $key);
             $set = array_diff_key($data, $key);
             $where = array_intersect_key($data, $key);
 

@@ -9,11 +9,11 @@ class Query implements QueryInterface
 {
     use QueryTrait;
 
-    const TYPE_SELECT = 'SELECT';
-    const TYPE_INSERT = 'INSERT';
-    const TYPE_UPDATE = 'UPDATE';
-    const TYPE_UPSERT = 'UPSERT';
-    const TYPE_DELETE = 'DELETE';
+    public const TYPE_SELECT = 'SELECT';
+    public const TYPE_INSERT = 'INSERT';
+    public const TYPE_UPDATE = 'UPDATE';
+    public const TYPE_UPSERT = 'UPSERT';
+    public const TYPE_DELETE = 'DELETE';
 
     /** @var Connection */
     protected $connection;
@@ -69,7 +69,7 @@ class Query implements QueryInterface
             $expression = explode(',', $expression);
         }
 
-        $this->type        = self::TYPE_SELECT;
+        $this->type = self::TYPE_SELECT;
         $this->expressions = array_merge($this->expressions, array_map(function ($expression, $alias) {
             return is_string($alias) ? "$expression AS $alias" : $expression;
         }, $expression, array_keys($expression)));

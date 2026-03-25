@@ -15,7 +15,7 @@ class SQLQuery implements QueryInterface
     public function __construct(Connection $connection, string $sql)
     {
         $this->connection = $connection;
-        $this->query      = $sql;
+        $this->query = $sql;
     }
 
     public function getQuery(): string
