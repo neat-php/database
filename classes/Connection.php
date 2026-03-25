@@ -13,9 +13,6 @@ use Throwable;
 
 ini_set('pcre.jit', false);
 
-/**
- * Connection class
- */
 class Connection
 {
     /** @var PDO */
@@ -27,12 +24,6 @@ class Connection
     /** @var bool */
     protected $started = false;
 
-    /**
-     * Constructor
-     *
-     * @param PDO $pdo
-     * @param LoggerInterface|null $log
-     */
     public function __construct(PDO $pdo, ?LoggerInterface $log = null)
     {
         $this->pdo = $pdo;
@@ -66,7 +57,6 @@ class Connection
     /**
      * Get or set PDO instance
      *
-     * @param PDO|null $pdo
      * @return PDO
      */
     public function pdo(?PDO $pdo = null)
@@ -122,7 +112,6 @@ class Connection
      * Merge data into an SQL query with placeholders
      *
      * @param string $query
-     * @param array $data
      * @return string
      */
     public function merge($query, array $data)
@@ -142,9 +131,6 @@ class Connection
     /**
      * Execute or run a query internally
      *
-     * @param string $method
-     * @param string $query
-     * @param array $data
      * @return PDOStatement|int
      * @throws QueryException
      */
@@ -257,7 +243,6 @@ class Connection
      * the query builder is returned so you can extend the query further.
      *
      * @param string $table
-     * @param array|null $data
      * @return Query|int
      * @throws QueryException
      */
@@ -279,7 +264,6 @@ class Connection
      * the query builder is returned so you can extend the query further.
      *
      * @param string $table
-     * @param array|null $data
      * @param array|null|string $where
      * @return Query|int
      * @throws QueryException
@@ -308,7 +292,6 @@ class Connection
      * the query builder is returned so you can extend the query further.
      *
      * @param string $table
-     * @param array|null $data
      * @param array|null|string $key
      * @return Query|int
      * @throws QueryException

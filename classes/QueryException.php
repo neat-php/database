@@ -19,19 +19,13 @@ class QueryException extends Exception
     /** @var string */
     protected $driverMessage;
 
-    /**
-     * Constructor
-     *
-     * @param PDOException $exception
-     * @param string       $query
-     */
     public function __construct(PDOException $exception, string $query)
     {
         parent::__construct($exception->getMessage(), 0, $exception);
 
         $this->query = $query;
 
-        list($this->state, $this->driverCode, $this->driverMessage) = $exception->errorInfo;
+        [$this->state, $this->driverCode, $this->driverMessage] = $exception->errorInfo;
     }
 
     /**

@@ -7,19 +7,11 @@ use PDO;
 use PDOStatement;
 use Traversable;
 
-/**
- * Result class
- */
 class Result implements IteratorAggregate
 {
     /** @var PDOStatement */
     protected $statement;
 
-    /**
-     * Constructor
-     *
-     * @param PDOStatement $statement
-     */
     public function __construct(PDOStatement $statement)
     {
         $this->statement = $statement;
@@ -28,7 +20,6 @@ class Result implements IteratorAggregate
     /**
      * Call a closure for each row
      *
-     * @param callable $closure
      * @return array
      */
     public function each(callable $closure)

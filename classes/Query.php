@@ -5,26 +5,14 @@ namespace Neat\Database;
 use DateTimeInterface;
 use RuntimeException;
 
-/**
- * Query builder class
- */
 class Query implements QueryInterface
 {
     use QueryTrait;
 
-    /** Select type */
     const TYPE_SELECT = 'SELECT';
-
-    /** Insert type */
     const TYPE_INSERT = 'INSERT';
-
-    /** Update type */
     const TYPE_UPDATE = 'UPDATE';
-
-    /** Atomic insert/update type */
     const TYPE_UPSERT = 'UPSERT';
-
-    /** Delete type */
     const TYPE_DELETE = 'DELETE';
 
     /** @var Connection */
@@ -66,19 +54,12 @@ class Query implements QueryInterface
     /** @var int|null */
     protected $offset = null;
 
-    /**
-     * Constructor
-     *
-     * @param Connection $connection
-     */
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
     }
 
     /**
-     * Select query
-     *
      * @param array|string $expression
      * @return $this
      */
@@ -97,8 +78,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Insert query
-     *
      * @param string|null $table
      * @return $this
      */
@@ -113,8 +92,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Update query
-     *
      * @param string|null $table
      * @return $this
      */
@@ -129,8 +106,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Atomic insert/update query
-     *
      * @param string|null $table
      * @return $this
      */
@@ -145,8 +120,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Delete query
-     *
      * @param string|null $table
      * @return $this
      */
@@ -161,8 +134,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Table to insert, update or delete from/into
-     *
      * @param array|string $table
      * @param string|null $alias
      * @return $this
@@ -193,8 +164,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * From table
-     *
      * @param array|string $table
      * @param string|null $alias
      * @return $this
@@ -205,8 +174,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Into table
-     *
      * @param string $table
      * @param string|null $alias
      * @return $this
@@ -217,8 +184,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Join a table
-     *
      * @param Query|string $table
      * @param string|null $alias
      * @param string|null $on
@@ -239,8 +204,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * LEFT OUTER Join a table
-     *
      * @param Query|string $table
      * @param string $alias
      * @param string $on
@@ -252,8 +215,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * RIGHT OUTER Join a table
-     *
      * @param Query|string $table
      * @param string|null $alias
      * @param string|null $on
@@ -265,8 +226,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * INNER Join a table
-     *
      * @param Query|string $table
      * @param string|null $alias
      * @param string|null $on
@@ -278,8 +237,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Data to insert
-     *
      * @param array $data
      * @return $this
      */
@@ -291,9 +248,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Data to set
-     *
-     * @param array $data
      * @return $this
      */
     public function set(array $data)
@@ -304,10 +258,8 @@ class Query implements QueryInterface
     }
 
     /**
-     * Where condition
-     *
-     * @param array|string                                 $conditions
-     * @param array|bool|DateTimeInterface|int|null|string ...$parameters (optional)
+     * @param array|string $conditions
+     * @param array|bool|DateTimeInterface|int|null|string ...$parameters
      * @return $this
      */
     public function where($conditions, ...$parameters)
@@ -335,8 +287,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Group by column
-     *
      * @param string $groupBy
      * @return $this
      */
@@ -348,10 +298,8 @@ class Query implements QueryInterface
     }
 
     /**
-     * Having condition
-     *
      * @param array|string $conditions
-     * @param mixed        ...$parameters (optional)
+     * @param mixed ...$parameters
      * @return $this
      */
     public function having($conditions, ...$parameters)
@@ -371,8 +319,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Order by column
-     *
      * @param string $orderBy
      * @return $this
      */
@@ -384,8 +330,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Limit number of results
-     *
      * @param int $limit
      * @return $this
      */
@@ -397,8 +341,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Return the number of results, starting at offset
-     *
      * @param int $offset
      * @return $this
      */
@@ -410,8 +352,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get select expression
-     *
      * @return string
      */
     public function getSelect()
@@ -420,8 +360,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get table
-     *
      * @return string
      */
     public function getTable()
@@ -430,8 +368,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get columns
-     *
      * @return string
      */
     public function getColumns()
@@ -440,8 +376,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get values
-     *
      * @return string
      */
     public function getValues()
@@ -450,8 +384,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get values
-     *
      * @return string
      */
     public function getSet()
@@ -464,8 +396,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get from query part
-     *
      * @return string
      */
     public function getFrom()
@@ -474,8 +404,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get where query part
-     *
      * @return string
      */
     public function getWhere()
@@ -484,8 +412,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get group by query part
-     *
      * @return string
      */
     public function getGroupBy()
@@ -494,8 +420,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get having query part
-     *
      * @return string
      */
     public function getHaving()
@@ -504,8 +428,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get order by query part
-     *
      * @return string
      */
     public function getOrderBy()
@@ -514,8 +436,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get limit query part
-     *
      * @return string
      */
     public function getLimit()
@@ -528,8 +448,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get SQL select query
-     *
      * @return string
      */
     public function getSelectQuery()
@@ -556,8 +474,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get SQL insert query
-     *
      * @return string
      */
     public function getInsertQuery()
@@ -570,8 +486,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get SQL update query
-     *
      * @return string
      */
     public function getUpdateQuery()
@@ -592,8 +506,6 @@ class Query implements QueryInterface
     }
 
     /**
-     * Get SQL upsert query
-     *
      * @return string
      */
     public function getUpsertQuery()
@@ -625,11 +537,6 @@ class Query implements QueryInterface
         return $sql;
     }
 
-    /**
-     * Get SQL Query
-     *
-     * @return string
-     */
     public function getQuery(): string
     {
         switch ($this->type) {
@@ -648,9 +555,6 @@ class Query implements QueryInterface
         }
     }
 
-    /**
-     * @return Connection
-     */
     protected function connection(): Connection
     {
         return $this->connection;

@@ -5,9 +5,6 @@ namespace Neat\Database;
 use Countable;
 use SeekableIterator;
 
-/**
- * Fetched result class
- */
 class FetchedResult implements Countable, SeekableIterator
 {
     /** @var array */
@@ -16,11 +13,6 @@ class FetchedResult implements Countable, SeekableIterator
     /** @var int */
     protected $cursor = 0;
 
-    /**
-     * Constructor
-     *
-     * @param array $rows
-     */
     public function __construct(array $rows)
     {
         $this->rows = $rows;
@@ -29,7 +21,6 @@ class FetchedResult implements Countable, SeekableIterator
     /**
      * Call a closure for each row
      *
-     * @param callable $closure
      * @return array
      */
     public function each(callable $closure)
@@ -109,8 +100,6 @@ class FetchedResult implements Countable, SeekableIterator
 
     /**
      * Count the number of rows
-     *
-     * @return int
      */
     public function count(): int
     {
@@ -138,7 +127,6 @@ class FetchedResult implements Countable, SeekableIterator
 
     /**
      * Get the current cursor index
-     * @return int
      */
     public function key(): int
     {

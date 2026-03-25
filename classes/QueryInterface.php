@@ -6,8 +6,6 @@ interface QueryInterface
 {
     /**
      * Get query string
-     *
-     * @return string
      */
     public function getQuery(): string;
 
