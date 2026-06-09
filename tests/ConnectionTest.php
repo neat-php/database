@@ -42,6 +42,9 @@ class ConnectionTest extends TestCase
         $this->assertSame("'1','2','3'", $connection->quote([1, 2, 3]));
         $this->assertSame("'0'", $connection->quote(false));
         $this->assertSame("'1'", $connection->quote(true));
+        if (PHP_VERSION_ID >= 80100) {
+            $this->assertSame("'yes'", $connection->quote(Stub\Options::YES));
+        }
     }
 
     /**

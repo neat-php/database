@@ -2,6 +2,7 @@
 
 namespace Neat\Database;
 
+use BackedEnum;
 use DateTimeInterface;
 use PDO;
 use PDOException;
@@ -71,13 +72,16 @@ class Connection
     /**
      * Quote a value (protecting against SQL injection)
      *
-     * @param array|bool|DateTimeInterface|int|null|string $value
+     * @param array|BackedEnum|bool|DateTimeInterface|int|null|string $value
      * @return string
      */
     public function quote($value)
     {
         if ($value === null) {
             return 'NULL';
+        }
+        if ($value instanceof BackedEnum) {
+            return $this->pdo->quote($value->value);
         }
         if ($value instanceof DateTimeInterface) {
             return $this->pdo->quote($value->format('Y-m-d H:i:s'));
